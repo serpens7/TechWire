@@ -117,5 +117,8 @@
   },
   "search": "Search",
   "edit": "Edit",
-  "IT-NEWS": "It-news"
+  "IT-NEWS": "It-news",
+  "increment": "Increment",
+  "decrement": "Decrement",
+  "add5": "Add 5"
 }

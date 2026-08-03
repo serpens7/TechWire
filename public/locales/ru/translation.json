@@ -111,5 +111,8 @@
   },
   "search": "Поиск",
   "edit": "Редактировать",
-  "IT-NEWS": "IT-news"
+  "IT-NEWS": "IT-news",
+  "increment": "Увеличить",
+  "decrement": "Уменьшить",
+  "add5": "Добавить 5"
 }
