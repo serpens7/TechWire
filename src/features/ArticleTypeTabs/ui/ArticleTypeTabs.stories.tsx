@@ -1,5 +1,4 @@
 import { StoryFn, Meta } from '@storybook/react';
-
 import { ArticleTypeTabs } from './ArticleTypeTabs';
 
 export default {
