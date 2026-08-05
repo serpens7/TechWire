@@ -59,7 +59,7 @@ app → pages → widgets → features → entities → shared
 
 Current slices:
 - **entities**: Article, Comment, Counter, Country, Currency, Notification, Profile, User
-- **features**: ArticleComments, AuthByUserName, articleRecommendationsList, editableProfileCard, LangSwitcher, NotificationButton, ThemeSwitcher
+- **features**: ArticleComments, articleRating, AuthByUserName, articleRecommendationsList, editableArticleCard, editableProfileCard, LangSwitcher, NotificationButton, ThemeSwitcher
 - **widgets**: Navbar, Page, PageError, PageLoader, Sidebar
 - **pages**: About, ArticleDetails, ArticleEdit, Articles, Forbidden, Main, NotFound, Profile
 - **shared/ui**: AppLink, Avatar, Button, Card, Code, Drawer, Dropdown, Icon, Input, ListBox, Loader, Modal, PageLoader, Popover, Portal, Select, Skeleton, Stack (HStack/VStack), Tabs, Text
@@ -75,6 +75,13 @@ Current slices:
    dedicated API for a consumer: `entities/Country/@x/Profile.ts`, imported as
    `@/entities/Country/@x/Profile`. Existing: `User/@x/Article`, `User/@x/Comment`,
    `Country/@x/Profile`, `Currency/@x/Profile`. (`@x` is just a folder name.)
+4. **Feature→feature cross-imports have no escape hatch (unlike entities' `@x`) —
+   steiger errors, not warns.** If two features need the same UI (e.g. a type
+   selector used by both the articles-list filters and the article-editing form),
+   it belongs one layer down, in the entity: `ArticleTypeTabs` lives in
+   `entities/Article/ui/ArticleTypeTabs`, not in a `features/` slice, so both
+   `pages/ArticlesPage` and `features/editableArticleCard` can import it from
+   `@/entities/Article` without a forbidden cross-feature edge.
 
 ## Redux store (important, non-obvious)
 
@@ -92,23 +99,33 @@ Current slices:
 
 ## RTK Query (server-state — preferred direction)
 
-- Base API: `shared/api/rtkApi.ts` (`createApi` + `axiosBaseQuery()`, `tagTypes: ['Comments', 'Profile']`).
-  Wired into the store (`api` reducer + middleware) and `StateSchema[rtkApi.reducerPath]`.
-  `axiosBaseQuery` (`shared/api/axiosBaseQuery.ts`) delegates to `$api.request(...)` (call
-  `.request` explicitly, not `$api(...)` — the callable instance is a separate bound
-  function from `.request`, so tests spying on `$api.request` wouldn't see calls made
-  through the bare callable).
+- Base API: `shared/api/rtkApi.ts` (`createApi` + `axiosBaseQuery()`,
+  `tagTypes: ['Comments', 'Profile', 'Articles']`). Wired into the store (`api` reducer +
+  middleware) and `StateSchema[rtkApi.reducerPath]`. `axiosBaseQuery`
+  (`shared/api/axiosBaseQuery.ts`) delegates to `$api.request(...)` (call `.request`
+  explicitly, not `$api(...)` — the callable instance is a separate bound function from
+  `.request`, so tests spying on `$api.request` wouldn't see calls made through the bare
+  callable).
 - Endpoints are injected (`injectEndpoints`) in an `api/` segment — usually in the feature
   (`features/ArticleComments/api/articleCommentsApi.ts`,
-  `features/editableProfileCard/api/profileApi.ts`), or in the entity when the query just
+  `features/editableProfileCard/api/profileApi.ts`,
+  `features/editableArticleCard/api/articleApi.ts`), or in the entity when the query just
   fetches that entity's own data (`entities/Notification/api/notificationApi.ts`).
   Hooks are re-exported under renamed constants; `tagTypes` stay centralized in `rtkApi`.
 - **Two data-fetching paradigms coexist**: legacy `createAsyncThunk`+slice+entityAdapter
-  (**Articles, Auth**) and RTK Query (Comments, Recommendations, **Profile**, Notifications).
-  Direction of travel = migrate server-state to RTK Query. **Profile is already migrated**:
-  `editableProfileCard` fetches/updates via `profileApi` (RTK Query); its slice now holds
-  only client-side edit state (readonly, form draft, validate errors). When adding new
-  fetching, prefer RTK Query.
+  (**Articles listing/details, Auth**) and RTK Query (Comments, Recommendations,
+  **Profile**, Notifications, **article create/edit**). Direction of travel = migrate
+  server-state to RTK Query. **Profile is already migrated**: `editableProfileCard`
+  fetches/updates via `profileApi` (RTK Query); its slice now holds only client-side edit
+  state (readonly, form draft, validate errors). **Article create/edit is RTK Query too**
+  (`editableArticleCard/api/articleApi.ts` — `getArticle`/`createArticle`/`updateArticle`),
+  even though reading the articles list/details page still goes through the legacy thunk
+  (`fetchArticlesList`, `fetchArticleById`) — the two paradigms coexist **within the same
+  entity**, not just across entities. `getArticle` intentionally fetches without
+  `_expand=user` (unlike the read-side thunks) so the same raw record (with `userId`, not
+  an expanded `user` object) can be sent straight back on `PUT` — see
+  `ArticleFormData` in `editableArticleCard/model/types`. When adding new fetching, prefer
+  RTK Query.
 - Auth header is set once, by `$api`'s request interceptor (`shared/api/api.ts`) — both
   thunks and RTK Query endpoints go through it. No separate `prepareHeaders` to keep in sync.
 
@@ -197,7 +214,20 @@ Current slices:
   Chrome installed). Base `npm run e2e` leaves `PW_CHANNEL` unset → bundled Chromium
   (headless, CI default). Manual override still works: `$env:PW_CHANNEL="msedge"` etc.
 - **E2E is NOT in the CI chain** (`main.yml`) yet — it's a separate `npm run e2e`. The
-  green-before-done chain below stays jest-only.
+  green-before-done chain below stays jest-only. Coverage so far: `e2e/auth.spec.ts`
+  (login, token persistence, RBAC redirect) and `e2e/article.spec.ts` (posting a comment,
+  rating an article, creating an article — including validation). The comment/rating/
+  article-creation **writes** are stubbed via `page.route` (see `e2e/article.spec.ts`)
+  so the suite never mutates the committed `json-server/db.json` fixture; reads still hit
+  the real backend. Shared login/creds live in `e2e/helpers.ts`.
+- **`lint:fsd` (steiger) has a known nondeterministic false-positive**: an import that's
+  correctly downgraded to a warning by a `steiger.config.ts` override (e.g. the
+  `model/**` or `shared/lib/tests/**` glob) can occasionally get reported as a hard
+  **error** instead — confirmed reproducible even on a clean tree with zero pending
+  changes (not caused by any specific edit). If `lint:fsd` reports exactly one error on
+  a file/pattern that's covered by an existing override in `steiger.config.ts`, that's
+  this flake, not a real architecture violation — rerun it before assuming your change
+  broke something; don't chase it by restructuring unrelated code.
 
 ## Verification & workflow
 

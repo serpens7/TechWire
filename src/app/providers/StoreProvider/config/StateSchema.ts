@@ -2,6 +2,7 @@ import { ArticleDetailsSchema } from "@/entities/Article";
 import { UserSchema } from "@/entities/User";
 import { LoginSchema } from "@/features/AuthByUserName";
 import { ProfileSchema } from "@/features/editableProfileCard";
+import { EditableArticleCardSchema } from "@/features/editableArticleCard";
 import { ArticlesPageSchema } from "@/pages/ArticlesPage";
 import { AnyAction, Dispatch, EnhancedStore, Reducer, ReducersMapObject } from "@reduxjs/toolkit";
 import { AxiosInstance } from "axios";
@@ -19,6 +20,7 @@ export interface StateSchema {
     loginForm?: LoginSchema;
     articleDetails?: ArticleDetailsSchema;
     articlesPage?: ArticlesPageSchema;
+    articleForm?: EditableArticleCardSchema;
 
     [rtkApi.reducerPath]: ReturnType<typeof rtkApi.reducer>;
 }

@@ -127,17 +127,82 @@ test.describe('rating', () => {
     });
 });
 
-test.describe('article creation (route)', () => {
-    // NOTE: ArticleEditPage is currently a stub (no form yet), so the most that can
-    // be asserted is that an admin actually reaches the create route. The non-admin
-    // → /forbidden gating for this same route is covered in auth.spec.ts. Once a
-    // real create form exists, extend this into a full "fill → submit → appears" flow.
-    test('an admin can open the create-article page', async ({ page }) => {
+test.describe('article creation', () => {
+    // Non-admin → /forbidden gating for this same route is covered in auth.spec.ts.
+    const NEW_ID = 'e2e-new-article';
+
+    test('an admin can fill the form and land on the new article', async ({
+        page,
+    }) => {
+        // Stub the write (POST /articles) so nothing is persisted to db.json, and
+        // stub the subsequent read of the "created" article so ArticleDetailsPage
+        // (which the app navigates to on success) has something to render.
+        await page.route('**/articles', async (route) => {
+            if (route.request().method() === 'POST') {
+                const body = route.request().postDataJSON();
+                await route.fulfill({
+                    status: 201,
+                    contentType: 'application/json',
+                    body: JSON.stringify({ id: NEW_ID, ...body }),
+                });
+            } else {
+                await route.continue();
+            }
+        });
+
+        await page.route(`**/articles/${NEW_ID}**`, async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: NEW_ID,
+                    title: 'E2E created article',
+                    subtitle: 'Created via Playwright',
+                    img: 'https://example.com/e2e.png',
+                    type: ['IT'],
+                    views: 0,
+                    createdAt: '01.01.2026',
+                    blocks: [],
+                    user: { id: '1', username: ADMIN.username },
+                }),
+            });
+        });
+
         await page.goto('/');
         await login(page, ADMIN);
         await page.goto('/articles/new');
 
+        await page
+            .getByTestId('EditableArticleCard.Title')
+            .fill('E2E created article');
+        await page
+            .getByTestId('EditableArticleCard.Subtitle')
+            .fill('Created via Playwright');
+        await page
+            .getByTestId('EditableArticleCard.Img')
+            .fill('https://example.com/e2e.png');
+        // ArticleTypeTabs renders each type as plain clickable text, not a button.
+        await page.getByText('IT', { exact: true }).click();
+
+        await page.getByTestId('EditableArticleCard.SaveButton').click();
+
+        // On success the form navigates to the created article's details page.
+        await expect(page).toHaveURL(new RegExp(`/articles/${NEW_ID}$`));
+        await expect(page.getByText('E2E created article')).toBeVisible();
+    });
+
+    test('required-field validation blocks submission', async ({ page }) => {
+        await page.goto('/');
+        await login(page, ADMIN);
+        await page.goto('/articles/new');
+
+        // No fields filled in — saving should surface validation errors and not
+        // navigate away.
+        await page.getByTestId('EditableArticleCard.SaveButton').click();
+
         await expect(page).toHaveURL(/\/articles\/new$/);
-        await expect(page.getByText('New article creation')).toBeVisible();
+        await expect(
+            page.getByTestId('EditableArticleCard.Error.Paragraph'),
+        ).toBeVisible();
     });
 });

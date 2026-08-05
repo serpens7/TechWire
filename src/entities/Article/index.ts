@@ -25,6 +25,8 @@ export { ArticleListItem } from './ui/ArticleListItem/ArticleListItem';
 
 export { ArticleListItemSkeleton } from './ui/ArticleListItem/ArticleListItemSkeleton';
 
+export { ArticleTypeTabs } from './ui/ArticleTypeTabs/ArticleTypeTabs';
+
 export type { ArticleDetailsSchema } from './model/types/articleDetailsSchema';
 
 export { getArticleDetailsData } from './model/selectors/articleDetails';
