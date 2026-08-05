@@ -17,7 +17,8 @@ A production-style single-page application built on **Feature-Sliced Design (FSD
 | Build | webpack 5 + **swc-loader**, React Fast Refresh, filesystem cache |
 | Language | TypeScript 5 (`moduleResolution: bundler`) |
 | Stories | Storybook 8 (webpack5 + SWC) |
-| Tests | Jest 29 + @swc/jest + Testing Library 14 |
+| Tests | Jest 29 + @swc/jest + Testing Library 14 (unit/component) |
+| E2E | Playwright (real Chromium against the dev stack) |
 | Architecture linter | steiger (FSD boundaries) |
 | Backend (dev) | json-server (`json-server/db.json`) |
 
@@ -78,8 +79,37 @@ The admin account can create and edit articles; the user account gets a Forbidde
 | `npm run lint:scss` / `lint:scss:fix` | Stylelint |
 | `npm run lint:fsd` | steiger — FSD architecture boundaries |
 | `npm run unit` | Jest unit/component tests |
+| `npm run e2e` | Playwright end-to-end tests (boots the dev stack automatically) |
+| `npm run e2e:ui` | Playwright interactive UI mode |
+| `npm run e2e:report` | Open the last Playwright HTML report |
 | `npm run build:prod` | Production webpack build |
 | `npm run storybook` / `build-storybook` | Storybook dev / static build |
+
+## End-to-end tests (Playwright)
+
+Unit/component tests (Jest) run in **jsdom** with a mocked `$api` — great for logic,
+blind to real routing, real navigation, the token surviving a reload, or the RBAC
+route gate. Playwright fills that gap: it drives a **real Chromium** against the
+**real dev stack**.
+
+One-time browser download (Playwright ships its own pinned Chromium, it does not use
+your installed Chrome):
+
+```bash
+npx playwright install chromium
+```
+
+Then just:
+
+```bash
+npm run e2e
+```
+
+`playwright.config.ts` starts `npm run start:dev` itself (app on `:3000` + json-server
+on `:8000`) and waits for `:3000` before running — no need to start anything by hand.
+The current suite (`e2e/auth.spec.ts`) covers the critical auth + RBAC path: admin
+login → the admin-only "Create article" link, auth surviving a reload, and a plain
+USER being redirected to `/forbidden` on the admin-only route.
 
 ## Project structure (FSD)
 

@@ -20,7 +20,8 @@ Absolute imports use the `@/` alias → `src/` (webpack + tsconfig `paths`).
 | TS | `typescript@^5.4` (resolves to 5.9); `moduleResolution: "bundler"` |
 | Build | webpack **5** (config in `config/build`); **swc-loader** transpiles (not ts-loader), dev filesystem cache + React Fast Refresh, prod `splitChunks` vendor chunk |
 | Stories | Storybook **8.6** (webpack5 + SWC compiler) |
-| Tests | jest **29** + `@swc/jest` + testing-library **14** |
+| Tests | jest **29** + `@swc/jest` + testing-library **14** (unit/component, jsdom) |
+| E2E | **Playwright** — real Chromium against the dev stack (`e2e/`, `playwright.config.ts`) |
 | HTTP | **axios `$api`** (`shared/api/api.ts`) for both thunks and RTK Query — `rtkApi.ts` uses `axiosBaseQuery` (`shared/api/axiosBaseQuery.ts`), not `fetchBaseQuery`, so the auth interceptor lives in one place |
 | Virtualization | react-virtuoso (articles list; already inside a lazy page chunk) |
 | Responsive | **react-device-detect** (`BrowserView`/`MobileView`) — e.g. Popover vs Drawer |
@@ -33,7 +34,9 @@ Absolute imports use the `@/` alias → `src/` (webpack + tsconfig `paths`).
 - `npm run lint:ts` / `lint:ts:fix` — eslint (airbnb)
 - `npm run lint:scss` / `lint:scss:fix` — stylelint
 - `npm run lint:fsd` — steiger (FSD boundaries)
-- `npm run unit` — jest
+- `npm run unit` — jest (unit/component, jsdom)
+- `npm run e2e` — Playwright E2E (boots `start:dev` itself; needs `npx playwright install chromium` once)
+- `npm run e2e:ui` / `e2e:report` — Playwright UI mode / open last HTML report
 - `npm run build:prod` — production webpack build
 - `npm run storybook` / `build-storybook`
 - `npm run start:dev` — dev server + json-server (concurrently)
@@ -170,6 +173,19 @@ Current slices:
 - **Do NOT `rm package-lock.json && npm install`** — it drifts transitive tool versions
   (stylelint/eslint) and changes lint behavior. Use `npm ci` for clean reinstalls, and
   targeted `npm install pkg@ver` for version changes.
+- **Playwright E2E selectors:** the shared `Input` (`shared/ui/Input`) renders its
+  `placeholder` prop as a sibling `<div>` (`${placeholder}>`), NOT as a real placeholder
+  attribute, and gives the `<input>` no accessible name — so `getByPlaceholder` /
+  `getByLabel` won't match. `Modal` has **no `role="dialog"`** either. E2E targets login
+  inputs by type inside the `<form>` (`form input[type="text"]` / `[type="password"]`).
+  Prefer role/text selectors elsewhere (`getByRole('button', { name: 'Enter' })`).
+- **Playwright boots its own server:** `playwright.config.ts` runs `npm run start:dev`
+  (app `:3000` + json-server `:8000`) and waits on `:3000` — don't start it manually.
+  Browser download is a one-time `npx playwright install chromium` (pinned Chromium, not
+  your system Chrome). `e2e/` and `playwright.config.ts` are **excluded from `tsc`**
+  (root tsconfig loads only jest types) — Playwright type-checks specs itself at run time.
+- **E2E is NOT in the CI chain** (`main.yml`) yet — it's a separate `npm run e2e`. The
+  green-before-done chain below stays jest-only.
 
 ## Verification & workflow
 
