@@ -21,13 +21,13 @@ async function login(page: Page, { username, password }: typeof ADMIN) {
     // Navbar "Enter" button opens the login modal (navbar.login).
     await page.getByRole('button', { name: 'Enter' }).click();
 
-    // NOTE: the shared Input renders `placeholder` as a sibling <div>, not as a
-    // real placeholder attribute, and gives the <input> no accessible name — so
-    // getByPlaceholder / getByLabel can't match. Target by type inside the form.
-    const form = page.locator('form');
-    await form.locator('input[type="text"]').fill(username);
-    await form.locator('input[type="password"]').fill(password);
-    await form.getByRole('button', { name: 'Login' }).click();
+    // Semantic selectors: Modal exposes role="dialog", and the shared Input gives
+    // its <input> an accessible name via aria-label={placeholder} — so the test
+    // finds fields the same way a screen reader / user would.
+    const dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Enter your login').fill(username);
+    await dialog.getByLabel('Enter your password').fill(password);
+    await dialog.getByRole('button', { name: 'Login' }).click();
 }
 
 test.describe('auth', () => {

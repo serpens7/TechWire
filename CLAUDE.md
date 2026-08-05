@@ -173,12 +173,12 @@ Current slices:
 - **Do NOT `rm package-lock.json && npm install`** — it drifts transitive tool versions
   (stylelint/eslint) and changes lint behavior. Use `npm ci` for clean reinstalls, and
   targeted `npm install pkg@ver` for version changes.
-- **Playwright E2E selectors:** the shared `Input` (`shared/ui/Input`) renders its
-  `placeholder` prop as a sibling `<div>` (`${placeholder}>`), NOT as a real placeholder
-  attribute, and gives the `<input>` no accessible name — so `getByPlaceholder` /
-  `getByLabel` won't match. `Modal` has **no `role="dialog"`** either. E2E targets login
-  inputs by type inside the `<form>` (`form input[type="text"]` / `[type="password"]`).
-  Prefer role/text selectors elsewhere (`getByRole('button', { name: 'Enter' })`).
+- **Playwright E2E selectors / a11y:** the shared `Input` (`shared/ui/Input`) still
+  renders its `placeholder` prop as a sibling `<div>` (`${placeholder}>`) for the custom
+  caret look, but the `<input>` now gets an accessible name via `aria-label={placeholder}`
+  — so `getByLabel('...')` matches (there is still no real `placeholder` attribute, so
+  `getByPlaceholder` does NOT). `Modal` exposes `role="dialog"` + `aria-modal` on its
+  content, so `getByRole('dialog')` works. E2E uses these semantic selectors.
 - **Playwright boots its own server:** `playwright.config.ts` runs `npm run start:dev`
   (app `:3000` + json-server `:8000`) and waits on `:3000` — don't start it manually.
   Browser download is a one-time `npx playwright install chromium` (pinned Chromium, not

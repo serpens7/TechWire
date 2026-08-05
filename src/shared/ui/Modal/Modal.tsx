@@ -40,7 +40,16 @@ export const Modal = (props: ModalProps) => {
         <Portal>
             <div className={classNames(cls.Modal, mods, [className])}>
                 <div className={cls.overlay} onClick={close}>
-                    <div className={cls.content} onClick={onContentClick}>
+                    {/* onClick only stops the overlay's close-on-click from firing
+                        when interacting with the dialog body; the dialog is closed
+                        via the overlay, Escape (useModal), or its own controls. */}
+                    {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+                    <div
+                        className={cls.content}
+                        onClick={onContentClick}
+                        role="dialog"
+                        aria-modal="true"
+                    >
                         {children}
                     </div>
                 </div>
