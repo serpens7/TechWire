@@ -30,7 +30,14 @@ export default defineConfig({
     projects: [
         {
             name: 'chromium',
-            use: { ...devices['Desktop Chrome'] },
+            use: {
+                ...devices['Desktop Chrome'],
+                // Opt-in escape hatch: on machines where Playwright's bundled
+                // Chromium can't launch headed (e.g. a broken Windows side-by-side
+                // runtime), set PW_CHANNEL=chrome (or msedge) to use the installed
+                // system browser instead. Unset → bundled Chromium (CI default).
+                channel: process.env.PW_CHANNEL || undefined,
+            },
         },
     ],
     webServer: {

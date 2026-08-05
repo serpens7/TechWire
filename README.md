@@ -111,6 +111,20 @@ The current suite (`e2e/auth.spec.ts`) covers the critical auth + RBAC path: adm
 login → the admin-only "Create article" link, auth surviving a reload, and a plain
 USER being redirected to `/forbidden` on the admin-only route.
 
+**Headed / UI mode & `PW_CHANNEL`.** Headless (`npm run e2e`) uses Playwright's bundled
+Chromium and always works. If the bundled Chromium can't launch **headed** on your
+machine (some Windows boxes throw a "side-by-side configuration is incorrect" error —
+a broken OS runtime, unrelated to this project), fall back to an installed system
+browser via `PW_CHANNEL`:
+
+```powershell
+# PowerShell — UI mode on the system Chrome
+$env:PW_CHANNEL="chrome"; npx playwright test --ui
+```
+
+`PW_CHANNEL` accepts `chrome` or `msedge`. Leave it unset for the bundled Chromium
+(the CI default).
+
 ## Project structure (FSD)
 
 Layers, top → bottom — each may import only from layers strictly below, via public API:

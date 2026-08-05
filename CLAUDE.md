@@ -184,6 +184,14 @@ Current slices:
   Browser download is a one-time `npx playwright install chromium` (pinned Chromium, not
   your system Chrome). `e2e/` and `playwright.config.ts` are **excluded from `tsc`**
   (root tsconfig loads only jest types) — Playwright type-checks specs itself at run time.
+- **Headed Chromium can fail on Windows with a SxS error** ("side-by-side configuration
+  is incorrect" / "Dependent Assembly … could not be found"): the bundled full `chrome.exe`
+  won't launch even with a clean, complete `install` — a machine-level Windows runtime
+  issue, NOT a Playwright/project problem (headless `chrome-headless-shell` is monolithic
+  and still works, so `npm run e2e` is fine). Escape hatch: the `chromium` project reads
+  `channel: process.env.PW_CHANNEL` — run headed/UI on a system browser with
+  `PW_CHANNEL=chrome` (or `msedge`), e.g. PowerShell `$env:PW_CHANNEL="chrome"; npx
+  playwright test --ui`. Unset → bundled Chromium (CI default).
 - **E2E is NOT in the CI chain** (`main.yml`) yet — it's a separate `npm run e2e`. The
   green-before-done chain below stays jest-only.
 
