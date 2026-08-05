@@ -36,7 +36,10 @@ Absolute imports use the `@/` alias → `src/` (webpack + tsconfig `paths`).
 - `npm run lint:fsd` — steiger (FSD boundaries)
 - `npm run unit` — jest (unit/component, jsdom)
 - `npm run e2e` — Playwright E2E (boots `start:dev` itself; needs `npx playwright install chromium` once)
-- `npm run e2e:ui` / `e2e:report` — Playwright UI mode / open last HTML report
+- `npm run e2e:ui` / `e2e:headed` — Playwright UI / headed mode; both bake in
+  `cross-env PW_CHANNEL=chrome` (system Chrome) because bundled Chromium can't launch
+  headed on this Windows box — see gotcha below
+- `npm run e2e:report` — open last HTML report
 - `npm run build:prod` — production webpack build
 - `npm run storybook` / `build-storybook`
 - `npm run start:dev` — dev server + json-server (concurrently)
@@ -188,10 +191,11 @@ Current slices:
   is incorrect" / "Dependent Assembly … could not be found"): the bundled full `chrome.exe`
   won't launch even with a clean, complete `install` — a machine-level Windows runtime
   issue, NOT a Playwright/project problem (headless `chrome-headless-shell` is monolithic
-  and still works, so `npm run e2e` is fine). Escape hatch: the `chromium` project reads
-  `channel: process.env.PW_CHANNEL` — run headed/UI on a system browser with
-  `PW_CHANNEL=chrome` (or `msedge`), e.g. PowerShell `$env:PW_CHANNEL="chrome"; npx
-  playwright test --ui`. Unset → bundled Chromium (CI default).
+  and still works, so `npm run e2e` is fine). Fix baked in: the `chromium` project reads
+  `channel: process.env.PW_CHANNEL`, and the **`e2e:ui` / `e2e:headed` scripts set
+  `cross-env PW_CHANNEL=chrome`** so headed/UI mode just works out of the box (needs system
+  Chrome installed). Base `npm run e2e` leaves `PW_CHANNEL` unset → bundled Chromium
+  (headless, CI default). Manual override still works: `$env:PW_CHANNEL="msedge"` etc.
 - **E2E is NOT in the CI chain** (`main.yml`) yet — it's a separate `npm run e2e`. The
   green-before-done chain below stays jest-only.
 
