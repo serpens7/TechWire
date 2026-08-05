@@ -95,7 +95,15 @@ Current slices:
   pointing back at slices). steiger surfaces these as **warnings, not errors** — see
   `steiger.config.ts`. Removing it fully would need Redux module augmentation.
 - Typed dispatch: **`useAppDispatch`** (`shared/lib/hooks/useAppDispatch`) for thunks;
-  plain `useDispatch` only for plain actions.
+  plain `useDispatch` only for plain actions. It stays FSD-clean by typing through
+  `AppDispatch` in `shared/types/store.ts` (a generic, store-agnostic type) instead of
+  importing the concrete store from `app`.
+- **`shared/lib/store/buildSelector.ts`** follows the same pattern: it's generic over
+  `TState` (no hardcoded `StateSchema`, no `shared → app` import) — callers annotate the
+  concrete type at the call site, e.g. `entities/Counter/model/selectors/getCounterValue.ts`
+  does `buildSelector((state: StateSchema) => ...)`. That call site is under `model/**`,
+  already covered by the steiger warn-override below; `shared/lib/store/**` itself needs
+  no override because it no longer references `app` at all.
 
 ## RTK Query (server-state — preferred direction)
 
