@@ -1,4 +1,5 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { ADMIN, USER, login } from './helpers';
 
 /**
  * End-to-end: authentication + role-based access control.
@@ -8,27 +9,7 @@ import { test, expect, Page } from '@playwright/test';
  * check: real routing, the lazy login slice registering, the token surviving in
  * localStorage, the axios interceptor attaching it, and `RequireAuth` gating a
  * route by role against the real json-server `/login` response.
- *
- * Demo accounts come from json-server/db.json:
- *   admin / 123  → ADMIN
- *   user2 / 321  → USER
  */
-
-const ADMIN = { username: 'admin', password: '123' };
-const USER = { username: 'user2', password: '321' };
-
-async function login(page: Page, { username, password }: typeof ADMIN) {
-    // Navbar "Enter" button opens the login modal (navbar.login).
-    await page.getByRole('button', { name: 'Enter' }).click();
-
-    // Semantic selectors: Modal exposes role="dialog", and the shared Input gives
-    // its <input> an accessible name via aria-label={placeholder} — so the test
-    // finds fields the same way a screen reader / user would.
-    const dialog = page.getByRole('dialog');
-    await dialog.getByLabel('Enter your login').fill(username);
-    await dialog.getByLabel('Enter your password').fill(password);
-    await dialog.getByRole('button', { name: 'Login' }).click();
-}
 
 test.describe('auth', () => {
     test('admin can log in and sees the "Create article" link', async ({
