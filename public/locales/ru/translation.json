@@ -89,7 +89,16 @@
     "editWithId": "Редактирование статьи с ID = ",
     "createArticle": "Создать статью",
     "valueTheArticle": "Оцените статью",
-    "leaveYourFeedbackAboutTheArticle": "Оставьте свой отзыв о статье"
+    "leaveYourFeedbackAboutTheArticle": "Оставьте свой отзыв о статье",
+    "titleLabel": "Заголовок статьи",
+    "subtitleLabel": "Краткое описание",
+    "imgLabel": "Ссылка на изображение",
+    "errors": {
+      "noTitle": "Введите заголовок статьи",
+      "noSubtitle": "Введите краткое описание",
+      "noImage": "Укажите ссылку на изображение",
+      "noType": "Выберите тип статьи"
+    }
   },
   "article-details": {},
   "comments": {
@@ -111,5 +120,8 @@
   },
   "search": "Поиск",
   "edit": "Редактировать",
-  "IT-NEWS": "IT-news"
+  "IT-NEWS": "IT-news",
+  "increment": "Увеличить",
+  "decrement": "Уменьшить",
+  "add5": "Добавить 5"
 }

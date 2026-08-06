@@ -1,4 +1,3 @@
-import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 
 import { ArticleViewSelector } from './ArticleViewSelector';
@@ -11,7 +10,9 @@ export default {
     },
 } as Meta<typeof ArticleViewSelector>;
 
-const Template: StoryFn<typeof ArticleViewSelector> = (args) => <ArticleViewSelector {...args} />;
+const Template: StoryFn<typeof ArticleViewSelector> = (args) => (
+    <ArticleViewSelector {...args} />
+);
 
 export const Normal = Template.bind({});
 Normal.args = {};

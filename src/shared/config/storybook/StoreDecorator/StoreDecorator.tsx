@@ -3,12 +3,14 @@ import { Decorator } from '@storybook/react';
 import { Action, ReducersMapObject } from '@reduxjs/toolkit';
 import { loginReducer } from '@/features/AuthByUserName';
 import { profileReducer } from '@/features/editableProfileCard';
+import { articleFormReducer } from '@/features/editableArticleCard';
 import { articleDetailsReducer } from '@/entities/Article';
 
 const defaultAsyncReducers = {
     loginForm: loginReducer,
     profile: profileReducer,
     articleDetails: articleDetailsReducer,
+    articleForm: articleFormReducer,
 };
 
 export const StoreDecorator =

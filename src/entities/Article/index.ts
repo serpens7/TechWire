@@ -27,10 +27,6 @@ export { ArticleListItemSkeleton } from './ui/ArticleListItem/ArticleListItemSke
 
 export { ArticleTypeTabs } from './ui/ArticleTypeTabs/ArticleTypeTabs';
 
-export { ArticleViewSelector } from './ui/ArticleViewSelector/ArticleViewSelector';
-
-export { ArticleSortSelector } from './ui/ArticleSortSelector/ArticleSortSelector';
-
 export type { ArticleDetailsSchema } from './model/types/articleDetailsSchema';
 
 export { getArticleDetailsData } from './model/selectors/articleDetails';

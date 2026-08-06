@@ -76,6 +76,7 @@ export const Input = memo((props: InputProps) => {
                     onBlur={onBlur}
                     onSelect={onSelect}
                     readOnly={readonly}
+                    aria-label={placeholder}
                     {...otherProps}
                 />
                 {isFocused && (

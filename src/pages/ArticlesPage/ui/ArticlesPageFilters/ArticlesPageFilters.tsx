@@ -5,11 +5,9 @@ import { useSelector } from 'react-redux';
 import cls from './ArticlesPageFilters.module.scss';
 import {
     ArticleSortField,
-    ArticleSortSelector,
     ArticleType,
-    ArticleView,
-    ArticleViewSelector,
     ArticleTypeTabs,
+    ArticleView,
 } from '@/entities/Article';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
 import { Card } from '@/shared/ui/Card/Card';
@@ -25,6 +23,8 @@ import { articlesPageActions } from '../../model/slices/articlePageSlice';
 import { fetchArticlesList } from '../../model/services/fetchArticlesList';
 import { useDebounce } from '@/shared/lib/hooks/useDebounce';
 import { SortOrder } from '@/shared/types/types';
+import { ArticleSortSelector } from '@/features/ArticleSortSelector';
+import { ArticleViewSelector } from '@/features/ArticleViewSelector';
 
 interface ArticlesPageFiltersProps {
     className?: string;

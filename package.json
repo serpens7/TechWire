@@ -19,13 +19,18 @@
         "storybook": "storybook dev -p 6006 -c config/storybook",
         "build-storybook": "storybook build -c config/storybook",
         "test": "npm run unit",
-        "test:ui:ci": "jest --config ./config/jest/jest.config.ts --ci"
+        "test:ui:ci": "jest --config ./config/jest/jest.config.ts --ci",
+        "e2e": "playwright test",
+        "e2e:ui": "cross-env PW_CHANNEL=chrome playwright test --ui",
+        "e2e:headed": "cross-env PW_CHANNEL=chrome playwright test --headed",
+        "e2e:report": "playwright show-report"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "devDependencies": {
         "@feature-sliced/steiger-plugin": "^0.6.0",
+        "@playwright/test": "^1.62.1",
         "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
         "@storybook/addon-actions": "8.6.14",
         "@storybook/addon-essentials": "8.6.14",
@@ -50,6 +55,7 @@
         "@typescript-eslint/eslint-plugin": "^5.12.1",
         "@typescript-eslint/parser": "^5.12.1",
         "copy-webpack-plugin": "^14.0.0",
+        "cross-env": "^10.1.0",
         "css-loader": "^6.6.0",
         "eslint": "^8.10.0",
         "eslint-config-airbnb": "^19.0.4",

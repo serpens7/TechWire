@@ -90,7 +90,16 @@
     "editWithId": "Edit with ID =",
     "createArticle": "Create article",
     "valueTheArticle": "Rate the article",
-    "leaveYourFeedbackAboutTheArticle": "Leave your feedback about the article"
+    "leaveYourFeedbackAboutTheArticle": "Leave your feedback about the article",
+    "titleLabel": "Article title",
+    "subtitleLabel": "Subtitle",
+    "imgLabel": "Image URL",
+    "errors": {
+      "noTitle": "Enter an article title",
+      "noSubtitle": "Enter a subtitle",
+      "noImage": "Provide an image URL",
+      "noType": "Choose an article type"
+    }
   },
   "button": {
     "cancel": "Cancel",
@@ -117,5 +126,8 @@
   },
   "search": "Search",
   "edit": "Edit",
-  "IT-NEWS": "It-news"
+  "IT-NEWS": "It-news",
+  "increment": "Increment",
+  "decrement": "Decrement",
+  "add5": "Add 5"
 }
