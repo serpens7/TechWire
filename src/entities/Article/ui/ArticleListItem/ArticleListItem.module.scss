@@ -20,11 +20,24 @@
         margin-top: 8px;
     }
 
+    // Wraps the title Text in an AppLink — block so it doesn't collapse to
+    // inline width, no default anchor underline until hovered.
+    .titleLink {
+        display: block;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    // Sized down (was 250px, effectively unbounded on wide sources) and moved
+    // to the bottom of the card, below the text and footer.
     .img {
         width: 100%;
-        max-height: 250px;
+        max-height: 200px;
         object-fit: cover;
-        margin: 16px 0;
+        margin-top: 16px;
     }
 
     .footer {

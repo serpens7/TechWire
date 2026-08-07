@@ -60,14 +60,13 @@ export const ArticleListItem = memo((props: ArticleListItemProps) => {
                         />
                         <Text text={article.createdAt} className={cls.date} />
                     </div>
-                    <Text title={article.title} className={cls.title} />
+                    <AppLink
+                        to={getRouteArticleDetails(article.id)}
+                        className={cls.titleLink}
+                    >
+                        <Text title={article.title} className={cls.title} />
+                    </AppLink>
                     {types}
-                    <AppImage
-                        fallback={<Skeleton width='100%' height={250} />}
-                        src={article.img}
-                        className={cls.img}
-                        alt={article.title}
-                    />
                     {textBlock && (
                         <ArticleTextBlockComponent
                             block={textBlock}
@@ -82,6 +81,12 @@ export const ArticleListItem = memo((props: ArticleListItemProps) => {
                         </AppLink>
                         {views}
                     </div>
+                    <AppImage
+                        fallback={<Skeleton width='100%' height={200} />}
+                        src={article.img}
+                        className={cls.img}
+                        alt={article.title}
+                    />
                 </Card>
             </div>
         );
