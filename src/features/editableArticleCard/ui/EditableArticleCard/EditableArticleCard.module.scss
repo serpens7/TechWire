@@ -1,0 +1,32 @@
+/* The shared Input draws no box of its own, so a value could run past the
+ * visible area with nothing marking where the field ends. Wrapping it in a
+ * bordered, full-width surface makes the field's extent obvious and gives
+ * focus somewhere to show. */
+.field {
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-m);
+    background: var(--card-bg);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus-within {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgb(2 50 194 / 12%);
+    }
+}
+
+.imgPreview {
+    border-radius: var(--radius-m);
+    border: 1px solid var(--border-color);
+    background: #f5f5f7;
+    object-fit: contain;
+    padding: var(--space-2);
+}
+
+.actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
