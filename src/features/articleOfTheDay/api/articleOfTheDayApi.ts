@@ -13,8 +13,6 @@ const articleOfTheDayApi = rtkApi.injectEndpoints({
                     _limit: 1,
                 },
             }),
-            // json-server returns an array even for _limit=1 — the most-viewed
-            // article is the single item we want.
             transformResponse: (response: Article[]) => response[0],
             providesTags: ['Articles'],
         }),

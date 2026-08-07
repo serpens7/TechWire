@@ -48,12 +48,6 @@ const Header = () => (
     </div>
 );
 
-// Skeletons are rendered through Virtuoso's Footer (which sits below the real
-// item flow) rather than mixed into `data`. Injecting placeholder items into
-// `data` poisons `endReached`'s internal high-water-mark — once it fires for a
-// skeleton index, the real item that later takes the same index never
-// re-triggers it, and pagination silently stops. Keeping `data` = real
-// articles only keeps `endReached` reliable.
 const Footer = ({ context }: { context: ListContext }) => {
     if (!context.isLoading) {
         return null;
@@ -83,19 +77,22 @@ export const ArticlesPageList = memo((props: ArticlesPageListProps) => {
 
     const context = useMemo<ListContext>(
         () => ({ isLoading, view, limit }),
-        [isLoading, view, limit],
+        [isLoading, view, limit]
     );
 
     const initialTopMostItemIndex = savedTopIndexByPath[pathname] ?? 0;
     const wrapperClassName = classNames(cls.wrapper, {}, [className]);
 
-    const onRangeChanged = useCallback((range: ListRange) => {
-        savedTopIndexByPath[pathname] = range.startIndex;
-    }, [pathname]);
+    const onRangeChanged = useCallback(
+        (range: ListRange) => {
+            savedTopIndexByPath[pathname] = range.startIndex;
+        },
+        [pathname]
+    );
 
     const computeItemKey = useCallback(
         (_: number, article: Article) => article.id,
-        [],
+        []
     );
 
     const renderArticle = useCallback(
@@ -106,7 +103,7 @@ export const ArticlesPageList = memo((props: ArticlesPageListProps) => {
                 className={view === ArticleView.BIG ? cls.bigCard : undefined}
             />
         ),
-        [view],
+        [view]
     );
 
     return (
