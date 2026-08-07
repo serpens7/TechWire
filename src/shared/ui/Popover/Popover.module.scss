@@ -1,5 +1,11 @@
+// `vertical-align: middle` matters: this is an inline-flex element, and its
+// default `baseline` alignment leaves descender space below it whenever a
+// non-flex ancestor (e.g. react-device-detect's <BrowserView> wrapper div)
+// lays it out via normal inline flow — visually pushing the trigger above
+// center next to taller siblings like the navbar Avatar.
 .Popover {
     display: inline-flex;
+    vertical-align: middle;
 }
 
 .btn {
