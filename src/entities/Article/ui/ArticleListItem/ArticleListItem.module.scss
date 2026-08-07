@@ -31,17 +31,23 @@
         }
     }
 
-    // Article images are mostly square tech logos. `width: 100%` + `cover`
-    // blew a 288x288 logo up to the full card width and cropped its middle
-    // into an unrecognisable blob — so the image is *contained* at its own
-    // aspect ratio and centred instead, capped by height.
+    // Article images are mostly square tech logos drawn on an opaque white
+    // background, so: `contain` at their own aspect ratio rather than
+    // `width: 100%` + `cover` (which blew a 288x288 logo across the card and
+    // cropped its middle into a blob), and an explicit padded plate, since on
+    // the dark theme the baked-in white otherwise bled through as a bare
+    // rectangle. Same treatment as the hero card's image panel.
     .img {
         display: block;
+        box-sizing: border-box;
         width: auto;
         max-width: 100%;
         max-height: 220px;
         object-fit: contain;
-        margin: 16px auto 0;
+        margin: var(--space-4) auto 0;
+        padding: var(--space-4);
+        border-radius: var(--radius-m);
+        background: #f5f5f7;
     }
 
     .footer {

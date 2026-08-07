@@ -66,12 +66,17 @@
     --sidebar-width: 200px;
     --sidebar-width-collapsed: 64px;
 
-    /* Reading column: caps the measure at ~70 characters. The page keeps the
-     * leftover width as an empty right gutter (DTF/Twitter-style) so the eye
-     * stays on one column instead of tracking 1100px-long lines. */
-    --content-max-width: 760px;
+    /* Layout column for pages, cards and lists. Left-aligned, so the leftover
+     * width stays an empty right gutter (DTF/Twitter-style) on wide screens
+     * and simply collapses on narrower ones. */
+    --content-max-width: 1520px;
+
+    /* Long-form prose is capped much tighter (~70 characters): a 1500px line
+     * is genuinely hard to track back to the next line. Applied to the
+     * article-detail body, not to cards or lists. */
+    --reading-max-width: 760px;
     --modal-z-index: 10;
     --overlay-color: rgba(0 0 0 / 60%);
-    --red-light: #f00;
-    --red-dark: #800000;
+    --red-light: #e5484d;
+    --red-dark: #b4242a;
 }

@@ -67,13 +67,13 @@
 
 .subtitle {
     p {
-        color: var(--secondary-color);
+        color: var(--text-secondary);
     }
 }
 
 .types {
     p {
-        color: var(--secondary-color);
+        color: var(--text-secondary);
         font: var(--font-s);
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -91,7 +91,7 @@
         margin-left: auto;
 
         p {
-            color: var(--secondary-color);
+            color: var(--text-secondary);
         }
     }
 }
@@ -110,7 +110,7 @@
 
 .views {
     margin-left: auto;
-    color: var(--secondary-color);
+    color: var(--text-secondary);
 }
 
 .eyebrowSkeleton {

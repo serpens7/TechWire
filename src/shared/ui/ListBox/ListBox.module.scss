@@ -50,9 +50,12 @@
     cursor: pointer;
 }
 
+/* Neutral highlight rather than --inverted-primary-color: that token is meant
+ * for content on the dark navbar/sidebar and is near-white, which would be
+ * invisible as a background on the light menu panel. */
 .active {
-    background: var(--inverted-primary-color);
-    color: var(--inverted-bg-color);
+    background: var(--hover-surface);
+    color: var(--text-primary);
 }
 
 .selected {

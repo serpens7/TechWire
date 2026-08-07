@@ -1,23 +1,23 @@
 .app_dark_theme {
-    --bg-color: #090949;
-    --inverted-bg-color: #e8e8ea;
-    --primary-color: #0cff04;
-    --secondary-color: #00d812ea;
-    --inverted-primary-color: #0232c2;
-    --inverted-secondary-color: #0452ff;
-    --skeleton-color: #1515ad;
-    --skeleton-shadow: #2b2be8;
-    --code-bg: #04002c;
-    --card-bg: #14146e;
-    --card-shadow: rgba(0 0 0 / 45%);
+    --bg-color: #14161a;
 
-    /* Same hierarchy idea as the light theme: body copy becomes a readable
-     * near-white instead of the acid-green accent, which stays reserved for
-     * interactive elements. The navy/green brand identity is untouched. */
-    --text-primary: #e8eaf2;
-    --text-secondary: #9ba3c4;
-    --text-on-inverted: #14151a;
-    --text-on-inverted-muted: #5f6672;
-    --accent-color: #0cff04;
-    --border-color: #2a2a7a;
+    /* Navbar + sidebar sit slightly above the page instead of being a light
+     * slab: a proper dark-grey theme, no navy and no green anywhere. */
+    --inverted-bg-color: #22252d;
+    --primary-color: #60a5fa;
+    --secondary-color: #93c5fd;
+    --inverted-primary-color: #e7e9ee;
+    --inverted-secondary-color: #9aa1ae;
+    --skeleton-color: #262a33;
+    --skeleton-shadow: #2f343e;
+    --code-bg: #0f1115;
+    --card-bg: #1c1f26;
+    --card-shadow: rgba(0 0 0 / 45%);
+    --text-primary: #e7e9ee;
+    --text-secondary: #9aa1ae;
+    --text-on-inverted: #e7e9ee;
+    --text-on-inverted-muted: #9aa1ae;
+    --accent-color: #60a5fa;
+    --border-color: #2c3039;
+    --hover-surface: rgba(255 255 255 / 8%);
 }

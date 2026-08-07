@@ -14,10 +14,9 @@
 
     /* Colour is left to AppLink's own theme class: an override here would have
      * equal specificity and the winner would depend on CSS-module bundle
-     * order. Neutral grey hover reads on both themes — the sidebar is navy in
-     * light mode and light grey in dark mode. */
+     * order. */
     &:hover {
-        background: rgb(128 128 128 / 20%);
+        background: rgb(255 255 255 / 10%);
     }
 }
 

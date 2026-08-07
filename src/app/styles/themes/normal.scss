@@ -1,24 +1,29 @@
 .app_light_theme {
-    --bg-color: #f2f3f5;
-    --inverted-bg-color: #090949;
-    --primary-color: #0232c2;
-    --secondary-color: #0449e0;
-    --inverted-primary-color: #04ff04;
-    --inverted-secondary-color: #049604;
-    --skeleton-color: #fff;
-    --skeleton-shadow: rgba(0 0 0 / 20%);
-    --code-bg: #fff;
-    --card-bg: #fff;
-    --card-shadow: rgba(0 0 0 / 10%);
+    --bg-color: #f4f5f7;
 
-    /* Text hierarchy — the point of these is that body copy is NOT the accent
-     * colour. Previously paragraphs, headings, links and borders were all the
-     * same saturated blue, so nothing stood out. Accent is now reserved for
-     * interactive elements. */
+    /* Navbar + sidebar surface. Neutral dark grey — the old navy/green pairing
+     * is gone entirely. */
+    --inverted-bg-color: #1b1d24;
+    --primary-color: #2563eb;
+    --secondary-color: #3b82f6;
+
+    /* Content sitting ON the dark surface (sidebar links, navbar icons). Used
+     * to be acid green; now a near-white neutral. */
+    --inverted-primary-color: #f5f6f8;
+    --inverted-secondary-color: #b9bfca;
+    --skeleton-color: #e6e8ec;
+    --skeleton-shadow: rgba(0 0 0 / 6%);
+    --code-bg: #f7f8fa;
+    --card-bg: #fff;
+    --card-shadow: rgba(0 0 0 / 8%);
+
+    /* Text hierarchy: body copy is a neutral, never the accent. The accent is
+     * reserved for interactive elements. */
     --text-primary: #14151a;
     --text-secondary: #5f6672;
     --text-on-inverted: #eef0f4;
     --text-on-inverted-muted: #a6adba;
-    --accent-color: #0232c2;
-    --border-color: #e2e4e9;
+    --accent-color: #2563eb;
+    --border-color: #e3e5ea;
+    --hover-surface: rgba(0 0 0 / 5%);
 }
