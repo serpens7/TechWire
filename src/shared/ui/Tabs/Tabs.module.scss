@@ -4,3 +4,13 @@
     cursor: pointer;
     margin-bottom: 16px;
 }
+
+// Tabs is only used by ArticleTypeTabs today, so shrinking the tab's own
+// padding here (each tab is a Card, default 15px all round) is safe and
+// doesn't affect any other Tabs consumer. Scoped as `.Tabs .tab` (not a bare
+// `.tab`) so its specificity (0,2,0) reliably beats Card's own
+// `.Card { padding: 15px }` (0,1,0) regardless of CSS module bundle order —
+// a bare same-specificity override would be a cascade-order coin flip.
+.Tabs .tab {
+    padding: 6px 12px;
+}

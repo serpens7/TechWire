@@ -4,8 +4,12 @@
     justify-content: space-between;
 }
 
-.search {
+// `.ArticlesPageFilters .search` (not a bare `.search`) so this reliably
+// beats Card's own `.Card { padding: 15px }` — same-specificity bare
+// overrides depend on CSS module bundle order, which isn't guaranteed.
+.ArticlesPageFilters .search {
     margin-top: 16px;
+    padding: 6px 12px;
 }
 
 .tabs {
