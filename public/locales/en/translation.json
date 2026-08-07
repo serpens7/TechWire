@@ -1,6 +1,55 @@
 {
     "about": {
-        "title": "About us"
+        "title": "IT-news — articles on development, economics and science",
+        "eyebrow": "About the project",
+        "lead": "A publication for people who write code and want to understand what is going on around it: technology deep dives, plain explanations, and material that is still useful a week later.",
+        "topicsTitle": "What we write about",
+        "topics": {
+            "it": {
+                "name": "Development",
+                "text": "Frontend and backend, tools and approaches: React and Next.js, TypeScript, Tailwind, state managers, Go, Rust, Python. Walkthroughs with real code, not a retelling of the docs."
+            },
+            "economics": {
+                "name": "Economics",
+                "text": "How the money around technology works: product unit economics, inflation and rates, investing, cryptocurrencies and how to store them."
+            },
+            "science": {
+                "name": "Science",
+                "text": "Big topics in plain language: the James Webb telescope, CRISPR genome editing, quantum computing, black holes."
+            }
+        },
+        "featuresTitle": "What you get",
+        "features": {
+            "articleOfTheDay": {
+                "name": "Article of the day",
+                "text": "The most-read piece is pulled onto the home page — a good place to start when you are not sure what to read."
+            },
+            "snippetOfTheDay": {
+                "name": "Snippet of the day",
+                "text": "A different code snippet from our articles every day, copied to the clipboard in one click."
+            },
+            "filters": {
+                "name": "Search and filters",
+                "text": "Search by title, sort by date, views or name, filter by topic, and switch between two list layouts."
+            },
+            "ratings": {
+                "name": "Article ratings",
+                "text": "Leave a rating and feedback so authors can tell which pieces actually landed."
+            },
+            "comments": {
+                "name": "Comments",
+                "text": "A discussion under every article: questions for the author, clarifications and other people's experience."
+            },
+            "themes": {
+                "name": "Light and dark themes",
+                "text": "One click to switch, remembered between visits — comfortable to read at any time of day."
+            }
+        },
+        "stackTitle": "How it is built",
+        "stackText": "The project runs on React 18 and TypeScript, organised with Feature-Sliced Design. State is handled by Redux Toolkit and RTK Query, bundling by Webpack 5, testing by Jest, Testing Library and Playwright. It is a production-style learning project: the UI, the architecture and the tests are all real.",
+        "ctaTitle": "Start reading",
+        "ctaText": "Over 30 pieces on development, economics and science — with real code and no filler.",
+        "ctaButton": "Go to articles"
     },
     "main": {
         "title": "Home",
