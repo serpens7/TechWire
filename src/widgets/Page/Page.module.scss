@@ -1,25 +1,26 @@
-/* The right gutter mirrors the sidebar's width, so the content column ends up
- * centred on the *screen* rather than merely in the space left over next to
- * the sidebar (which made it lean right). With a symmetric gutter the column's
- * centre lands exactly on the viewport centre. Dropped on narrower viewports,
- * where the width is needed for the content itself. */
+/* The right inset mirrors `sidebar + gutter`, so the content column is centred
+ * on the *screen* rather than merely in the space left over beside the
+ * sidebar. Padding (not margin) keeps the scrollbar on this element's border
+ * edge — i.e. at the page corner, where it belongs. Below 1440px the mirrored
+ * inset is dropped; the width is better spent on the content itself. */
 .Page {
     flex-grow: 1;
     flex-shrink: 100;
     height: calc(100vh - var(--navbar-height));
     overflow-y: auto;
-    padding-right: var(--sidebar-width);
+    padding-left: var(--content-gutter);
+    padding-right: calc(var(--sidebar-width) + var(--content-gutter));
 }
 
 .content {
     box-sizing: border-box;
     max-width: var(--content-max-width);
     margin-inline: auto;
-    padding: var(--space-8) var(--space-6) var(--space-12);
+    padding: var(--space-8) 0 var(--space-12);
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1279px) {
     .Page {
-        padding-right: 0;
+        padding-right: var(--content-gutter);
     }
 }

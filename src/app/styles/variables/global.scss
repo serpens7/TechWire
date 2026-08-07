@@ -63,8 +63,13 @@
 
     /* ---------- Layout ---------- */
     --navbar-height: 56px;
-    --sidebar-width: 280px;
+    --sidebar-width: 320px;
     --sidebar-width-collapsed: 72px;
+
+    /* Breathing room between the sidebar and the content column. The column's
+     * right inset mirrors `sidebar + gutter`, which is what keeps it centred
+     * on the screen rather than merely in the space beside the sidebar. */
+    --content-gutter: 48px;
 
     /* Layout column for pages, cards and lists. Left-aligned, so the leftover
      * width stays an empty right gutter (DTF/Twitter-style) on wide screens

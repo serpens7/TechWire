@@ -1,58 +1,52 @@
-// The scroller (Virtuoso root) keeps the scrollbar hugging the viewport edge;
-// the reading column lives on the content slots inside it. The right padding
-// mirrors the sidebar width so the column is centred on the screen rather than
-// just in the leftover space beside the sidebar — see Page.module.scss for the
-// same treatment on every other page.
+// IMPORTANT: no horizontal padding on this wrapper. react-virtuoso renders its
+// own scroller element *inside* it, so padding here shrinks that scroller and
+// drags its scrollbar into the middle of the page instead of leaving it at the
+// page corner. The column insets therefore live on the content slots below.
 .wrapper {
     box-sizing: border-box;
     flex-grow: 1;
     flex-shrink: 100;
     min-width: 0;
     height: calc(100vh - var(--navbar-height));
-    padding-right: var(--sidebar-width);
 }
 
-// This page renders Virtuoso directly rather than going through the Page
-// widget, so each content slot carries the column constraint itself.
+// Shared column geometry: a gutter away from the sidebar on the left, and
+// `sidebar + gutter` on the right, which mirrors the sidebar and lands the
+// column's centre on the viewport centre.
+.header,
+.itemsWrapper,
+.skeletonsGrid,
+.bigCard {
+    box-sizing: border-box;
+    margin-left: var(--content-gutter);
+    margin-right: calc(var(--sidebar-width) + var(--content-gutter));
+}
+
 .header {
-    box-sizing: border-box;
-    max-width: var(--content-max-width);
-    margin-inline: auto;
-    padding: var(--space-8) var(--space-6) 0;
+    padding-top: var(--space-8);
 }
 
-.itemsWrapper {
-    box-sizing: border-box;
+.itemsWrapper,
+.skeletonsGrid {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-6);
-    max-width: var(--content-max-width);
-    margin-inline: auto;
-    padding: var(--space-6);
+    padding: var(--space-6) 0;
 }
 
 .bigCard {
-    box-sizing: border-box;
-    max-width: var(--content-max-width);
-    margin: 0 auto var(--space-6);
-}
-
-.skeletonsGrid {
-    box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-6);
-    max-width: var(--content-max-width);
-    margin-inline: auto;
-    padding: var(--space-6);
+    margin-bottom: var(--space-6);
 }
 
 .skeletonsList {
     padding-top: var(--space-6);
 }
 
-@media (max-width: 1280px) {
-    .wrapper {
-        padding-right: 0;
+@media (max-width: 1279px) {
+    .header,
+    .itemsWrapper,
+    .skeletonsGrid,
+    .bigCard {
+        margin-right: var(--content-gutter);
     }
 }
