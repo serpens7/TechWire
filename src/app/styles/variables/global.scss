@@ -66,15 +66,16 @@
     --sidebar-width: 320px;
     --sidebar-width-collapsed: 72px;
 
-    /* Breathing room between the sidebar and the content column. The column's
-     * right inset mirrors `sidebar + gutter`, which is what keeps it centred
-     * on the screen rather than merely in the space beside the sidebar. */
+    /* Minimum breathing room on either side of the content column. The column
+     * is centred within the area *next to* the sidebar, which makes the empty
+     * space to its left and right equal — the sidebar is a filled panel, not
+     * whitespace, so mirroring its width on the right looked lopsided. */
     --content-gutter: 48px;
 
     /* Layout column for pages, cards and lists. Left-aligned, so the leftover
      * width stays an empty right gutter (DTF/Twitter-style) on wide screens
      * and simply collapses on narrower ones. */
-    --content-max-width: 1520px;
+    --content-max-width: 1200px;
 
     /* Long-form prose is capped much tighter (~70 characters): a 1500px line
      * is genuinely hard to track back to the next line. Applied to the
