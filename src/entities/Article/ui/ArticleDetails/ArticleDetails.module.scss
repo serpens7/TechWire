@@ -1,5 +1,9 @@
+/* Long-form prose is capped much tighter than the page's layout column: at
+ * full width a line would run ~1500px, which is genuinely hard to track back
+ * to the start of the next one. Cards and lists keep the wide column. */
 .ArticleDetails {
     min-height: 100%;
+    max-width: var(--reading-max-width);
 }
 
 .avatar {
