@@ -21,14 +21,10 @@
     }
 
     // Wraps the title Text in an AppLink — block so it doesn't collapse to
-    // inline width, no default anchor underline until hovered.
+    // inline width, and never underlined.
     .titleLink {
         display: block;
         text-decoration: none;
-
-        &:hover {
-            text-decoration: underline;
-        }
     }
 
     // Article images are mostly square tech logos drawn on an opaque white

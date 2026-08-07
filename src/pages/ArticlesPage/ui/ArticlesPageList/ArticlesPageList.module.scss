@@ -1,19 +1,23 @@
-// The scroller (Virtuoso root) must span the full width so its scrollbar hugs
-// the right edge — the reading column is applied to the content inside it.
+// The scroller (Virtuoso root) keeps the scrollbar hugging the viewport edge;
+// the reading column lives on the content slots inside it. The right padding
+// mirrors the sidebar width so the column is centred on the screen rather than
+// just in the leftover space beside the sidebar — see Page.module.scss for the
+// same treatment on every other page.
 .wrapper {
     box-sizing: border-box;
     flex-grow: 1;
     flex-shrink: 100;
     min-width: 0;
     height: calc(100vh - var(--navbar-height));
+    padding-right: var(--sidebar-width);
 }
 
 // This page renders Virtuoso directly rather than going through the Page
-// widget, so the reading column (--content-max-width + empty right gutter)
-// is applied to each content slot here instead.
+// widget, so each content slot carries the column constraint itself.
 .header {
     box-sizing: border-box;
     max-width: var(--content-max-width);
+    margin-inline: auto;
     padding: var(--space-8) var(--space-6) 0;
 }
 
@@ -23,13 +27,14 @@
     flex-wrap: wrap;
     gap: var(--space-6);
     max-width: var(--content-max-width);
+    margin-inline: auto;
     padding: var(--space-6);
 }
 
 .bigCard {
     box-sizing: border-box;
     max-width: var(--content-max-width);
-    margin: 0 var(--space-6) var(--space-6);
+    margin: 0 auto var(--space-6);
 }
 
 .skeletonsGrid {
@@ -38,9 +43,16 @@
     flex-wrap: wrap;
     gap: var(--space-6);
     max-width: var(--content-max-width);
+    margin-inline: auto;
     padding: var(--space-6);
 }
 
 .skeletonsList {
     padding-top: var(--space-6);
+}
+
+@media (max-width: 1280px) {
+    .wrapper {
+        padding-right: 0;
+    }
 }
