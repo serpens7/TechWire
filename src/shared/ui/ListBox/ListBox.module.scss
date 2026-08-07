@@ -12,13 +12,17 @@
 }
 
 /* Shrink the inner Button to match the text line-height (24px) instead of the
- * default M-size height (~37.5px), so the trigger lines up with the labels. */
+ * default M-size height (~37.5px), so the trigger lines up with the labels.
+ * The radius is also reduced from Button's 12px: at 24px tall that would be
+ * exactly half the height, turning the trigger into a full pill/stadium that
+ * reads far rounder than every other surface. 6px keeps it a rounded rect. */
 .trigger button {
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     height: var(--font-line-m);
     padding: 0 15px;
+    border-radius: 6px;
 }
 
 /*

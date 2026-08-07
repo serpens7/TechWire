@@ -31,13 +31,17 @@
         }
     }
 
-    // Sized down (was 250px, effectively unbounded on wide sources) and moved
-    // to the bottom of the card, below the text and footer.
+    // Article images are mostly square tech logos. `width: 100%` + `cover`
+    // blew a 288x288 logo up to the full card width and cropped its middle
+    // into an unrecognisable blob — so the image is *contained* at its own
+    // aspect ratio and centred instead, capped by height.
     .img {
-        width: 100%;
-        max-height: 200px;
-        object-fit: cover;
-        margin-top: 16px;
+        display: block;
+        width: auto;
+        max-width: 100%;
+        max-height: 220px;
+        object-fit: contain;
+        margin: 16px auto 0;
     }
 
     .footer {
