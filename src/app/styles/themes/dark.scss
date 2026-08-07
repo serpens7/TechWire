@@ -10,4 +10,14 @@
     --code-bg: #04002c;
     --card-bg: #14146e;
     --card-shadow: rgba(0 0 0 / 45%);
+
+    /* Same hierarchy idea as the light theme: body copy becomes a readable
+     * near-white instead of the acid-green accent, which stays reserved for
+     * interactive elements. The navy/green brand identity is untouched. */
+    --text-primary: #e8eaf2;
+    --text-secondary: #9ba3c4;
+    --text-on-inverted: #14151a;
+    --text-on-inverted-muted: #5f6672;
+    --accent-color: #0cff04;
+    --border-color: #2a2a7a;
 }

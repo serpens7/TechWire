@@ -1,7 +1,12 @@
 .Page {
     flex-grow: 1;
-    padding: 20px 20px 20px 45px;
+    flex-shrink: 100;
     height: calc(100vh - var(--navbar-height));
     overflow-y: auto;
-    flex-shrink: 100;
+}
+
+.content {
+    box-sizing: border-box;
+    max-width: var(--content-max-width);
+    padding: var(--space-8) var(--space-6) var(--space-12);
 }

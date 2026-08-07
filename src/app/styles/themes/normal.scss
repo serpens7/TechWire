@@ -1,5 +1,5 @@
 .app_light_theme {
-    --bg-color: #e8e8ea;
+    --bg-color: #f2f3f5;
     --inverted-bg-color: #090949;
     --primary-color: #0232c2;
     --secondary-color: #0449e0;
@@ -9,5 +9,16 @@
     --skeleton-shadow: rgba(0 0 0 / 20%);
     --code-bg: #fff;
     --card-bg: #fff;
-    --card-shadow: rgba(0 0 0 / 12%);
+    --card-shadow: rgba(0 0 0 / 10%);
+
+    /* Text hierarchy — the point of these is that body copy is NOT the accent
+     * colour. Previously paragraphs, headings, links and borders were all the
+     * same saturated blue, so nothing stood out. Accent is now reserved for
+     * interactive elements. */
+    --text-primary: #14151a;
+    --text-secondary: #5f6672;
+    --text-on-inverted: #eef0f4;
+    --text-on-inverted-muted: #a6adba;
+    --accent-color: #0232c2;
+    --border-color: #e2e4e9;
 }

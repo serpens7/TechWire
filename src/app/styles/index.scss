@@ -5,7 +5,8 @@
 
 body {
     font: var(--font-m);
-    color: var(--primary-color);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
 }
 
 .app {

@@ -50,9 +50,13 @@
         margin-top: 16px;
     }
 
+    /* A hard height cut sliced the preview through the middle of a line,
+     * leaving the tops of letters visible. Fading the last rows out makes the
+     * truncation read as deliberate regardless of where the cut lands. */
     .textBlock {
-        max-height: 200px;
-        overflow-y: hidden;
+        max-height: 160px;
+        overflow: hidden;
+        mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
     }
 }
 

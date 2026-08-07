@@ -47,7 +47,11 @@ export const Page = (props: PageProps) => {
             className={classNames(cls.Page, {}, [className])}
             onScroll={onScroll}
         >
-            {children}
+            {/* Reading column: content is capped at --content-max-width and
+                left-aligned, so the leftover width stays an empty right
+                gutter (DTF/Twitter-style) instead of stretching lines across
+                the whole viewport. */}
+            <div className={cls.content}>{children}</div>
             <div ref={triggerRef} />
         </main>
     );

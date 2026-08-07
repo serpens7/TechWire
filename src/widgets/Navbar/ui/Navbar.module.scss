@@ -4,23 +4,28 @@
     background: var(--inverted-bg-color);
     display: flex;
     align-items: center;
-    padding: 20px;
+    padding: 0 var(--space-6);
 }
 
+/* The wordmark keeps the monospace family — it's the anchor of the terminal
+ * motif that the `prompt>` inputs and the code panels also carry. */
 .appName {
     flex-shrink: 0;
 
     p {
-        color: var(--bg-color);
+        color: var(--text-on-inverted);
         font: var(--font-l);
+        font-family: var(--font-family-mono);
         font-weight: 700;
+        letter-spacing: -0.02em;
     }
 }
 
 .createBtn {
-    margin-left: 48px;
+    margin-left: var(--space-12);
     white-space: nowrap;
     flex-shrink: 0;
+    color: var(--text-on-inverted);
 }
 
 .rightSide {
