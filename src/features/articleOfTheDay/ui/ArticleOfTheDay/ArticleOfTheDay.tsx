@@ -7,7 +7,7 @@ import { Avatar } from '@/shared/ui/Avatar/Avatar';
 import { AppImage } from '@/shared/ui/AppImage/AppImage';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { AppLink } from '@/shared/ui/AppLink/AppLink';
-import { Button, ButtonSize, ButtonTheme } from '@/shared/ui/Button/Button';
+import { Button, ButtonTheme } from '@/shared/ui/Button/Button';
 import { Icon } from '@/shared/ui/Icon/Icon';
 import { HStack, VStack } from '@/shared/ui/Stack';
 import EyeIcon from '@/shared/assets/icons/eye-20-20.svg';
@@ -20,20 +20,22 @@ interface ArticleOfTheDayProps {
 }
 
 const ArticleOfTheDaySkeleton = () => (
-    <Card theme={CardTheme.NORMAL} max className={cls.card}>
+    <>
         <Skeleton width={180} height={16} className={cls.eyebrowSkeleton} />
-        <div className={cls.content}>
-            <div className={cls.imagePanel}>
-                <Skeleton width='100%' height='100%' />
+        <Card theme={CardTheme.NORMAL} max className={cls.card}>
+            <div className={cls.content}>
+                <div className={cls.imagePanel}>
+                    <Skeleton width='100%' height='100%' />
+                </div>
+                <VStack gap='16' align='start' max className={cls.info}>
+                    <Skeleton width='80%' height={36} />
+                    <Skeleton width='60%' height={20} />
+                    <Skeleton width={220} height={16} />
+                    <Skeleton width={160} height={30} border='8px' />
+                </VStack>
             </div>
-            <VStack gap='16' align='start' max className={cls.info}>
-                <Skeleton width='80%' height={36} />
-                <Skeleton width='60%' height={20} />
-                <Skeleton width={220} height={16} />
-                <Skeleton width={160} height={30} border='8px' />
-            </VStack>
-        </div>
-    </Card>
+        </Card>
+    </>
 );
 
 export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
@@ -55,11 +57,11 @@ export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
 
     return (
         <div className={classNames(cls.ArticleOfTheDay, {}, [className])}>
+            <Text
+                text={`★ ${t('main.articleOfTheDay')}`}
+                className={cls.eyebrow}
+            />
             <Card theme={CardTheme.NORMAL} max className={cls.card}>
-                <Text
-                    text={`★ ${t('main.articleOfTheDay')}`}
-                    className={cls.eyebrow}
-                />
                 <div className={cls.content}>
                     <div className={cls.imagePanel}>
                         <AppImage
@@ -90,10 +92,7 @@ export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
                         </HStack>
                         <div className={cls.footer}>
                             <AppLink to={getRouteArticleDetails(article.id)}>
-                                <Button
-                                    theme={ButtonTheme.BACKGROUND}
-                                    size={ButtonSize.L}
-                                >
+                                <Button theme={ButtonTheme.BACKGROUND}>
                                     {t('main.readArticle')}
                                 </Button>
                             </AppLink>

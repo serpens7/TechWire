@@ -1,137 +1,137 @@
 {
-  "about": {
-    "title": "About us"
-  },
-  "main": {
-    "title": "Home",
-    "articleOfTheDay": "Article of the day",
-    "readArticle": "Read article",
-    "snippetOfTheDay": "Snippet of the day",
-    "fromArticle": "from article"
-  },
-  "lang": {
-    "switcher": "Русский"
-  },
-  "notFound": {
-    "title": "Page not found"
-  },
-  "forbidden": {
-    "title": "Access denied"
-  },
-  "notification": {
-    "empty": "No notifications"
-  },
-  "rating": {
-    "thankYou": "Thank you for your rating!",
-    "close": "Close",
-    "send": "Send",
-    "feedbackPlaceholder": "Your feedback"
-  },
-  "error": {
-    "occured": "An unexpected error occured",
-    "reload": "Reload page",
-    "throw-button": "Throw Error",
-    "server": "Server error occured",
-    "incorrectCountry": "Invalid country",
-    "incorrectAge": "Invalid age",
-    "noData": "Invalid data",
-    "incorrectUserData": "First and last name are required",
-    "articleNotFound": "Article not found",
-    "articleError": "An error occurred when uploading the article"
-  },
-  "login": {
-    "error": "Invalid username or password",
-    "authorization": "Authorization form",
-    "username": "Enter your login",
-    "password": "Enter your password",
-    "submit": "Login"
-  },
-  "navbar": {
-    "exit": "Exit",
-    "login": "Enter"
-  },
-  "profile": {
-    "page": "Profile",
-    "profile": "Profile",
-    "edit": "Edit",
-    "firstName": "Firstname",
-    "lastName": "Lastname",
-    "error": "Error occured",
-    "refreshPage": "Try refreshing the page",
-    "title": "Profile",
-    "name": "Your name",
-    "lastname": "Your lastname",
-    "age": "Your age",
-    "city": "Your city",
-    "username": "Your login",
-    "avatar": "Your avatar",
+    "about": {
+        "title": "About us"
+    },
+    "main": {
+        "title": "Home",
+        "articleOfTheDay": "Article of the day",
+        "readArticle": "Read article",
+        "snippetOfTheDay": "Snippet of the day",
+        "fromArticle": "from article"
+    },
+    "lang": {
+        "switcher": "Русский"
+    },
+    "notFound": {
+        "title": "Page not found"
+    },
+    "forbidden": {
+        "title": "Access denied"
+    },
+    "notification": {
+        "empty": "No notifications"
+    },
+    "rating": {
+        "thankYou": "Thank you for your rating!",
+        "close": "Close",
+        "send": "Send",
+        "feedbackPlaceholder": "Your feedback"
+    },
+    "error": {
+        "occured": "An unexpected error occured",
+        "reload": "Reload page",
+        "throw-button": "Throw Error",
+        "server": "Server error occured",
+        "incorrectCountry": "Invalid country",
+        "incorrectAge": "Invalid age",
+        "noData": "Invalid data",
+        "incorrectUserData": "First and last name are required",
+        "articleNotFound": "Article not found",
+        "articleError": "An error occurred when uploading the article"
+    },
+    "login": {
+        "error": "Invalid username or password",
+        "authorization": "Authorization form",
+        "username": "Enter your login",
+        "password": "Enter your password",
+        "submit": "Login"
+    },
+    "navbar": {
+        "exit": "Exit",
+        "login": "Enter"
+    },
+    "profile": {
+        "page": "Profile",
+        "profile": "Profile",
+        "edit": "Edit",
+        "firstName": "Firstname",
+        "lastName": "Lastname",
+        "error": "Error occured",
+        "refreshPage": "Try refreshing the page",
+        "title": "Profile",
+        "name": "Your name",
+        "lastname": "Your lastname",
+        "age": "Your age",
+        "city": "Your city",
+        "username": "Your login",
+        "avatar": "Your avatar",
+        "button": {
+            "save": "Save",
+            "cancel": "Cancel",
+            "edit": "Edit"
+        }
+    },
+    "currency": {
+        "select": "Choose currency"
+    },
+    "country": {
+        "select": "Choose country"
+    },
+    "article": {
+        "title": "Articles",
+        "comments": "Comments",
+        "backToList": "Back to list",
+        "createDateSort": "date of creation",
+        "titleSort": "names",
+        "viewsSort": "views",
+        "sortBy": "sort by",
+        "orderBy": "by",
+        "decrement": "decrement",
+        "increment": "increment",
+        "recommendations": "Recomendations",
+        "readMore": "Read more...",
+        "newArticleCreation": "New article creation",
+        "editWithId": "Edit with ID =",
+        "createArticle": "Create article",
+        "valueTheArticle": "Rate the article",
+        "leaveYourFeedbackAboutTheArticle": "Leave your feedback about the article",
+        "titleLabel": "Article title",
+        "subtitleLabel": "Subtitle",
+        "imgLabel": "Image URL",
+        "errors": {
+            "noTitle": "Enter an article title",
+            "noSubtitle": "Enter a subtitle",
+            "noImage": "Provide an image URL",
+            "noType": "Choose an article type"
+        }
+    },
     "button": {
-      "save": "Save",
-      "cancel": "Cancel",
-      "edit": "Edit"
-    }
-  },
-  "currency": {
-    "select": "Choose currency"
-  },
-  "country": {
-    "select": "Choose country"
-  },
-  "article": {
-    "title": "Articles",
-    "comments": "Comments",
-    "backToList": "Back to list",
-    "createDateSort": "date of creation",
-    "titleSort": "names",
-    "viewsSort": "views",
-    "sortBy": "sort by",
-    "orderBy": "by",
-    "decrement": "decrement",
-    "increment": "increment",
-    "recommendations": "Recomendations",
-    "readMore": "Read more...",
-    "newArticleCreation": "New article creation",
-    "editWithId": "Edit with ID =",
-    "createArticle": "Create article",
-    "valueTheArticle": "Rate the article",
-    "leaveYourFeedbackAboutTheArticle": "Leave your feedback about the article",
-    "titleLabel": "Article title",
-    "subtitleLabel": "Subtitle",
-    "imgLabel": "Image URL",
-    "errors": {
-      "noTitle": "Enter an article title",
-      "noSubtitle": "Enter a subtitle",
-      "noImage": "Provide an image URL",
-      "noType": "Choose an article type"
-    }
-  },
-  "button": {
-    "cancel": "Cancel",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "save": "Save"
+    },
+    "article-details": {},
+    "comments": {
+        "notFound": "No comments",
+        "send": "Send",
+        "enterText": "Enter comment text"
+    },
+    "articles": {
+        "allArticles": "All",
+        "it": "IT",
+        "economics": "Economy",
+        "science": "Science"
+    },
+    "sidebar": {
+        "main": "Home",
+        "about": "About",
+        "profile": "Profile",
+        "articles": "Articles"
+    },
+    "search": "Search",
     "edit": "Edit",
-    "save": "Save"
-  },
-  "article-details": {},
-  "comments": {
-    "notFound": "No comments",
-    "send": "Send",
-    "enterText": "Enter comment text"
-  },
-  "articles": {
-    "allArticles": "All",
-    "it": "IT",
-    "economics": "Economy",
-    "science": "Science"
-  },
-  "sidebar": {
-    "main": "Home",
-    "about": "About",
-    "profile": "Profile",
-    "articles": "Articles"
-  },
-  "search": "Search",
-  "edit": "Edit",
-  "IT-NEWS": "It-news",
-  "increment": "Increment",
-  "decrement": "Decrement",
-  "add5": "Add 5"
+    "IT-NEWS": "IT-news",
+    "increment": "Increment",
+    "decrement": "Decrement",
+    "add5": "Add 5"
 }

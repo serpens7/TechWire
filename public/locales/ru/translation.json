@@ -1,131 +1,131 @@
 {
-  "about": {
-    "title": "О нас"
-  },
-  "main": {
-    "title": "Главная",
-    "articleOfTheDay": "Статья дня",
-    "readArticle": "Читать статью",
-    "snippetOfTheDay": "Сниппет дня",
-    "fromArticle": "из статьи"
-  },
-  "lang": {
-    "switcher": "English"
-  },
-  "notFound": {
-    "title": "Страница не найдена"
-  },
-  "forbidden": {
-    "title": "Доступ запрещён"
-  },
-  "notification": {
-    "empty": "Нет уведомлений"
-  },
-  "rating": {
-    "thankYou": "Спасибо за оценку!",
-    "close": "Закрыть",
-    "send": "Отправить",
-    "feedbackPlaceholder": "Ваш отзыв"
-  },
-  "error": {
-    "occured": "Произошла непредвиденная ошибка",
-    "reload": "Обновить страницу",
-    "throw-button": "Показать ошибку",
-    "server": "Серверная ошибка при сохранении",
-    "incorrectCountry": "Недопустимая страна",
-    "incorrectAge": "Недопустимый возраст",
-    "noData": "Недопустимые данные",
-    "incorrectUserData": "Имя и фамилия обязательны",
-    "articleNotFound": "Статья не найдена",
-    "articleError": "Произошла ошибка при загрузке статьи"
-  },
-  "login": {
-    "error": "Вы ввели неверный логин или пароль",
-    "authorization": "Форма авторизации",
-    "username": "Введите логин",
-    "password": "Введите пароль",
-    "submit": "Войти"
-  },
-  "navbar": {
-    "exit": "Выйти",
-    "login": "Войти"
-  },
-  "button": {
-    "save": "Сохранить",
-    "edit": "Изменить",
-    "cancel": "Отменить"
-  },
-  "profile": {
-    "title": "Профиль",
-    "profile": "Профиль",
+    "about": {
+        "title": "О нас"
+    },
+    "main": {
+        "title": "Главная",
+        "articleOfTheDay": "Статья дня",
+        "readArticle": "Читать статью",
+        "snippetOfTheDay": "Сниппет дня",
+        "fromArticle": "из статьи"
+    },
+    "lang": {
+        "switcher": "English"
+    },
+    "notFound": {
+        "title": "Страница не найдена"
+    },
+    "forbidden": {
+        "title": "Доступ запрещён"
+    },
+    "notification": {
+        "empty": "Нет уведомлений"
+    },
+    "rating": {
+        "thankYou": "Спасибо за оценку!",
+        "close": "Закрыть",
+        "send": "Отправить",
+        "feedbackPlaceholder": "Ваш отзыв"
+    },
+    "error": {
+        "occured": "Произошла непредвиденная ошибка",
+        "reload": "Обновить страницу",
+        "throw-button": "Показать ошибку",
+        "server": "Серверная ошибка при сохранении",
+        "incorrectCountry": "Недопустимая страна",
+        "incorrectAge": "Недопустимый возраст",
+        "noData": "Недопустимые данные",
+        "incorrectUserData": "Имя и фамилия обязательны",
+        "articleNotFound": "Статья не найдена",
+        "articleError": "Произошла ошибка при загрузке статьи"
+    },
+    "login": {
+        "error": "Вы ввели неверный логин или пароль",
+        "authorization": "Форма авторизации",
+        "username": "Введите логин",
+        "password": "Введите пароль",
+        "submit": "Войти"
+    },
+    "navbar": {
+        "exit": "Выйти",
+        "login": "Войти"
+    },
+    "button": {
+        "save": "Сохранить",
+        "edit": "Изменить",
+        "cancel": "Отменить"
+    },
+    "profile": {
+        "title": "Профиль",
+        "profile": "Профиль",
+        "edit": "Редактировать",
+        "firstName": "Имя",
+        "lastName": "Фамилия",
+        "error": "Произошла ошибка",
+        "refreshPage": "Попробуйте обновить страницу",
+        "name": "Ваше имя",
+        "lastname": "Ваша фамилия",
+        "age": "Ваш возраст",
+        "city": "Ваш город",
+        "username": "Ваш логин",
+        "avatar": "Ваш аватар"
+    },
+    "currency": {
+        "select": "Укажите валюту"
+    },
+    "country": {
+        "select": "Укажите страну"
+    },
+    "article": {
+        "title": "Статьи",
+        "comments": "Комментарии",
+        "backToList": "Вернуться к списку",
+        "createDateSort": "дату создания",
+        "titleSort": "названия",
+        "viewsSort": "просмотры",
+        "sortBy": "сортировать",
+        "orderBy": "по",
+        "decrement": "убыванию",
+        "increment": "возрастанию",
+        "recommendations": "Рекомендации",
+        "readMore": "Читать далее...",
+        "newArticleCreation": "Создание новой статьи",
+        "editWithId": "Редактирование статьи с ID = ",
+        "createArticle": "Создать статью",
+        "valueTheArticle": "Оцените статью",
+        "leaveYourFeedbackAboutTheArticle": "Оставьте свой отзыв о статье",
+        "titleLabel": "Заголовок статьи",
+        "subtitleLabel": "Краткое описание",
+        "imgLabel": "Ссылка на изображение",
+        "errors": {
+            "noTitle": "Введите заголовок статьи",
+            "noSubtitle": "Введите краткое описание",
+            "noImage": "Укажите ссылку на изображение",
+            "noType": "Выберите тип статьи"
+        }
+    },
+    "article-details": {},
+    "comments": {
+        "notFound": "Нет комментариев",
+        "send": "Отправить",
+        "enterText": "Введите текст комментария"
+    },
+    "articles": {
+        "allArticles": "Все",
+        "it": "Айти",
+        "economics": "Экономика",
+        "science": "Наука"
+    },
+    "sidebar": {
+        "main": "Главная",
+        "about": "О сайте",
+        "profile": "Профиль",
+        "articles": "Статьи"
+    },
+    "search": "Поиск",
     "edit": "Редактировать",
-    "firstName": "Имя",
-    "lastName": "Фамилия",
-    "error": "Произошла ошибка",
-    "refreshPage": "Попробуйте обновить страницу",
-    "name": "Ваше имя",
-    "lastname": "Ваша фамилия",
-    "age": "Ваш возраст",
-    "city": "Ваш город",
-    "username": "Ваш логин",
-    "avatar": "Ваш аватар"
-  },
-  "currency": {
-    "select": "Укажите валюту"
-  },
-  "country": {
-    "select": "Укажите страну"
-  },
-  "article": {
-    "title": "Статьи",
-    "comments": "Комментарии",
-    "backToList": "Вернуться к списку",
-    "createDateSort": "дату создания",
-    "titleSort": "названия",
-    "viewsSort": "просмотры",
-    "sortBy": "сортировать",
-    "orderBy": "по",
-    "decrement": "убыванию",
-    "increment": "возрастанию",
-    "recommendations": "Рекомендации",
-    "readMore": "Читать далее...",
-    "newArticleCreation": "Создание новой статьи",
-    "editWithId": "Редактирование статьи с ID = ",
-    "createArticle": "Создать статью",
-    "valueTheArticle": "Оцените статью",
-    "leaveYourFeedbackAboutTheArticle": "Оставьте свой отзыв о статье",
-    "titleLabel": "Заголовок статьи",
-    "subtitleLabel": "Краткое описание",
-    "imgLabel": "Ссылка на изображение",
-    "errors": {
-      "noTitle": "Введите заголовок статьи",
-      "noSubtitle": "Введите краткое описание",
-      "noImage": "Укажите ссылку на изображение",
-      "noType": "Выберите тип статьи"
-    }
-  },
-  "article-details": {},
-  "comments": {
-    "notFound": "Нет комментариев",
-    "send": "Отправить",
-    "enterText": "Введите текст комментария"
-  },
-  "articles": {
-    "allArticles": "Все",
-    "it": "Айти",
-    "economics": "Экономика",
-    "science": "Наука"
-  },
-  "sidebar": {
-    "main": "Главная",
-    "about": "О сайте",
-    "profile": "Профиль",
-    "articles": "Статьи"
-  },
-  "search": "Поиск",
-  "edit": "Редактировать",
-  "IT-NEWS": "IT-news",
-  "increment": "Увеличить",
-  "decrement": "Уменьшить",
-  "add5": "Добавить 5"
+    "IT-NEWS": "IT-news",
+    "increment": "Увеличить",
+    "decrement": "Уменьшить",
+    "add5": "Добавить 5"
 }
