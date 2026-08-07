@@ -5,7 +5,9 @@
   "main": {
     "title": "Home",
     "articleOfTheDay": "Article of the day",
-    "readArticle": "Read article"
+    "readArticle": "Read article",
+    "snippetOfTheDay": "Snippet of the day",
+    "fromArticle": "from article"
   },
   "lang": {
     "switcher": "Русский"

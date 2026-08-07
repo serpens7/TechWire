@@ -1,0 +1,121 @@
+.SnippetOfTheDay {
+    width: 100%;
+}
+
+.eyebrow {
+    margin-bottom: 16px;
+
+    p {
+        display: inline-flex;
+        align-items: center;
+        color: var(--primary-color);
+        font: var(--font-s);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+}
+
+// The window's own border/shadow comes from its children (the shared `Code`
+// component already draws a themed border+background) — this wrapper only
+// clips their square corners into a single rounded "terminal" silhouette via
+// overflow:hidden, so titleBar/code/footer read as one continuous panel.
+.window {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px var(--card-shadow);
+}
+
+.titleBar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--card-bg);
+}
+
+.dots {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+// Fixed hues, deliberately not theme-swapped: this is what reads as terminal
+// window chrome (macOS-style traffic lights) in both light and dark themes.
+.dotRed,
+.dotAmber,
+.dotGreen {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.dotRed {
+    background: #ff5f56;
+}
+
+.dotAmber {
+    background: #ffbd2e;
+}
+
+.dotGreen {
+    background: #27c93f;
+}
+
+.path {
+    p {
+        color: var(--secondary-color);
+        font: var(--font-s);
+    }
+}
+
+.code {
+    max-height: 320px;
+    overflow: auto;
+    margin: 0;
+}
+
+// Mirrors Code's own box (border + background) so the loading skeleton lines
+// up with the real content that will replace it.
+.body {
+    background: var(--code-bg);
+    border: 1px solid var(--primary-color);
+    padding: 20px;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--card-bg);
+}
+
+.fromLabel {
+    p {
+        color: var(--secondary-color);
+        font: var(--font-s);
+        white-space: nowrap;
+    }
+}
+
+.articleLink {
+    font-weight: 700;
+    margin-right: auto;
+}
+
+.author {
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .footer {
+        align-items: flex-start;
+    }
+
+    .articleLink {
+        margin-right: 0;
+        width: 100%;
+    }
+}

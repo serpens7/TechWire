@@ -5,7 +5,9 @@
   "main": {
     "title": "Главная",
     "articleOfTheDay": "Статья дня",
-    "readArticle": "Читать статью"
+    "readArticle": "Читать статью",
+    "snippetOfTheDay": "Сниппет дня",
+    "fromArticle": "из статьи"
   },
   "lang": {
     "switcher": "English"

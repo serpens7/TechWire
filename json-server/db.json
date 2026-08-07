@@ -132,7 +132,7 @@
         {
           "id": "18-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function debounce(fn, delay) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}"
         },
         {
           "id": "18-3",
@@ -174,7 +174,7 @@
         {
           "id": "19-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function throttle(fn, limit) {\n  let inThrottle = false;\n  return (...args) => {\n    if (inThrottle) return;\n    fn(...args);\n    inThrottle = true;\n    setTimeout(() => { inThrottle = false; }, limit);\n  };\n}"
         },
         {
           "id": "19-3",
@@ -217,7 +217,7 @@
         {
           "id": "20-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const formatMoney = (value, currency = 'USD') =>\n  new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency,\n  }).format(value);\n\nconsole.log(formatMoney(1999.9)); // \"$1,999.90\""
         },
         {
           "id": "20-3",
@@ -259,7 +259,7 @@
         {
           "id": "21-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "type DeepPartial<T> = T extends object\n  ? { [K in keyof T]?: DeepPartial<T[K]> }\n  : T;\n\ninterface Config { server: { port: number; host: string } }\nconst patch: DeepPartial<Config> = { server: { port: 8080 } };"
         },
         {
           "id": "21-3",
@@ -301,7 +301,7 @@
         {
           "id": "22-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const items = ['a', 'b', 'c'];\n\nconsole.log(items.at(-1)); // \"c\"\nconsole.log(items.at(0));  // \"a\""
         },
         {
           "id": "22-3",
@@ -343,7 +343,7 @@
         {
           "id": "23-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const user = { profile: { name: 'Alex' } };\n\nconst city = user.profile?.address?.city ?? 'Unknown';\nconsole.log(city); // \"Unknown\""
         },
         {
           "id": "23-3",
@@ -386,7 +386,7 @@
         {
           "id": "24-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function useLocalStorage(key, initial) {\n  const [value, setValue] = useState(\n    () => JSON.parse(localStorage.getItem(key)) ?? initial\n  );\n  useEffect(() => {\n    localStorage.setItem(key, JSON.stringify(value));\n  }, [key, value]);\n  return [value, setValue];\n}"
         },
         {
           "id": "24-3",
@@ -428,7 +428,7 @@
         {
           "id": "25-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const original = { a: 1, nested: { b: 2 } };\nconst copy = structuredClone(original);\n\ncopy.nested.b = 42;\nconsole.log(original.nested.b); // 2 — untouched"
         },
         {
           "id": "25-3",
@@ -470,7 +470,7 @@
         {
           "id": "26-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "async function fetchWithTimeout(url, ms = 5000) {\n  const controller = new AbortController();\n  const timer = setTimeout(() => controller.abort(), ms);\n  try {\n    return await fetch(url, { signal: controller.signal });\n  } finally {\n    clearTimeout(timer);\n  }\n}"
         },
         {
           "id": "26-3",
@@ -512,7 +512,7 @@
         {
           "id": "27-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const unique = (arr) => [...new Set(arr)];\n\nconsole.log(unique([1, 2, 2, 3, 3, 3])); // [1, 2, 3]"
         },
         {
           "id": "27-3",
@@ -555,7 +555,7 @@
         {
           "id": "28-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function groupBy(items, key) {\n  return items.reduce((acc, item) => {\n    const group = item[key];\n    (acc[group] ??= []).push(item);\n    return acc;\n  }, {});\n}"
         },
         {
           "id": "28-3",
@@ -597,7 +597,7 @@
         {
           "id": "29-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function memoize(fn) {\n  const cache = new Map();\n  return (arg) => {\n    if (!cache.has(arg)) cache.set(arg, fn(arg));\n    return cache.get(arg);\n  };\n}"
         },
         {
           "id": "29-3",
@@ -639,7 +639,7 @@
         {
           "id": "30-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function debounce(fn, delay) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}"
         },
         {
           "id": "30-3",
@@ -681,7 +681,7 @@
         {
           "id": "31-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function throttle(fn, limit) {\n  let inThrottle = false;\n  return (...args) => {\n    if (inThrottle) return;\n    fn(...args);\n    inThrottle = true;\n    setTimeout(() => { inThrottle = false; }, limit);\n  };\n}"
         },
         {
           "id": "31-3",
@@ -724,7 +724,7 @@
         {
           "id": "32-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const formatMoney = (value, currency = 'USD') =>\n  new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency,\n  }).format(value);\n\nconsole.log(formatMoney(1999.9)); // \"$1,999.90\""
         },
         {
           "id": "32-3",
@@ -766,7 +766,7 @@
         {
           "id": "33-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "type DeepPartial<T> = T extends object\n  ? { [K in keyof T]?: DeepPartial<T[K]> }\n  : T;\n\ninterface Config { server: { port: number; host: string } }\nconst patch: DeepPartial<Config> = { server: { port: 8080 } };"
         },
         {
           "id": "33-3",
@@ -808,7 +808,7 @@
         {
           "id": "34-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const items = ['a', 'b', 'c'];\n\nconsole.log(items.at(-1)); // \"c\"\nconsole.log(items.at(0));  // \"a\""
         },
         {
           "id": "34-3",
@@ -850,7 +850,7 @@
         {
           "id": "35-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const user = { profile: { name: 'Alex' } };\n\nconst city = user.profile?.address?.city ?? 'Unknown';\nconsole.log(city); // \"Unknown\""
         },
         {
           "id": "35-3",
@@ -893,7 +893,7 @@
         {
           "id": "36-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function useLocalStorage(key, initial) {\n  const [value, setValue] = useState(\n    () => JSON.parse(localStorage.getItem(key)) ?? initial\n  );\n  useEffect(() => {\n    localStorage.setItem(key, JSON.stringify(value));\n  }, [key, value]);\n  return [value, setValue];\n}"
         },
         {
           "id": "36-3",
@@ -935,7 +935,7 @@
         {
           "id": "37-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const original = { a: 1, nested: { b: 2 } };\nconst copy = structuredClone(original);\n\ncopy.nested.b = 42;\nconsole.log(original.nested.b); // 2 — untouched"
         },
         {
           "id": "37-3",
@@ -977,7 +977,7 @@
         {
           "id": "38-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "async function fetchWithTimeout(url, ms = 5000) {\n  const controller = new AbortController();\n  const timer = setTimeout(() => controller.abort(), ms);\n  try {\n    return await fetch(url, { signal: controller.signal });\n  } finally {\n    clearTimeout(timer);\n  }\n}"
         },
         {
           "id": "38-3",
@@ -1019,7 +1019,7 @@
         {
           "id": "39-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const unique = (arr) => [...new Set(arr)];\n\nconsole.log(unique([1, 2, 2, 3, 3, 3])); // [1, 2, 3]"
         },
         {
           "id": "39-3",
@@ -1062,7 +1062,7 @@
         {
           "id": "40-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function groupBy(items, key) {\n  return items.reduce((acc, item) => {\n    const group = item[key];\n    (acc[group] ??= []).push(item);\n    return acc;\n  }, {});\n}"
         },
         {
           "id": "40-3",
@@ -1104,7 +1104,7 @@
         {
           "id": "41-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function memoize(fn) {\n  const cache = new Map();\n  return (arg) => {\n    if (!cache.has(arg)) cache.set(arg, fn(arg));\n    return cache.get(arg);\n  };\n}"
         },
         {
           "id": "41-3",
@@ -1146,7 +1146,7 @@
         {
           "id": "42-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function debounce(fn, delay) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}"
         },
         {
           "id": "42-3",
@@ -1188,7 +1188,7 @@
         {
           "id": "43-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function throttle(fn, limit) {\n  let inThrottle = false;\n  return (...args) => {\n    if (inThrottle) return;\n    fn(...args);\n    inThrottle = true;\n    setTimeout(() => { inThrottle = false; }, limit);\n  };\n}"
         },
         {
           "id": "43-3",
@@ -1231,7 +1231,7 @@
         {
           "id": "44-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const formatMoney = (value, currency = 'USD') =>\n  new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency,\n  }).format(value);\n\nconsole.log(formatMoney(1999.9)); // \"$1,999.90\""
         },
         {
           "id": "44-3",
@@ -1273,7 +1273,7 @@
         {
           "id": "45-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "type DeepPartial<T> = T extends object\n  ? { [K in keyof T]?: DeepPartial<T[K]> }\n  : T;\n\ninterface Config { server: { port: number; host: string } }\nconst patch: DeepPartial<Config> = { server: { port: 8080 } };"
         },
         {
           "id": "45-3",
@@ -1315,7 +1315,7 @@
         {
           "id": "46-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const items = ['a', 'b', 'c'];\n\nconsole.log(items.at(-1)); // \"c\"\nconsole.log(items.at(0));  // \"a\""
         },
         {
           "id": "46-3",
@@ -1357,7 +1357,7 @@
         {
           "id": "47-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const user = { profile: { name: 'Alex' } };\n\nconst city = user.profile?.address?.city ?? 'Unknown';\nconsole.log(city); // \"Unknown\""
         },
         {
           "id": "47-3",
@@ -1400,7 +1400,7 @@
         {
           "id": "48-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "function useLocalStorage(key, initial) {\n  const [value, setValue] = useState(\n    () => JSON.parse(localStorage.getItem(key)) ?? initial\n  );\n  useEffect(() => {\n    localStorage.setItem(key, JSON.stringify(value));\n  }, [key, value]);\n  return [value, setValue];\n}"
         },
         {
           "id": "48-3",
@@ -1442,7 +1442,7 @@
         {
           "id": "49-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "const original = { a: 1, nested: { b: 2 } };\nconst copy = structuredClone(original);\n\ncopy.nested.b = 42;\nconsole.log(original.nested.b); // 2 — untouched"
         },
         {
           "id": "49-3",
@@ -1484,7 +1484,7 @@
         {
           "id": "50-2",
           "type": "CODE",
-          "code": "const sum = (a, b) => a + b;\nconsole.log(sum(2, 3));"
+          "code": "async function fetchWithTimeout(url, ms = 5000) {\n  const controller = new AbortController();\n  const timer = setTimeout(() => controller.abort(), ms);\n  try {\n    return await fetch(url, { signal: controller.signal });\n  } finally {\n    clearTimeout(timer);\n  }\n}"
         },
         {
           "id": "50-3",
