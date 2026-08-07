@@ -3,7 +3,9 @@
     "title": "О нас"
   },
   "main": {
-    "title": "Главная"
+    "title": "Главная",
+    "articleOfTheDay": "Статья дня",
+    "readArticle": "Читать статью"
   },
   "lang": {
     "switcher": "English"

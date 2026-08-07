@@ -3,7 +3,9 @@
     "title": "About us"
   },
   "main": {
-    "title": "Home"
+    "title": "Home",
+    "articleOfTheDay": "Article of the day",
+    "readArticle": "Read article"
   },
   "lang": {
     "switcher": "Русский"
