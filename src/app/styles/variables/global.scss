@@ -66,21 +66,12 @@
     --sidebar-width: 320px;
     --sidebar-width-collapsed: 72px;
 
-    /* Minimum breathing room on either side of the content column. The column
-     * is centred within the area *next to* the sidebar, which makes the empty
-     * space to its left and right equal — the sidebar is a filled panel, not
-     * whitespace, so mirroring its width on the right looked lopsided. */
+    /* Gap between the sidebar and the content column. The column's right
+     * margin is --sidebar-width instead, so the filled sidebar panel and the
+     * empty strip opposite it are the same width and frame the content
+     * symmetrically. The column is deliberately uncapped: a max-width would
+     * push the surplus into that right margin and break the symmetry. */
     --content-gutter: 48px;
-
-    /* Layout column for pages, cards and lists. Left-aligned, so the leftover
-     * width stays an empty right gutter (DTF/Twitter-style) on wide screens
-     * and simply collapses on narrower ones. */
-    --content-max-width: 1200px;
-
-    /* Long-form prose is capped much tighter (~70 characters): a 1500px line
-     * is genuinely hard to track back to the next line. Applied to the
-     * article-detail body, not to cards or lists. */
-    --reading-max-width: 760px;
     --modal-z-index: 10;
     --overlay-color: rgba(0 0 0 / 60%);
     --red-light: #e5484d;

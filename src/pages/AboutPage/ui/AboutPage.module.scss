@@ -1,7 +1,7 @@
-/* Prose-heavy page: capped tighter than the wide layout column so the copy
- * stays comfortable to read. */
+/* Horizontal placement comes from the Page widget's shared column — an extra
+ * cap here only pulled this page out of alignment with every other one. */
 .AboutPage {
-    max-width: var(--reading-max-width);
+    width: 100%;
 }
 
 .hero {
