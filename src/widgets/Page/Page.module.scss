@@ -1,20 +1,25 @@
-/* No horizontal padding on the scroller itself — the column geometry lives on
- * .content, so the scrollbar stays on this element's border edge (the page
- * corner) and the layout matches the articles page, where a padded scroller
- * would drag react-virtuoso's own scrollbar inward. */
+/* Column geometry: the empty strip on the right is exactly as wide as the
+ * sidebar panel on the left, so the two frame the content symmetrically. A
+ * gutter keeps the content from touching the sidebar. Padding (not margin)
+ * means the scrollbar stays on this element's border edge — the page corner. */
 .Page {
     flex-grow: 1;
     flex-shrink: 100;
     height: calc(100vh - var(--navbar-height));
     overflow-y: auto;
+    padding-left: var(--content-gutter);
+    padding-right: var(--sidebar-width);
 }
 
-/* Centred within the area next to the sidebar, so the empty space on its left
- * and right is equal. The gutter is carried as padding inside the max-width,
- * which keeps a minimum margin once the viewport is too narrow to centre. */
 .content {
     box-sizing: border-box;
-    max-width: calc(var(--content-max-width) + 2 * var(--content-gutter));
-    margin-inline: auto;
-    padding: var(--space-8) var(--content-gutter) var(--space-12);
+    padding: var(--space-8) 0 var(--space-12);
+}
+
+/* Below this the mirrored strip costs more than it's worth — the width is
+ * better spent on the content itself. */
+@media (max-width: 1279px) {
+    .Page {
+        padding-right: var(--content-gutter);
+    }
 }

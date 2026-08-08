@@ -10,18 +10,18 @@
     height: calc(100vh - var(--navbar-height));
 }
 
-// Shared column geometry: centred within the area next to the sidebar, so the
-// empty space to the column's left and right is equal. The gutter is carried
-// as padding inside the max-width, so a minimum margin survives once the
-// viewport is too narrow for the column to centre.
+// Column geometry: the empty strip on the right is exactly as wide as the
+// sidebar panel on the left, so the two frame the content symmetrically, with
+// a gutter keeping it off the sidebar. No max-width — capping the column would
+// push the surplus into the right margin and break that equality on wide
+// screens.
 .header,
 .itemsWrapper,
 .skeletonsGrid,
 .bigCard {
     box-sizing: border-box;
-    max-width: calc(var(--content-max-width) + 2 * var(--content-gutter));
-    margin-inline: auto;
-    padding-inline: var(--content-gutter);
+    margin-left: var(--content-gutter);
+    margin-right: var(--sidebar-width);
 }
 
 .header {
@@ -42,4 +42,13 @@
 
 .skeletonsList {
     padding-top: var(--space-6);
+}
+
+@media (max-width: 1279px) {
+    .header,
+    .itemsWrapper,
+    .skeletonsGrid,
+    .bigCard {
+        margin-right: var(--content-gutter);
+    }
 }
