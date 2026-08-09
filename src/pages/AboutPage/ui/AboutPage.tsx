@@ -9,14 +9,8 @@ import { getRouteArticles } from '@/shared/const/router';
 import cls from './AboutPage.module.scss';
 
 const TOPIC_KEYS = ['it', 'economics', 'science'] as const;
-const FEATURE_KEYS = [
-    'articleOfTheDay',
-    'snippetOfTheDay',
-    'filters',
-    'ratings',
-    'comments',
-    'themes',
-] as const;
+const PRINCIPLE_KEYS = ['practice', 'depth', 'honest', 'lasting'] as const;
+const AUDIENCE_KEYS = ['learning', 'working', 'curious'] as const;
 
 const AboutPage = () => {
     const { t } = useTranslation();
@@ -25,10 +19,7 @@ const AboutPage = () => {
         <Page>
             <VStack gap='32' max className={cls.AboutPage}>
                 <header className={cls.hero}>
-                    <Text
-                        className={cls.eyebrow}
-                        text={t('about.eyebrow')}
-                    />
+                    <Text className={cls.eyebrow} text={t('about.eyebrow')} />
                     <Text size={TextSize.L} title={t('about.title')} />
                     <Text className={cls.lead} text={t('about.lead')} />
                 </header>
@@ -52,29 +43,63 @@ const AboutPage = () => {
                 </section>
 
                 <section className={cls.section}>
-                    <Text size={TextSize.S} title={t('about.featuresTitle')} />
-                    <ul className={cls.features}>
-                        {FEATURE_KEYS.map((key) => (
-                            <li key={key} className={cls.feature}>
-                                <span className={cls.bullet} />
+                    <Text
+                        size={TextSize.S}
+                        title={t('about.principlesTitle')}
+                    />
+                    <Text
+                        className={cls.sectionLead}
+                        text={t('about.principlesLead')}
+                    />
+                    <ol className={cls.principles}>
+                        {PRINCIPLE_KEYS.map((key, index) => (
+                            <li key={key} className={cls.principle}>
+                                <span className={cls.principleNum}>
+                                    {String(index + 1).padStart(2, '0')}
+                                </span>
                                 <div>
                                     <Text
-                                        className={cls.featureName}
-                                        text={t(`about.features.${key}.name`)}
+                                        className={cls.principleName}
+                                        text={t(`about.principles.${key}.name`)}
                                     />
                                     <Text
-                                        className={cls.featureText}
-                                        text={t(`about.features.${key}.text`)}
+                                        className={cls.principleText}
+                                        text={t(`about.principles.${key}.text`)}
                                     />
                                 </div>
                             </li>
                         ))}
-                    </ul>
+                    </ol>
+                </section>
+
+                <section className={cls.section}>
+                    <Text size={TextSize.S} title={t('about.audienceTitle')} />
+                    <div className={cls.topics}>
+                        {AUDIENCE_KEYS.map((key) => (
+                            <Card key={key} className={cls.topic}>
+                                <Text
+                                    className={cls.topicName}
+                                    text={t(`about.audience.${key}.name`)}
+                                />
+                                <Text
+                                    className={cls.topicText}
+                                    text={t(`about.audience.${key}.text`)}
+                                />
+                            </Card>
+                        ))}
+                    </div>
                 </section>
 
                 <section className={cls.section}>
                     <Text size={TextSize.S} title={t('about.stackTitle')} />
-                    <Text className={cls.stackText} text={t('about.stackText')} />
+                    <Text
+                        className={cls.stackText}
+                        text={t('about.stackText')}
+                    />
+                    <Text
+                        className={cls.stackText}
+                        text={t('about.stackText2')}
+                    />
                 </section>
 
                 <Card className={cls.cta}>

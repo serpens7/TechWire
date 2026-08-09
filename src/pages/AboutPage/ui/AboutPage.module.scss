@@ -36,9 +36,16 @@
     width: 100%;
 }
 
+.sectionLead {
+    p {
+        color: var(--text-secondary);
+        max-width: 70ch;
+    }
+}
+
 .topics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: var(--space-4);
 }
 
@@ -63,37 +70,42 @@
     }
 }
 
-.features {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
+/* 440px keeps this at two columns on the wide layout, so the four items form
+ * a balanced 2x2 instead of a 3 + 1 with a gap hanging off the end. */
+.principles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+    gap: var(--space-6) var(--space-8);
     margin: 0;
     padding: 0;
     list-style: none;
+    counter-reset: principle;
 }
 
-.feature {
+.principle {
     display: flex;
     align-items: flex-start;
-    gap: var(--space-3);
+    gap: var(--space-4);
 }
 
-.bullet {
+.principleNum {
     flex-shrink: 0;
-    width: 8px;
-    height: 8px;
-    margin-top: 9px;
-    border-radius: 50%;
-    background: var(--accent-color);
+    font: var(--font-l);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--accent-color);
+    opacity: 0.45;
+    font-variant-numeric: tabular-nums;
 }
 
-.featureName {
+.principleName {
     p {
         font-weight: 600;
+        margin-bottom: var(--space-1);
     }
 }
 
-.featureText {
+.principleText {
     p {
         font: var(--font-s);
         color: var(--text-secondary);
@@ -103,6 +115,7 @@
 .stackText {
     p {
         color: var(--text-secondary);
+        max-width: 80ch;
     }
 }
 
