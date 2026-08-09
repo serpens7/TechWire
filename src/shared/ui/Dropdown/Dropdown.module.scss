@@ -10,16 +10,20 @@
     cursor: pointer;
 }
 
-/* Rendered in a portal via the `anchor` prop; only the panel is styled here. */
+/* Rendered in a portal via the `anchor` prop; only the panel is styled here.
+ * Same surface treatment as ListBox: raised card background, neutral border. */
 .menu {
+    /* Headless UI focuses this panel when it opens, so the UA draws its
+     * default focus ring around it. Item-level focus is styled below. */
+    outline: none;
     z-index: 1000;
     min-width: 160px;
     padding: 8px 0;
     margin: 0;
-    background: var(--bg-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 12px;
-    box-shadow: 4px 4px 12px var(--card-shadow);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-m);
+    box-shadow: 0 8px 24px var(--card-shadow);
 }
 
 .item {
@@ -27,7 +31,7 @@
     width: 100%;
     padding: 8px 16px;
     font: inherit;
-    color: var(--primary-color);
+    color: var(--text-primary);
     text-align: left;
     background: none;
     border: none;

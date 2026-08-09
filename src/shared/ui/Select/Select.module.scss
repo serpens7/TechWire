@@ -18,7 +18,10 @@
     border-radius: 6px;
 }
 
+/* --inverted-bg-color is the dark navbar/sidebar surface, so using it here
+ * painted the option list black on the light theme. Options are a normal
+ * surface: card background with primary text, in both themes. */
 .option {
-    color: var(--inverted-primary-color);
-    background: var(--inverted-bg-color);
+    color: var(--text-primary);
+    background: var(--card-bg);
 }

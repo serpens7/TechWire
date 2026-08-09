@@ -39,7 +39,6 @@
 .sectionLead {
     p {
         color: var(--text-secondary);
-        max-width: 70ch;
     }
 }
 
@@ -112,10 +111,11 @@
     }
 }
 
+/* No max-width: the ch-based caps here left this section visibly narrower
+ * than every other block on the page. */
 .stackText {
     p {
         color: var(--text-secondary);
-        max-width: 80ch;
     }
 }
 
