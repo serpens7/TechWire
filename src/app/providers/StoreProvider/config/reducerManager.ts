@@ -22,7 +22,10 @@ export function createReducerManager(initialReducers: ReducersMapObject<StateSch
                 });
                 keysToRemove = [];
             }
-            return combinedReducer(state, action);
+            // redux 5's combineReducers infers a state shape whose optional async
+            // slices are typed as `undefined`; the aggregate StateSchema is wider,
+            // so the input is cast to the combined reducer's own parameter type.
+            return combinedReducer(state as Parameters<typeof combinedReducer>[0], action);
         },
         add: (key: StateSchemaKey, reducer: Reducer) => {
             if (!key || reducers[key]) {

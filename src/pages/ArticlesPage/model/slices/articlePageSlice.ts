@@ -9,31 +9,32 @@ import { fetchArticlesList } from '../services/fetchArticlesList';
 import { ArticlesPageSchema } from '../types/ArticlesPageSchema';
 import { SortOrder } from '@/shared/types/types';
 
-const articlesAdapter = createEntityAdapter<Article>({
-    selectId: (article) => article.id,
+// RTK 2's default selectId reads `entity.id` and infers Id from it (Article.id is
+// string), so the explicit selectId is no longer needed — and passing it here would
+// widen Id to EntityId (string | number), breaking EntityState<Article, string>.
+const articlesAdapter = createEntityAdapter<Article>();
+
+const initialState: ArticlesPageSchema = articlesAdapter.getInitialState({
+    isLoading: false,
+    error: undefined,
+    view: ArticleView.SMALL,
+    page: 1,
+    hasMore: true,
+    inited: false,
+    limit: 12,
+    sort: ArticleSortField.CREATED,
+    search: '',
+    order: 'asc' as SortOrder,
+    type: ArticleType.ALL,
 });
 
 export const getArticles = articlesAdapter.getSelectors<StateSchema>(
-    (state) => state.articlesPage || articlesAdapter.getInitialState(),
+    (state) => state.articlesPage ?? initialState,
 );
 
 const articlesPageSlice = createSlice({
     name: 'articlesPageSlice',
-    initialState: articlesAdapter.getInitialState<ArticlesPageSchema>({
-        isLoading: false,
-        error: undefined,
-        ids: [],
-        entities: {},
-        view: ArticleView.SMALL,
-        page: 1,
-        hasMore: true,
-        inited: false,
-        limit: 12,
-        sort: ArticleSortField.CREATED,
-        search: '',
-        order: 'asc',
-        type: ArticleType.ALL,
-    }),
+    initialState,
     reducers: {
         setView: (state, action: PayloadAction<ArticleView>) => {
             state.view = action.payload;

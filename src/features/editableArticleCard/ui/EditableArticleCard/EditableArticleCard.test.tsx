@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AxiosRequestConfig } from 'axios';
 import { $api } from '@/shared/api/api';
@@ -113,6 +113,11 @@ describe('features/EditableArticleCard', () => {
             const titleInput = await screen.findByTestId(
                 'EditableArticleCard.Title'
             );
+            // Wait for the fetched article to populate the field before editing —
+            // otherwise clear() runs on a still-empty input and the prefill lands
+            // afterwards, producing "Existing title" + "Updated title".
+            await waitFor(() =>
+                expect(titleInput).toHaveValue('Existing title'));
             await userEvent.clear(titleInput);
             await userEvent.type(titleInput, 'Updated title');
 

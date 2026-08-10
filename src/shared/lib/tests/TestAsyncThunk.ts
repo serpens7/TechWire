@@ -1,27 +1,30 @@
 import { StateSchema } from '@/app/providers/StoreProvider';
-import { AsyncThunkAction } from '@reduxjs/toolkit';
 import axios, { AxiosStatic } from 'axios';
 
-type ActionCreatorType<Return, Arg, RejectedValue> =
-    (arg: Arg) => AsyncThunkAction<Return, Arg, { rejectValue: RejectedValue }>;
+// The returned thunk action is typed `any`: under RTK 2 the AsyncThunkAction's
+// dispatch parameter is bound to the thunk's concrete state (StateSchema) and is
+// contravariant, so no single generic form of this helper accepts every thunk. The
+// helper only needs the (arg) => thunkAction call shape; the dispatch/getState it
+// feeds in are jest mocks, so the precise action type carries no value here.
+type ActionCreatorType<Arg> = (arg: Arg) => any;
 
 jest.mock('axios');
 
 const mockedAxios = jest.mocked(axios);
 
-export class TestAsyncThunk<Return, Arg, RejectedValue> {
+export class TestAsyncThunk<Arg> {
     dispatch: jest.MockedFn<any>;
 
     getState: () => StateSchema;
 
-    actionCreator: ActionCreatorType<Return, Arg, RejectedValue>;
+    actionCreator: ActionCreatorType<Arg>;
 
     api: jest.MockedFunctionDeep<AxiosStatic>;
 
     navigate: jest.MockedFn<any>;
 
     constructor(
-        actionCreator: ActionCreatorType<Return, Arg, RejectedValue>,
+        actionCreator: ActionCreatorType<Arg>,
         state?: DeepPartial<StateSchema>,
     ) {
         this.actionCreator = actionCreator;
@@ -32,8 +35,9 @@ export class TestAsyncThunk<Return, Arg, RejectedValue> {
         this.navigate = jest.fn();
     }
 
-    async callThunk(arg: Arg) {
-        const action = this.actionCreator(arg);
+    // arg is optional so void-argument thunks can be invoked as callThunk().
+    async callThunk(arg?: Arg) {
+        const action = this.actionCreator(arg as Arg);
         const result = await action(
             this.dispatch,
             this.getState,

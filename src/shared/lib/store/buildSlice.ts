@@ -29,8 +29,8 @@ export function buildSlice<
         );
     };
 
-    return {
-        ...slice,
-        useActions,
-    };
+    // RTK 2's Slice exposes `selectors` as a getter and a this-bound `injectInto`;
+    // spreading would eagerly evaluate the getter and rebind onto a plain object.
+    // Object.assign keeps the slice as the target, preserving its own accessors.
+    return Object.assign(slice, { useActions });
 }

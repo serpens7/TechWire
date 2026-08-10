@@ -72,10 +72,12 @@ export const EditableArticleCard = ({ className, id }: EditableArticleCardProps)
         } else {
             dispatch(articleFormActions.initForm({ type: [] }));
         }
-        // Only re-run when switching between create/edit or when the fetched
-        // article for edit mode arrives — not on every form keystroke.
+        // Key on data?.id, not the whole `data` object: RTK Query can hand back a
+        // referentially-new `data` on an unrelated re-render, and depending on `data`
+        // would re-run initForm mid-edit and clobber the user's changes. Re-init only
+        // when switching create/edit or when a *different* article actually arrives.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isEdit, data, dispatch]);
+    }, [isEdit, data?.id, dispatch]);
 
     const onChangeTitle = (value?: string) => {
         dispatch(articleFormActions.updateForm({ title: value ?? '' }));

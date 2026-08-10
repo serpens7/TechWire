@@ -1,6 +1,6 @@
 import { StateSchema, StoreProvider } from '@/app/providers/StoreProvider';
 import { Decorator } from '@storybook/react';
-import { Action, ReducersMapObject } from '@reduxjs/toolkit';
+import { ReducersMapObject } from '@reduxjs/toolkit';
 import { loginReducer } from '@/features/AuthByUserName';
 import { profileReducer } from '@/features/editableProfileCard';
 import { articleFormReducer } from '@/features/editableArticleCard';
@@ -23,7 +23,7 @@ export const StoreDecorator =
                 initialState={state}
                 asyncReducers={
                      { ...defaultAsyncReducers, ...asyncReducers } as DeepPartial<
-                    ReducersMapObject<StateSchema, Action<any>>
+                    ReducersMapObject<StateSchema>
                 >
                 }
             >

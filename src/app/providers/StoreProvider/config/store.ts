@@ -3,7 +3,7 @@ import { StateSchema } from './StateSchema';
 import { counterReducer } from '@/entities/Counter';
 import { userReducer } from '@/entities/User';
 import { createReducerManager } from './reducerManager';
-import { Reducer, AnyAction } from 'redux';
+import { Reducer, UnknownAction } from 'redux';
 import { $api } from '@/shared/api/api';
 import { rtkApi } from '@/shared/api/rtkApi';
 
@@ -20,7 +20,7 @@ export function createReduxStore(
     const reducerManager = createReducerManager(rootReducers);
 
     const store = configureStore({
-        reducer: reducerManager.reduce as Reducer<StateSchema, AnyAction>,
+        reducer: reducerManager.reduce as Reducer<StateSchema, UnknownAction>,
         devTools: __IS_DEV__,
         preloadedState: initialState,
         middleware: (getDefaultMiddleware) => getDefaultMiddleware({
