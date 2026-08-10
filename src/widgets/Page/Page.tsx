@@ -1,6 +1,5 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
 import {
-    MutableRefObject,
     ReactNode,
     UIEvent,
     useCallback,
@@ -20,8 +19,8 @@ interface PageProps {
 
 export const Page = (props: PageProps) => {
     const { className = '', children, onScrollEnd } = props;
-    const wrapperRef = useRef() as MutableRefObject<HTMLDivElement>;
-    const triggerRef = useRef() as MutableRefObject<HTMLDivElement>;
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
     const { pathname } = useLocation();
 
     useInfiniteScroll({
@@ -31,7 +30,9 @@ export const Page = (props: PageProps) => {
     });
 
     useInitialEffect(() => {
-        wrapperRef.current.scrollTop = scrollSaver.getScroll(pathname);
+        if (wrapperRef.current) {
+            wrapperRef.current.scrollTop = scrollSaver.getScroll(pathname);
+        }
     });
 
     const onScroll = useCallback(

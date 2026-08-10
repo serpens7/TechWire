@@ -1,5 +1,9 @@
-import { bindActionCreators, createSlice } from '@reduxjs/toolkit';
-import { SliceCaseReducers, CreateSliceOptions } from '@reduxjs/toolkit/dist';
+import {
+    bindActionCreators,
+    createSlice,
+    type CreateSliceOptions,
+    type SliceCaseReducers,
+} from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import { useMemo } from 'react';
 
@@ -13,8 +17,16 @@ export function buildSlice<
     const useActions = (): typeof slice.actions => {
         const dispatch = useDispatch();
 
-        // @ts-ignore
-        return useMemo(() => bindActionCreators(slice.actions, dispatch), [dispatch]);
+        // RTK's CaseReducerActions type doesn't satisfy bindActionCreators'
+        // ActionCreatorsMapObject constraint (its members widen to include void),
+        // so the input is cast; the bound result is re-narrowed to slice.actions.
+        return useMemo(
+            () => bindActionCreators(
+                slice.actions as unknown as Record<string, (...args: any[]) => unknown>,
+                dispatch,
+            ) as typeof slice.actions,
+            [dispatch],
+        );
     };
 
     return {

@@ -1,11 +1,12 @@
 import { screen } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
+import { ReactElement } from 'react';
 import { componentRender } from '@/shared/lib/tests/componentRender';
 import { UserRole } from '@/entities/User';
 import { RequireAuth } from './RequireAuth';
 
 const renderProtectedRoutes = (
-    protectedElement: JSX.Element,
+    protectedElement: ReactElement,
     route: string,
     initialState: Record<string, unknown>
 ) =>
