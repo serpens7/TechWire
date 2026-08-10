@@ -23,11 +23,6 @@ export default ({ config }: { config: webpack.Configuration }) => {
         ...config.resolve.alias,
         '@': paths.src,
         app: path.resolve(paths.src, 'app'),
-        // react-virtuoso (used in ArticlesPageList) requests the bare
-        // `react/jsx-runtime`, which Storybook's resolver fails to locate.
-        // Map it explicitly to the installed React runtime files.
-        'react/jsx-runtime': require.resolve('react/jsx-runtime'),
-        'react/jsx-dev-runtime': require.resolve('react/jsx-dev-runtime'),
     };
 
     config.module ??= { rules: [] };
