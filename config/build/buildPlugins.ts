@@ -14,9 +14,14 @@ export function buildPlugins({ paths, isDev, apiUrl, project }: BuildOptions): w
             template: paths.html,
         }),
         new webpack.ProgressPlugin(),
+        // NOTE: the placeholder must be `[contenthash:8]` with no space —
+        // `[contenthash: 8]` is not recognised, so webpack emitted files
+        // literally named `css/main.[contenthash` while the generated HTML
+        // asked for `css/main.%5Bcontenthash%3A%208%5D.css`. The two never
+        // matched, so production builds shipped with no stylesheet at all.
         new MiniCssExtractPlugin({
-            filename: 'css/[name].[contenthash: 8].css',
-            chunkFilename: 'css/[name].[contenthash: 8].css',
+            filename: 'css/[name].[contenthash:8].css',
+            chunkFilename: 'css/[name].[contenthash:8].css',
         }),
         new webpack.DefinePlugin({
             __IS_DEV__: JSON.stringify(isDev),

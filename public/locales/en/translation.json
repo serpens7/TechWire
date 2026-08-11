@@ -1,133 +1,195 @@
 {
-  "about": {
-    "title": "About us"
-  },
-  "main": {
-    "title": "Home"
-  },
-  "lang": {
-    "switcher": "Русский"
-  },
-  "notFound": {
-    "title": "Page not found"
-  },
-  "forbidden": {
-    "title": "Access denied"
-  },
-  "notification": {
-    "empty": "No notifications"
-  },
-  "rating": {
-    "thankYou": "Thank you for your rating!",
-    "close": "Close",
-    "send": "Send",
-    "feedbackPlaceholder": "Your feedback"
-  },
-  "error": {
-    "occured": "An unexpected error occured",
-    "reload": "Reload page",
-    "throw-button": "Throw Error",
-    "server": "Server error occured",
-    "incorrectCountry": "Invalid country",
-    "incorrectAge": "Invalid age",
-    "noData": "Invalid data",
-    "incorrectUserData": "First and last name are required",
-    "articleNotFound": "Article not found",
-    "articleError": "An error occurred when uploading the article"
-  },
-  "login": {
-    "error": "Invalid username or password",
-    "authorization": "Authorization form",
-    "username": "Enter your login",
-    "password": "Enter your password",
-    "submit": "Login"
-  },
-  "navbar": {
-    "exit": "Exit",
-    "login": "Enter"
-  },
-  "profile": {
-    "page": "Profile",
-    "profile": "Profile",
-    "edit": "Edit",
-    "firstName": "Firstname",
-    "lastName": "Lastname",
-    "error": "Error occured",
-    "refreshPage": "Try refreshing the page",
-    "title": "Profile",
-    "name": "Your name",
-    "lastname": "Your lastname",
-    "age": "Your age",
-    "city": "Your city",
-    "username": "Your login",
-    "avatar": "Your avatar",
+    "about": {
+        "title": "IT-news — articles on development, economics and science",
+        "eyebrow": "About the project",
+        "lead": "A publication for people who write code and want to understand what is going on around it: technology deep dives, plain explanations, and material that is still useful a week later.",
+        "topicsTitle": "What we write about",
+        "topics": {
+            "it": {
+                "name": "Development",
+                "text": "Frontend and backend, tools and approaches: React and Next.js, TypeScript, Tailwind, state managers, Go, Rust, Python. Walkthroughs with real code, not a retelling of the docs."
+            },
+            "economics": {
+                "name": "Economics",
+                "text": "How the money around technology works: product unit economics, inflation and rates, investing, cryptocurrencies and how to store them."
+            },
+            "science": {
+                "name": "Science",
+                "text": "Big topics in plain language: the James Webb telescope, CRISPR genome editing, quantum computing, black holes."
+            }
+        },
+        "stackTitle": "How it is built",
+        "stackText": "The project runs on React 18 and TypeScript, organised with Feature-Sliced Design: the code is split into layers from shared UI primitives up to pages, and each layer only knows about the ones below it. Application state is Redux Toolkit; server data is RTK Query, with caching and tag-based invalidation. Webpack 5 handles bundling, with code splitting per route.",
+        "ctaTitle": "Start reading",
+        "ctaText": "Over 30 pieces on development, economics and science — with real code and no filler.",
+        "ctaButton": "Go to articles",
+        "principlesTitle": "How we work",
+        "principlesLead": "This is not a feed of reworded press releases. Every piece goes through four rules, and they are what separates this from a news aggregator.",
+        "principles": {
+            "practice": {
+                "name": "Practice, not paraphrase",
+                "text": "We do not rewrite the docs in our own words. A piece explains what problem the technology solves, where it wins and what it costs you — with examples you can actually run."
+            },
+            "depth": {
+                "name": "Explain the mechanism",
+                "text": "\"It is faster\" is not an explanation. We go into why: how the algorithm works, what happens at runtime, which trade-offs are baked into the design."
+            },
+            "honest": {
+                "name": "Honest trade-offs",
+                "text": "Every choice has a price. If a tool is convenient but locks you into an ecosystem or falls apart at scale, we say so plainly instead of listing only its strengths."
+            },
+            "lasting": {
+                "name": "Built to last",
+                "text": "We pick topics that will still be useful in a year: principles, architectural approaches and fundamentals. The hype around the latest release is someone else's beat."
+            }
+        },
+        "audienceTitle": "Who it is for",
+        "audience": {
+            "learning": {
+                "name": "People still learning",
+                "text": "If you know your way around frontend or backend and are tired of build-a-counter tutorials, here are real problems worked through, with the reasoning behind the code."
+            },
+            "working": {
+                "name": "Working developers",
+                "text": "Comparisons of tools and approaches, so that \"what should we use\" rests on understanding the trade-offs rather than on the first search result."
+            },
+            "curious": {
+                "name": "The simply curious",
+                "text": "Economics and science without formulas or jargon: how inflation works, what James Webb found, why quantum error correction matters."
+            }
+        },
+        "stackText2": "Quality rests on three levels of checking: unit tests in Jest and Testing Library, end-to-end journeys in a real browser via Playwright, and static analysis — TypeScript, ESLint, Stylelint and an architectural-boundary linter. It is a production-style learning project: the UI, the architecture and the tests are working code, not a mock-up."
+    },
+    "main": {
+        "title": "Home",
+        "articleOfTheDay": "Article of the day",
+        "readArticle": "Read article",
+        "snippetOfTheDay": "Snippet of the day",
+        "fromArticle": "from article"
+    },
+    "lang": {
+        "switcher": "Русский"
+    },
+    "notFound": {
+        "title": "Page not found"
+    },
+    "forbidden": {
+        "title": "Access denied"
+    },
+    "notification": {
+        "empty": "No notifications"
+    },
+    "rating": {
+        "thankYou": "Thank you for your rating!",
+        "close": "Close",
+        "send": "Send",
+        "feedbackPlaceholder": "Your feedback"
+    },
+    "error": {
+        "occured": "An unexpected error occured",
+        "reload": "Reload page",
+        "throw-button": "Throw Error",
+        "server": "Server error occured",
+        "incorrectCountry": "Invalid country",
+        "incorrectAge": "Invalid age",
+        "noData": "Invalid data",
+        "incorrectUserData": "First and last name are required",
+        "articleNotFound": "Article not found",
+        "articleError": "An error occurred when uploading the article"
+    },
+    "login": {
+        "error": "Invalid username or password",
+        "authorization": "Authorization form",
+        "username": "Enter your login",
+        "password": "Enter your password",
+        "submit": "Login"
+    },
+    "navbar": {
+        "exit": "Exit",
+        "login": "Enter"
+    },
+    "profile": {
+        "page": "Profile",
+        "profile": "Profile",
+        "edit": "Edit",
+        "firstName": "Firstname",
+        "lastName": "Lastname",
+        "error": "Error occured",
+        "refreshPage": "Try refreshing the page",
+        "title": "Profile",
+        "name": "Your name",
+        "lastname": "Your lastname",
+        "age": "Your age",
+        "city": "Your city",
+        "username": "Your login",
+        "avatar": "Your avatar",
+        "button": {
+            "save": "Save",
+            "cancel": "Cancel",
+            "edit": "Edit"
+        }
+    },
+    "currency": {
+        "select": "Choose currency"
+    },
+    "country": {
+        "select": "Choose country"
+    },
+    "article": {
+        "title": "Articles",
+        "comments": "Comments",
+        "backToList": "Back to list",
+        "createDateSort": "date of creation",
+        "titleSort": "names",
+        "viewsSort": "views",
+        "sortBy": "sort by",
+        "orderBy": "by",
+        "decrement": "decrement",
+        "increment": "increment",
+        "recommendations": "Recomendations",
+        "readMore": "Read more...",
+        "newArticleCreation": "New article creation",
+        "editWithId": "Edit with ID =",
+        "createArticle": "Create article",
+        "valueTheArticle": "Rate the article",
+        "leaveYourFeedbackAboutTheArticle": "Leave your feedback about the article",
+        "titleLabel": "Article title",
+        "subtitleLabel": "Subtitle",
+        "imgLabel": "Image URL",
+        "errors": {
+            "noTitle": "Enter an article title",
+            "noSubtitle": "Enter a subtitle",
+            "noImage": "Provide an image URL",
+            "noType": "Choose an article type"
+        }
+    },
     "button": {
-      "save": "Save",
-      "cancel": "Cancel",
-      "edit": "Edit"
-    }
-  },
-  "currency": {
-    "select": "Choose currency"
-  },
-  "country": {
-    "select": "Choose country"
-  },
-  "article": {
-    "title": "Articles",
-    "comments": "Comments",
-    "backToList": "Back to list",
-    "createDateSort": "date of creation",
-    "titleSort": "names",
-    "viewsSort": "views",
-    "sortBy": "sort by",
-    "orderBy": "by",
-    "decrement": "decrement",
-    "increment": "increment",
-    "recommendations": "Recomendations",
-    "readMore": "Read more...",
-    "newArticleCreation": "New article creation",
-    "editWithId": "Edit with ID =",
-    "createArticle": "Create article",
-    "valueTheArticle": "Rate the article",
-    "leaveYourFeedbackAboutTheArticle": "Leave your feedback about the article",
-    "titleLabel": "Article title",
-    "subtitleLabel": "Subtitle",
-    "imgLabel": "Image URL",
-    "errors": {
-      "noTitle": "Enter an article title",
-      "noSubtitle": "Enter a subtitle",
-      "noImage": "Provide an image URL",
-      "noType": "Choose an article type"
-    }
-  },
-  "button": {
-    "cancel": "Cancel",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "save": "Save"
+    },
+    "article-details": {},
+    "comments": {
+        "notFound": "No comments",
+        "send": "Send",
+        "enterText": "Enter comment text"
+    },
+    "articles": {
+        "allArticles": "All",
+        "it": "IT",
+        "economics": "Economy",
+        "science": "Science"
+    },
+    "sidebar": {
+        "main": "Home",
+        "about": "About",
+        "profile": "Profile",
+        "articles": "Articles"
+    },
+    "search": "Search",
     "edit": "Edit",
-    "save": "Save"
-  },
-  "article-details": {},
-  "comments": {
-    "notFound": "No comments",
-    "send": "Send",
-    "enterText": "Enter comment text"
-  },
-  "articles": {
-    "allArticles": "All",
-    "it": "IT",
-    "economics": "Economy",
-    "science": "Science"
-  },
-  "sidebar": {
-    "main": "Home",
-    "about": "About",
-    "profile": "Profile",
-    "articles": "Articles"
-  },
-  "search": "Search",
-  "edit": "Edit",
-  "IT-NEWS": "It-news",
-  "increment": "Increment",
-  "decrement": "Decrement",
-  "add5": "Add 5"
+    "IT-NEWS": "IT-news",
+    "increment": "Increment",
+    "decrement": "Decrement",
+    "add5": "Add 5"
 }

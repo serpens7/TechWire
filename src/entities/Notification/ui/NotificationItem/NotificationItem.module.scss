@@ -19,6 +19,15 @@
     color: inherit;
 }
 
-.title {
-    font-weight: bold;
+/* Text sizes its heading from the type scale (TextSize.M -> --font-xl, 28px),
+ * which is display-sized for a notification sitting in a dropdown panel.
+ * Scoped through .NotificationItem so the selector reaches (0,2,1) — Text's
+ * own `.size_m .title` is (0,2,0), so a bare `.title h2` would lose. */
+.NotificationItem .title {
+    h1,
+    h2,
+    h3 {
+        font: var(--font-m);
+        font-weight: 600;
+    }
 }

@@ -4,9 +4,31 @@ import { buildCssLoader } from './loaders/buildCssLoader';
 
 export function buildLoaders({ isDev }: BuildOptions): webpack.RuleSetRule[] {
 
+    // svgo (which svgr runs by default) strips `viewBox` via its
+    // `removeViewBox` plugin. Without a viewBox an <svg> cannot be resized:
+    // setting width/height just crops the canvas while the paths keep their
+    // original coordinates, so any icon rendered smaller than its authored
+    // size gets clipped instead of scaled. Keeping the viewBox makes the icons
+    // genuinely scalable.
     const svgLoader = {
         test: /\.svg$/,
-        use: ['@svgr/webpack'],
+        use: [
+            {
+                loader: '@svgr/webpack',
+                options: {
+                    svgoConfig: {
+                        plugins: [
+                            {
+                                name: 'preset-default',
+                                params: {
+                                    overrides: { removeViewBox: false },
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        ],
     }
 
     const jsResolveLoader = {

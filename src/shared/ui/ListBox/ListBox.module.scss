@@ -12,29 +12,38 @@
 }
 
 /* Shrink the inner Button to match the text line-height (24px) instead of the
- * default M-size height (~37.5px), so the trigger lines up with the labels. */
+ * default M-size height (~37.5px), so the trigger lines up with the labels.
+ * The radius is also reduced from Button's 12px: at 24px tall that would be
+ * exactly half the height, turning the trigger into a full pill/stadium that
+ * reads far rounder than every other surface. 6px keeps it a rounded rect. */
 .trigger button {
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     height: var(--font-line-m);
     padding: 0 15px;
+    border-radius: 6px;
 }
 
 /*
  * Rendered in a portal via the `anchor` prop, so positioning is handled by
- * Headless UI. Here we only style the panel itself.
+ * Headless UI. A raised surface, so --card-bg rather than the page
+ * background, and a neutral border rather than the accent. Item text is
+ * primary text: the accent is reserved for emphasis, not every row.
  */
 .options {
+    /* Headless UI focuses this panel when it opens, so the UA draws its
+     * default focus ring around it. Item-level focus is styled below. */
+    outline: none;
     z-index: 1000;
     min-width: 120px;
     padding: 8px 0;
     margin: 0;
     list-style: none;
-    background: var(--bg-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 12px;
-    box-shadow: 4px 4px 12px var(--card-shadow);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-m);
+    box-shadow: 0 8px 24px var(--card-shadow);
 }
 
 .item {
@@ -42,13 +51,16 @@
     gap: 8px;
     align-items: center;
     padding: 8px 16px;
-    color: var(--primary-color);
+    color: var(--text-primary);
     cursor: pointer;
 }
 
+/* Neutral highlight rather than --inverted-primary-color: that token is meant
+ * for content on the dark navbar/sidebar and is near-white, which would be
+ * invisible as a background on the light menu panel. */
 .active {
-    background: var(--inverted-primary-color);
-    color: var(--inverted-bg-color);
+    background: var(--hover-surface);
+    color: var(--text-primary);
 }
 
 .selected {

@@ -1,19 +1,79 @@
 :root {
-    --font-family-main: consolas, "Times New Roman", serif;
-    --font-size-s: 12px;
-    --font-line-s: 20px;
+    /* ---------- Type families ----------
+     * Body copy is proportional: monospace at paragraph length is genuinely
+     * hard to read. Mono is kept as a deliberate accent (logo, code, the
+     * `prompt>` input labels) via --font-family-mono. System stack only —
+     * no webfont request. */
+    --font-family-main:
+        "Inter",
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        roboto,
+        "Helvetica Neue",
+        arial,
+        sans-serif;
+    --font-family-mono:
+        consolas,
+        "SF Mono",
+        "Cascadia Code",
+        "Courier New",
+        monospace;
+
+    /* ---------- Type scale ----------
+     * xs/s captions · m body · l/xl/2xl headings. --font-xl previously did
+     * not exist even though Text's size_l referenced it, so TextSize.L
+     * silently rendered at an unset size. */
+    --font-size-xs: 12px;
+    --font-line-xs: 18px;
+    --font-xs: var(--font-size-xs) / var(--font-line-xs) var(--font-family-main);
+    --font-size-s: 14px;
+    --font-line-s: 22px;
     --font-s: var(--font-size-s) / var(--font-line-s) var(--font-family-main);
     --font-size-m: 16px;
-    --font-line-m: 24px;
+    --font-line-m: 26px;
     --font-m: var(--font-size-m) / var(--font-line-m) var(--font-family-main);
-    --font-size-l: 24px;
-    --font-line-l: 32px;
+    --font-size-l: 20px;
+    --font-line-l: 28px;
     --font-l: var(--font-size-l) / var(--font-line-l) var(--font-family-main);
-    --navbar-height: 50px;
-    --sidebar-width: 300px;
-    --sidebar-width-collapsed: 80px;
+    --font-size-xl: 28px;
+    --font-line-xl: 36px;
+    --font-xl: var(--font-size-xl) / var(--font-line-xl) var(--font-family-main);
+    --font-size-2xl: 36px;
+    --font-line-2xl: 44px;
+    --font-2xl:
+        var(--font-size-2xl) / var(--font-line-2xl)
+        var(--font-family-main);
+
+    /* ---------- Spacing scale ----------
+     * Replaces the ad-hoc 8/10/15/20/30/45px mix. */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-12: 48px;
+
+    /* ---------- Radii ----------
+     * Compact controls (~24px tall) need the smaller value: 12px there is
+     * half the height, i.e. a pill. */
+    --radius-s: 6px;
+    --radius-m: 12px;
+
+    /* ---------- Layout ---------- */
+    --navbar-height: 56px;
+    --sidebar-width: 320px;
+    --sidebar-width-collapsed: 72px;
+
+    /* Gap between the sidebar and the content column. The column's right
+     * margin is --sidebar-width instead, so the filled sidebar panel and the
+     * empty strip opposite it are the same width and frame the content
+     * symmetrically. The column is deliberately uncapped: a max-width would
+     * push the surplus into that right margin and break the symmetry. */
+    --content-gutter: 48px;
     --modal-z-index: 10;
     --overlay-color: rgba(0 0 0 / 60%);
-    --red-light: #f00;
-    --red-dark: #800000;
+    --red-light: #e5484d;
+    --red-dark: #b4242a;
 }

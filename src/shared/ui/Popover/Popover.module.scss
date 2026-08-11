@@ -1,5 +1,11 @@
+// `vertical-align: middle` matters: this is an inline-flex element, and its
+// default `baseline` alignment leaves descender space below it whenever a
+// non-flex ancestor (e.g. react-device-detect's <BrowserView> wrapper div)
+// lays it out via normal inline flow — visually pushing the trigger above
+// center next to taller siblings like the navbar Avatar.
 .Popover {
     display: inline-flex;
+    vertical-align: middle;
 }
 
 .btn {
@@ -12,14 +18,17 @@
 
 /* Rendered in a portal via the `anchor` prop; only the panel is styled here. */
 .panel {
+    /* Headless UI focuses this panel when it opens, so the UA draws its
+     * default focus ring around it. Item-level focus is styled below. */
+    outline: none;
     z-index: 1000;
     width: 320px;
     max-height: 400px;
     overflow-y: auto;
     padding: 12px;
     margin: 0;
-    background: var(--bg-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 12px;
-    box-shadow: 4px 4px 12px var(--card-shadow);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-m);
+    box-shadow: 0 8px 24px var(--card-shadow);
 }

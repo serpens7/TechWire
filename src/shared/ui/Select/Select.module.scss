@@ -6,15 +6,22 @@
     margin-right: 5px;
 }
 
+/* 6px, not the 12px used on cards/buttons: this control is only ~26px tall,
+ * where a 12px radius reads as a pill rather than a rounded rectangle. Matches
+ * the ListBox trigger, the other compact form control. */
 .select {
     background: none;
     outline: none;
     color: var(--primary-color);
     padding: 2px 10px 2px 2px;
     border: 1px solid var(--primary-color);
+    border-radius: 6px;
 }
 
+/* --inverted-bg-color is the dark navbar/sidebar surface, so using it here
+ * painted the option list black on the light theme. Options are a normal
+ * surface: card background with primary text, in both themes. */
 .option {
-    color: var(--inverted-primary-color);
-    background: var(--inverted-bg-color);
+    color: var(--text-primary);
+    background: var(--card-bg);
 }

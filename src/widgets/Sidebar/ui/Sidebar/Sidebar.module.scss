@@ -3,30 +3,39 @@
     width: var(--sidebar-width);
     background: var(--inverted-bg-color);
     position: relative;
+    z-index: 10;
     transition: width 0.3s;
 }
 
 .switchers {
     position: absolute;
-    bottom: 20px;
+    bottom: var(--space-6);
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: var(--space-4);
     width: 100%;
 }
 
 .lang {
-    margin-left: 20px;
+    margin-left: 0;
 }
 
 .collapseBtn {
     position: absolute;
     right: -32px;
     bottom: 32px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.Sidebar:hover .collapseBtn,
+.Sidebar:focus-within .collapseBtn {
+    opacity: 1;
 }
 
 .items {
-    margin-top: 20px;
-    margin-left: 30px;
+    margin-top: var(--space-6);
 }
 
 .item {

@@ -5,6 +5,7 @@ export {
 export type {
     Article,
     ArticleBlock,
+    ArticleCodeBlock,
 } from './model/types/article';
 
 export {

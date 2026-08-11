@@ -1,7 +1,25 @@
+/* Column geometry: the empty strip on the right is exactly as wide as the
+ * sidebar panel on the left, so the two frame the content symmetrically. A
+ * gutter keeps the content from touching the sidebar. Padding (not margin)
+ * means the scrollbar stays on this element's border edge — the page corner. */
 .Page {
     flex-grow: 1;
-    padding: 20px 20px 20px 45px;
+    flex-shrink: 100;
     height: calc(100vh - var(--navbar-height));
     overflow-y: auto;
-    flex-shrink: 100;
+    padding-left: var(--content-gutter);
+    padding-right: var(--sidebar-width);
+}
+
+.content {
+    box-sizing: border-box;
+    padding: var(--space-8) 0 var(--space-12);
+}
+
+/* Below this the mirrored strip costs more than it's worth — the width is
+ * better spent on the content itself. */
+@media (max-width: 1279px) {
+    .Page {
+        padding-right: var(--content-gutter);
+    }
 }

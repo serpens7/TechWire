@@ -20,11 +20,25 @@
         margin-top: 8px;
     }
 
+    // Wraps the title Text in an AppLink — block so it doesn't collapse to
+    // inline width, and never underlined.
+    .titleLink {
+        display: block;
+        text-decoration: none;
+    }
+
+    // `contain` at the image's own aspect ratio rather than `width: 100%` +
+    // `cover`, which blew a 288x288 logo across the whole card and cropped its
+    // middle into an unrecognisable blob. Just a rounded image — no plate
+    // around it.
     .img {
-        width: 100%;
-        max-height: 250px;
-        object-fit: cover;
-        margin: 16px 0;
+        display: block;
+        width: auto;
+        max-width: 100%;
+        max-height: 340px;
+        object-fit: contain;
+        margin: var(--space-4) auto 0;
+        border-radius: var(--radius-m);
     }
 
     .footer {
@@ -33,9 +47,13 @@
         margin-top: 16px;
     }
 
+    /* A hard height cut sliced the preview through the middle of a line,
+     * leaving the tops of letters visible. Fading the last rows out makes the
+     * truncation read as deliberate regardless of where the cut lands. */
     .textBlock {
-        max-height: 200px;
-        overflow-y: hidden;
+        max-height: 160px;
+        overflow: hidden;
+        mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
     }
 }
 
@@ -94,10 +112,17 @@
         margin-top: 8px;
     }
 
+    /* Two lines before ellipsing: a single line cut most titles mid-word.
+     * Line clamping still requires the -webkit-box display value in every
+     * current browser, hence the disable. */
     .title p {
         width: 200px;
-        white-space: nowrap;
+
+        /* stylelint-disable-next-line value-no-vendor-prefix */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
     }
 }

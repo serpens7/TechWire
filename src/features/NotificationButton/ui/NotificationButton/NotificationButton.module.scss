@@ -1,8 +1,15 @@
+// `align-items: center` matters here: react-device-detect's <BrowserView>
+// renders a plain block-level wrapper `<div>` around the Popover trigger, and
+// without it that wrapper stretches (flex default) while its own child stays
+// top-aligned by normal block flow — visually pushing the bell above center
+// next to the taller Avatar in the navbar.
 .NotificationButton {
     display: inline-flex;
+    align-items: center;
 }
 
 .icon {
+    display: block;
     fill: var(--inverted-primary-color);
 }
 

@@ -1,3 +1,18 @@
 .ThemeSwitcher {
+    display: inline-flex;
     align-items: center;
+    padding: 0;
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* The source SVGs carry hard-coded fills on their paths (#FFC700 yellow,
+     * #0115C6 blue), which a `fill` on the <svg> itself cannot override — the
+     * path-level attribute wins. Targeting the paths puts the icon on the same
+     * neutral as the rest of the sidebar. */
+    svg path {
+        fill: var(--inverted-primary-color);
+    }
 }

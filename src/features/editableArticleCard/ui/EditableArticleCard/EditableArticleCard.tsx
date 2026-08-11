@@ -13,8 +13,11 @@ import { ArticleType, ArticleTypeTabs } from '@/entities/Article';
 import { Input } from '@/shared/ui/Input/Input';
 import { Button, ButtonTheme } from '@/shared/ui/Button/Button';
 import { Text, TextTheme } from '@/shared/ui/Text/Text';
+import { AppImage } from '@/shared/ui/AppImage/AppImage';
+import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { VStack } from '@/shared/ui/Stack';
-import { getRouteArticleDetails } from '@/shared/const/router';
+import { getRouteArticleDetails, getRouteArticles } from '@/shared/const/router';
+import cls from './EditableArticleCard.module.scss';
 import {
     articleFormActions,
     articleFormReducer,
@@ -90,6 +93,12 @@ export const EditableArticleCard = ({ className, id }: EditableArticleCardProps)
         dispatch(articleFormActions.updateForm({ type: [type] }));
     };
 
+    // Back to the article being edited, or to the list when creating a new one
+    // (there's nothing to go back to yet in that case).
+    const onCancel = () => {
+        navigate(isEdit && id ? getRouteArticleDetails(id) : getRouteArticles());
+    };
+
     const onSave = async () => {
         const errors = validateArticleData(form);
 
@@ -141,35 +150,65 @@ export const EditableArticleCard = ({ className, id }: EditableArticleCardProps)
                     </div>
                 )}
                 <Input
+                    className={cls.field}
                     value={form?.title}
                     placeholder={t('article.titleLabel')}
                     onChange={onChangeTitle}
                     data-testid='EditableArticleCard.Title'
                 />
                 <Input
+                    className={cls.field}
                     value={form?.subtitle}
                     placeholder={t('article.subtitleLabel')}
                     onChange={onChangeSubtitle}
                     data-testid='EditableArticleCard.Subtitle'
                 />
                 <Input
+                    className={cls.field}
                     value={form?.img}
                     placeholder={t('article.imgLabel')}
                     onChange={onChangeImg}
                     data-testid='EditableArticleCard.Img'
                 />
+                {/* Live preview right under the URL field, so a wrong or dead
+                    link is obvious before saving. */}
+                {form?.img && (
+                    <AppImage
+                        src={form.img}
+                        alt={t('article.imgLabel')}
+                        width={160}
+                        height={160}
+                        className={cls.imgPreview}
+                        fallback={<Skeleton width={160} height={160} />}
+                        errorFallback={
+                            <Text
+                                theme={TextTheme.ERROR}
+                                text={t('article.errors.noImage')}
+                            />
+                        }
+                    />
+                )}
                 <ArticleTypeTabs
                     value={(form?.type?.[0] ?? '') as ArticleType}
                     onChangeType={onChangeType}
                 />
-                <Button
-                    theme={ButtonTheme.OUTLINE}
-                    onClick={onSave}
-                    disabled={isFetching || isCreating || isUpdating}
-                    data-testid='EditableArticleCard.SaveButton'
-                >
-                    {t('button.save')}
-                </Button>
+                <div className={cls.actions}>
+                    <Button
+                        theme={ButtonTheme.OUTLINE}
+                        onClick={onSave}
+                        disabled={isFetching || isCreating || isUpdating}
+                        data-testid='EditableArticleCard.SaveButton'
+                    >
+                        {t('button.save')}
+                    </Button>
+                    <Button
+                        theme={ButtonTheme.CLEAR}
+                        onClick={onCancel}
+                        data-testid='EditableArticleCard.CancelButton'
+                    >
+                        {t('button.cancel')}
+                    </Button>
+                </div>
             </VStack>
         </DynamicModuleLoader>
     );

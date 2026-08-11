@@ -1,5 +1,7 @@
-// The scroller (Virtuoso root) must span the full width so its scrollbar hugs
-// the right edge — padding lives on the content, not on the scroll container.
+// IMPORTANT: no horizontal padding on this wrapper. react-virtuoso renders its
+// own scroller element *inside* it, so padding here shrinks that scroller and
+// drags its scrollbar into the middle of the page instead of leaving it at the
+// page corner. The column geometry therefore lives on the content slots below.
 .wrapper {
     box-sizing: border-box;
     flex-grow: 1;
@@ -8,28 +10,45 @@
     height: calc(100vh - var(--navbar-height));
 }
 
-.header {
-    padding: 20px 20px 0 45px;
-}
-
-.itemsWrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    padding: 20px 20px 20px 45px;
-}
-
+// Column geometry: the empty strip on the right is exactly as wide as the
+// sidebar panel on the left, so the two frame the content symmetrically, with
+// a gutter keeping it off the sidebar. No max-width — capping the column would
+// push the surplus into the right margin and break that equality on wide
+// screens.
+.header,
+.itemsWrapper,
+.skeletonsGrid,
 .bigCard {
-    margin: 0 20px 30px 45px;
+    box-sizing: border-box;
+    margin-left: var(--content-gutter);
+    margin-right: var(--sidebar-width);
 }
 
+.header {
+    padding-top: var(--space-8);
+}
+
+.itemsWrapper,
 .skeletonsGrid {
     display: flex;
     flex-wrap: wrap;
-    gap: 30px;
-    padding: 20px 20px 20px 45px;
+    gap: var(--space-6);
+    padding-block: var(--space-6);
+}
+
+.bigCard {
+    margin-bottom: var(--space-6);
 }
 
 .skeletonsList {
-    padding-top: 20px;
+    padding-top: var(--space-6);
+}
+
+@media (max-width: 1279px) {
+    .header,
+    .itemsWrapper,
+    .skeletonsGrid,
+    .bigCard {
+        margin-right: var(--content-gutter);
+    }
 }
