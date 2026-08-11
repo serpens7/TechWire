@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+
+# Переменные окружения — вне контроля версий (шаблон в .env.example)
+.env
+
+# Сгенерированный Prisma-клиент
+/generated/

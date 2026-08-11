@@ -1,0 +1,154 @@
+// Схема БД для production-project.
+//
+// Источник данных — json-server/db.json (см. prisma/seed.ts). Идентификаторы
+// существующих записей ("1".."36") сохраняются один в один: на них завязаны
+// e2e-тесты и моки сторисов. Для новых записей — cuid().
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "cjs"
+}
+
+// В Prisma 7 строка подключения больше не живёт в схеме: для CLI/миграций
+// она берётся из prisma.config.ts, а клиент в рантайме получает её через
+// driver adapter (@prisma/adapter-pg) — см. prisma/seed.ts и src/prisma.
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+}
+
+enum ArticleType {
+  IT
+  SCIENCE
+  ECONOMICS
+}
+
+enum Currency {
+  RUB
+  EUR
+  USD
+}
+
+enum Country {
+  Russia
+  Belarus
+  Ukraine
+  // Опечатка унаследована от фронта: в enum Country значение
+  // Kazakhstan описано как 'Kazahstan'. Значение важнее ключа —
+  // именно оно ходит по API.
+  Kazahstan
+  Armenia
+}
+
+model User {
+  id       String     @id @default(cuid())
+  username String     @unique
+  /// bcrypt-хэш, никогда не отдаётся наружу
+  password String
+  avatar   String?
+  roles    UserRole[]
+
+  profile       Profile?
+  articles      Article[]
+  comments      Comment[]
+  notifications Notification[]
+  ratings       Rating[]
+
+  @@map("users")
+}
+
+model Profile {
+  id       String    @id @default(cuid())
+  first    String?
+  lastname String?
+  age      Int?
+  currency Currency?
+  country  Country?
+  city     String?
+
+  // username и avatar сознательно НЕ дублируются здесь (в db.json они
+  // лежали и в users, и в profile) — в ответе API берутся из связанного User.
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Article {
+  id       String        @id @default(cuid())
+  title    String
+  subtitle String
+  img      String
+  views    Int           @default(0)
+  /// В db.json хранилась строка "DD.MM.YYYY", из-за чего сортировка по дате
+  /// была лексической и работала неверно. Здесь — настоящая дата; обратно в
+  /// "DD.MM.YYYY" сериализует слой представления.
+  createdAt DateTime
+  type      ArticleType[]
+  /// Полиморфные блоки (TEXT | CODE | IMAGE) с разным набором полей.
+  /// Хранятся как JSON: нормализовать мешает в том числе то, что id блоков
+  /// не уникальны глобально (136 уникальных на 137 блоков).
+  blocks    Json
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  comments Comment[]
+  ratings  Rating[]
+
+  @@index([createdAt])
+  @@index([views])
+  @@index([title])
+  @@map("articles")
+}
+
+model Comment {
+  id   String @id @default(cuid())
+  text String
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+  @@map("comments")
+}
+
+model Notification {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  href        String?
+  isViewed    Boolean @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+model Rating {
+  id       String  @id @default(cuid())
+  rate     Int
+  feedback String?
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Одна оценка на пару пользователь+статья.
+  @@unique([userId, articleId])
+  @@map("ratings")
+}
