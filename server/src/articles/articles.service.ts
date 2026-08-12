@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { publicUserSelect, serializeArticle } from '../common/serialization/serializers';
+import {
+    parseRuDate,
+    publicUserSelect,
+    serializeArticle,
+} from '../common/serialization/serializers';
+import type { ArticleBody } from './dto/article-body.dto';
 import type { FindArticleParams, FindArticlesQuery } from './dto/find-articles.query';
 
 const DEFAULT_LIMIT = 12;
@@ -67,5 +72,47 @@ export class ArticlesService {
         }
 
         return serializeArticle(article, { expandUser });
+    }
+
+    async create(body: ArticleBody, authorId: string) {
+        const article = await this.prisma.article.create({
+            data: {
+                ...this.toWriteData(body),
+                // Автор — тот, кто авторизован. userId из тела игнорируется:
+                // иначе можно было бы опубликовать статью от чужого имени.
+                userId: authorId,
+            },
+        });
+
+        return serializeArticle(article);
+    }
+
+    async update(id: string, body: ArticleBody) {
+        const existing = await this.prisma.article.findUnique({ where: { id } });
+
+        if (!existing) {
+            throw new NotFoundException(`Статья ${id} не найдена`);
+        }
+
+        const article = await this.prisma.article.update({
+            where: { id },
+            // Автора при правке не меняем — статья остаётся за тем, кто её создал.
+            data: this.toWriteData(body),
+        });
+
+        return serializeArticle(article);
+    }
+
+    /** Общая часть create/update: приведение тела запроса к колонкам таблицы. */
+    private toWriteData(body: ArticleBody) {
+        return {
+            title: body.title,
+            subtitle: body.subtitle,
+            img: body.img,
+            type: body.type,
+            blocks: body.blocks,
+            views: body.views ?? 0,
+            createdAt: body.createdAt ? parseRuDate(body.createdAt) : new Date(),
+        };
     }
 }

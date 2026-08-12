@@ -14,6 +14,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
     testDir: './e2e',
+    // Возвращает БД к состоянию из db.json перед прогоном: тесты теперь пишут
+    // по-настоящему, а тест оценки требует, чтобы статья ещё не была оценена.
+    globalSetup: './e2e/globalSetup.ts',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,

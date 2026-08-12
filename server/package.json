@@ -23,7 +23,8 @@
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset",
     "type:check": "tsc --noEmit",
-    "db:verify": "tsx prisma/verify.ts"
+    "db:verify": "tsx prisma/verify.ts",
+    "db:seed:fresh": "tsx prisma/seed.ts --fresh"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

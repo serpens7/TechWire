@@ -5,8 +5,16 @@ Guidance for working in this repo. Read this first, then dive into code.
 ## What this is
 
 A production-style React SPA (based on the Ulbi TV "production project") built with
-**Feature-Sliced Design (FSD)**. Backend is a local **json-server** (`json-server/db.json`).
-Absolute imports use the `@/` alias → `src/` (webpack + tsconfig `paths`).
+**Feature-Sliced Design (FSD)**. Absolute imports use the `@/` alias → `src/`
+(webpack + tsconfig `paths`).
+
+**Backend is a real app in `server/`** — NestJS 11 (Fastify) + Prisma 7 + PostgreSQL 17,
+replacing the original json-server. It's a **separate npm package** with its own
+`package.json` / `tsconfig` / `node_modules`: Nest needs CommonJS + decorators +
+`emitDecoratorMetadata`, which the frontend tsconfig (`jsx`, `moduleResolution: bundler`)
+can't provide. Consequently the root `tsconfig.json` and `.eslintignore` **exclude
+`server/`** — it has its own `type:check` and `lint`. See `server/README.md`.
+`json-server/db.json` survives only as the **seed fixture** (`server/prisma/seed.ts`).
 
 ## Tech stack (current, verified)
 
@@ -42,7 +50,11 @@ Absolute imports use the `@/` alias → `src/` (webpack + tsconfig `paths`).
 - `npm run e2e:report` — open last HTML report
 - `npm run build:prod` — production webpack build
 - `npm run storybook` / `build-storybook`
-- `npm run start:dev` — dev server + json-server (concurrently)
+- `npm run start:dev` — dev server (`:3000`) + backend (`:8000`), via concurrently.
+  Postgres must be running first: `Start-Service postgresql-x64-17` (admin console;
+  the service is set to `Manual`).
+- Backend-side: `npm --prefix server run db:migrate` / `db:seed` / `db:seed:fresh`
+  (wipe + reseed) / `db:verify` (check DB against `db.json`) / `type:check`
 
 **Before finishing any change, run the CI chain and keep it green** (this is exactly
 what `.github/workflows/main.yml` runs, on **node 24.x**):
@@ -141,8 +153,15 @@ Current slices:
 
 - **`UserRole`** enum lives in `shared/const/rbac.ts` and is re-exported from
   `entities/User` (kept in `shared` so `shared/const/router` can reference it without a
-  forbidden `shared → entities` import). `User.roles?: UserRole[]` comes straight from
-  `/login` (json-server `users` carry a `roles` array).
+  forbidden `shared → entities` import). `User.roles?: UserRole[]` comes from the
+  `/login` response (`{ user, token }`); roles also travel **inside the JWT**, which is
+  what the backend's `RolesGuard` actually checks.
+- **Auth is real JWT.** `/login` verifies the password with bcrypt and signs a token
+  (`shared/api/api.ts` sends `Authorization: Bearer <token>`; on 401 it clears storage).
+  `localStorage` holds the token (`TOKEN_LOCALSTORAGE_KEY`) plus a **cosmetic** cached
+  user for instant paint — `initAuthData` requires both. Nothing is trusted client-side:
+  the backend closes every route by default (global `JwtAuthGuard`; `@Public()` opts out
+  — only `/login` and `/health`). `RequireAuth` on the frontend is UX only.
 - **Route gating**: `AppRouteProps` has an optional `roles?: UserRole[]`; `RequireAuth`
   (`app/providers/router/ui/RequireAuth`) checks auth **and** role intersection — a
   role mismatch redirects to **`ForbiddenPage`** (`/forbidden`), missing auth redirects to
@@ -208,7 +227,11 @@ Current slices:
   `getByPlaceholder` does NOT). `Modal` exposes `role="dialog"` + `aria-modal` on its
   content, so `getByRole('dialog')` works. E2E uses these semantic selectors.
 - **Playwright boots its own server:** `playwright.config.ts` runs `npm run start:dev`
-  (app `:3000` + json-server `:8000`) and waits on `:3000` — don't start it manually.
+  (app `:3000` + backend `:8000`) — don't start it manually. There are **two `webServer`
+  entries**: the first launches the stack and waits on `:3000`, the second waits on
+  `:8000/health` (Playwright allows one URL per entry, and the suite must not start
+  before Nest has connected to Postgres). `globalSetup` (`e2e/globalSetup.ts`) reseeds
+  the DB from `db.json` before every run — **it wipes anything you created by hand.**
   Browser download is a one-time `npx playwright install chromium` (pinned Chromium, not
   your system Chrome). `e2e/` and `playwright.config.ts` are **excluded from `tsc`**
   (root tsconfig loads only jest types) — Playwright type-checks specs itself at run time.
@@ -224,10 +247,14 @@ Current slices:
 - **E2E is NOT in the CI chain** (`main.yml`) yet — it's a separate `npm run e2e`. The
   green-before-done chain below stays jest-only. Coverage so far: `e2e/auth.spec.ts`
   (login, token persistence, RBAC redirect) and `e2e/article.spec.ts` (posting a comment,
-  rating an article, creating an article — including validation). The comment/rating/
-  article-creation **writes** are stubbed via `page.route` (see `e2e/article.spec.ts`)
-  so the suite never mutates the committed `json-server/db.json` fixture; reads still hit
-  the real backend. Shared login/creds live in `e2e/helpers.ts`.
+  rating an article, creating an article — including validation). **Writes are no longer
+  stubbed**: with a real database there is nothing to protect, so the tests assert actual
+  persistence (a comment survives a reload; a rating flips the card permanently). The old
+  `page.route` stubs only proved the frontend *sent* the right request. Repeatability now
+  comes from `globalSetup` reseeding instead.
+  Watch out for seeded state when writing new specs: article ids are **not contiguous**
+  (1, 3, 18…51), and admin already rates articles 1, 28 and 29 — the rating spec uses
+  article 34 for that reason. Shared login/creds live in `e2e/helpers.ts`.
 - **`lint:fsd` (steiger) has a known nondeterministic false-positive**: an import that's
   correctly downgraded to a warning by a `steiger.config.ts` override (e.g. the
   `model/**` or `shared/lib/tests/**` glob) can occasionally get reported as a hard

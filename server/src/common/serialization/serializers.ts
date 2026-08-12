@@ -34,6 +34,25 @@ export function formatRuDate(date: Date): string {
     return `${day}.${month}.${date.getUTCFullYear()}`;
 }
 
+/**
+ * Обратное преобразование: фронт присылает дату строкой "DD.MM.YYYY"
+ * (new Date().toLocaleDateString('ru-RU') при создании статьи).
+ *
+ * Полдень UTC — чтобы сдвиг часового пояса не перекидывал дату на соседний
+ * день при обратной сериализации.
+ */
+export function parseRuDate(value: string): Date {
+    const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value);
+
+    if (!match) {
+        throw new Error(`Неожиданный формат даты: "${value}" (ожидался DD.MM.YYYY)`);
+    }
+
+    const [, day, month, year] = match;
+
+    return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 12));
+}
+
 export function serializeUser(user: PublicUser) {
     return {
         id: user.id,

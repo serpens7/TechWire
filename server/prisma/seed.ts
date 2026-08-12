@@ -3,7 +3,7 @@
  *
  * Свойства, на которые опирается всё остальное:
  *  - идемпотентность: всё через upsert по id, повторный прогон не плодит дублей;
- *  - идентификаторы сохраняются как есть ("1".."36") — на них завязаны
+ *  - идентификаторы сохраняются как есть (1, 3, 18…51 — они не сплошные) — на них завязаны
  *    e2e-тесты (/articles/1) и моки сторисов;
  *  - пары логин/пароль не меняются (admin/123, user2/321), меняется только
  *    способ хранения: bcrypt вместо открытого текста.
@@ -110,7 +110,32 @@ function parseRuDate(value: string): Date {
     return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 12));
 }
 
+/**
+ * Полная очистка перед засевом (флаг --fresh).
+ *
+ * Нужна e2e: тест оценки статьи требует состояния «пользователь ещё не
+ * оценивал», а прогон его создаёт. Чистим DELETE-ами, а не `migrate reset`:
+ * тот дропает базу целиком и спотыкается, если к ней кто-то подключён —
+ * например уже запущенный бэкенд.
+ *
+ * Порядок — от зависимых к независимым, хотя onDelete: Cascade и сам бы
+ * справился.
+ */
+async function wipe(): Promise<void> {
+    await prisma.rating.deleteMany();
+    await prisma.comment.deleteMany();
+    await prisma.notification.deleteMany();
+    await prisma.article.deleteMany();
+    await prisma.profile.deleteMany();
+    await prisma.user.deleteMany();
+}
+
 async function main() {
+    if (process.argv.includes('--fresh')) {
+        await wipe();
+        console.log('База очищена перед засевом (--fresh)');
+    }
+
     const db = JSON.parse(readFileSync(DB_JSON, 'utf-8')) as RawDb;
 
     // --- users -------------------------------------------------------------

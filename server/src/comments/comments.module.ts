@@ -1,9 +1,22 @@
-import { Controller, Get, Injectable, Module, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Injectable,
+    Module,
+    NotFoundException,
+    Post,
+    Query,
+} from '@nestjs/common';
 import { z } from 'zod';
 import { PrismaService } from '../prisma/prisma.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { optionalString } from '../common/validation/query';
 import { publicUserSelect, serializeComment } from '../common/serialization/serializers';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/auth.types';
 
 const findCommentsQuerySchema = z.object({
     articleId: optionalString,
@@ -11,6 +24,16 @@ const findCommentsQuerySchema = z.object({
 });
 
 type FindCommentsQuery = z.infer<typeof findCommentsQuerySchema>;
+
+const createCommentSchema = z.object({
+    articleId: z.string().min(1, 'Не указана статья'),
+    text: z.string().trim().min(1, 'Комментарий не может быть пустым'),
+    // Фронт присылает userId, но автором становится владелец токена —
+    // иначе можно было бы оставить комментарий от чужого имени.
+    userId: z.string().optional(),
+});
+
+type CreateCommentDto = z.infer<typeof createCommentSchema>;
 
 @Injectable()
 export class CommentsService {
@@ -26,6 +49,24 @@ export class CommentsService {
 
         return comments.map((comment) => serializeComment(comment, { expandUser }));
     }
+
+    async create(dto: CreateCommentDto, authorId: string) {
+        const article = await this.prisma.article.findUnique({
+            where: { id: dto.articleId },
+            select: { id: true },
+        });
+
+        if (!article) {
+            throw new NotFoundException(`Статья ${dto.articleId} не найдена`);
+        }
+
+        const comment = await this.prisma.comment.create({
+            data: { text: dto.text, articleId: dto.articleId, userId: authorId },
+            include: { user: { select: publicUserSelect } },
+        });
+
+        return serializeComment(comment, { expandUser: true });
+    }
 }
 
 @Controller('comments')
@@ -35,6 +76,15 @@ export class CommentsController {
     @Get()
     findMany(@Query(new ZodValidationPipe(findCommentsQuerySchema)) query: FindCommentsQuery) {
         return this.comments.findMany(query);
+    }
+
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    create(
+        @Body(new ZodValidationPipe(createCommentSchema)) dto: CreateCommentDto,
+        @CurrentUser() user: AuthenticatedUser,
+    ) {
+        return this.comments.create(dto, user.id);
     }
 }
 

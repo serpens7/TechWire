@@ -20,7 +20,8 @@ export class AuthService {
         // иначе эндпоинт превращается в способ узнать, какие логины заняты.
         // bcrypt.compare гоняем и при отсутствии пользователя — так время
         // ответа не выдаёт, существует логин или нет.
-        const hash = user?.password ?? '$2b$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidin';
+        const hash =
+            user?.password ?? '$2b$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidin';
         const passwordMatches = await bcrypt.compare(password, hash);
 
         if (!user || !passwordMatches) {
