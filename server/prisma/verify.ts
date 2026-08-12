@@ -38,47 +38,102 @@ async function main(): Promise<void> {
         ratings: await prisma.rating.count(),
     };
     check('users', counts.users === raw.users.length, `${counts.users} из ${raw.users.length}`);
-    check('profiles', counts.profiles === raw.profile.length, `${counts.profiles} из ${raw.profile.length}`);
-    check('articles', counts.articles === raw.articles.length, `${counts.articles} из ${raw.articles.length}`);
-    check('comments', counts.comments === raw.comments.length, `${counts.comments} из ${raw.comments.length}`);
-    check('notifications', counts.notifications === raw.notifications.length, `${counts.notifications} из ${raw.notifications.length}`);
-    check('ratings', counts.ratings === raw['article-ratings'].length, `${counts.ratings} из ${raw['article-ratings'].length}`);
+    check(
+        'profiles',
+        counts.profiles === raw.profile.length,
+        `${counts.profiles} из ${raw.profile.length}`,
+    );
+    check(
+        'articles',
+        counts.articles === raw.articles.length,
+        `${counts.articles} из ${raw.articles.length}`,
+    );
+    check(
+        'comments',
+        counts.comments === raw.comments.length,
+        `${counts.comments} из ${raw.comments.length}`,
+    );
+    check(
+        'notifications',
+        counts.notifications === raw.notifications.length,
+        `${counts.notifications} из ${raw.notifications.length}`,
+    );
+    check(
+        'ratings',
+        counts.ratings === raw['article-ratings'].length,
+        `${counts.ratings} из ${raw['article-ratings'].length}`,
+    );
 
     const articles = await prisma.article.findMany({ include: { user: true } });
     const blocks = articles.reduce((n, a) => n + (a.blocks as unknown[]).length, 0);
-    const rawBlocks = (raw.articles as { blocks: unknown[] }[]).reduce((n, a) => n + a.blocks.length, 0);
+    const rawBlocks = (raw.articles as { blocks: unknown[] }[]).reduce(
+        (n, a) => n + a.blocks.length,
+        0,
+    );
     check('блоки внутри статей', blocks === rawBlocks, `${blocks} из ${rawBlocks}`);
 
     console.log('\n--- идентификаторы ---');
     const numericIds = articles.filter((a) => /^\d+$/.test(a.id)).length;
-    check('id статей сохранены как в db.json', numericIds === articles.length, `${numericIds} числовых`);
+    check(
+        'id статей сохранены как в db.json',
+        numericIds === articles.length,
+        `${numericIds} числовых`,
+    );
     const a1 = await prisma.article.findUnique({ where: { id: '1' }, include: { user: true } });
     check('статья id=1 доступна (на неё ходят e2e)', a1 !== null, a1 ? `"${a1.title}"` : '');
 
     console.log('\n--- даты ---');
     if (a1) {
-        const rawA1 = (raw.articles as { id: string; createdAt: string }[]).find((a) => a.id === '1');
+        const rawA1 = (raw.articles as { id: string; createdAt: string }[]).find(
+            (a) => a.id === '1',
+        );
         const iso = a1.createdAt.toISOString().slice(0, 10);
         const [d, m, y] = (rawA1?.createdAt ?? '').split('.');
         check('createdAt разобран верно', iso === `${y}-${m}-${d}`, `${rawA1?.createdAt} → ${iso}`);
     }
-    const byDate = await prisma.article.findMany({ orderBy: { createdAt: 'asc' }, select: { createdAt: true } });
+    const byDate = await prisma.article.findMany({
+        orderBy: { createdAt: 'asc' },
+        select: { createdAt: true },
+    });
     const years = byDate.map((a) => a.createdAt.getUTCFullYear());
     const sorted = years.every((y, i) => i === 0 || years[i - 1] <= y);
-    check('сортировка по дате настоящая, а не лексическая', sorted, `${years[0]} … ${years[years.length - 1]}`);
+    check(
+        'сортировка по дате настоящая, а не лексическая',
+        sorted,
+        `${years[0]} … ${years[years.length - 1]}`,
+    );
 
     console.log('\n--- целостность связей ---');
     const comments = await prisma.comment.findMany({ include: { article: true, user: true } });
     const notifications = await prisma.notification.findMany({ include: { user: true } });
     const ratings = await prisma.rating.findMany({ include: { article: true, user: true } });
-    check('у всех статей есть автор', articles.every((a) => a.user !== null));
-    check('у всех комментариев есть статья и автор', comments.every((c) => c.article && c.user));
-    check('у всех уведомлений есть пользователь', notifications.every((n) => n.user));
-    check('у всех рейтингов есть статья и пользователь', ratings.every((r) => r.article && r.user));
+    check(
+        'у всех статей есть автор',
+        articles.every((a) => a.user !== null),
+    );
+    check(
+        'у всех комментариев есть статья и автор',
+        comments.every((c) => c.article && c.user),
+    );
+    check(
+        'у всех уведомлений есть пользователь',
+        notifications.every((n) => n.user),
+    );
+    check(
+        'у всех рейтингов есть статья и пользователь',
+        ratings.every((r) => r.article && r.user),
+    );
 
     console.log('\n--- профиль ---');
-    const profile = await prisma.profile.findUnique({ where: { id: '1' }, include: { user: true } });
-    check('профиль связан с пользователем', profile?.user.username === 'admin', profile?.user.username);
+    const profile = await prisma.profile.findUnique({
+        where: { id: '1' },
+        include: { user: true },
+    });
+    check(
+        'профиль связан с пользователем',
+        profile?.user.username === 'admin',
+        profile?.user.username,
+    );
     check('username/avatar не дублируются в profiles', !('username' in (profile ?? {})));
 
     console.log('\n--- пароли ---');
@@ -92,7 +147,10 @@ async function main(): Promise<void> {
         check(`${rawUser.username}: хранится bcrypt-хэшем`, user!.password.startsWith('$2'));
     }
     const admin = await prisma.user.findUnique({ where: { username: 'admin' } });
-    check('неверный пароль отвергается', !(await bcrypt.compare('заведомо-неверный', admin!.password)));
+    check(
+        'неверный пароль отвергается',
+        !(await bcrypt.compare('заведомо-неверный', admin!.password)),
+    );
     check('роли admin перенесены', admin!.roles.includes('ADMIN'), JSON.stringify(admin!.roles));
 
     console.log(`\n${failed === 0 ? 'ВСЕ ПРОВЕРКИ ПРОЙДЕНЫ' : `ПРОВАЛОВ: ${failed}`}\n`);

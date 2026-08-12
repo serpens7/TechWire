@@ -4,10 +4,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
-    const app = await NestFactory.create<NestFastifyApplication>(
-        AppModule,
-        new FastifyAdapter(),
-    );
+    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
     const config = app.get(ConfigService);
     const port = Number(config.get('PORT') ?? 8000);
