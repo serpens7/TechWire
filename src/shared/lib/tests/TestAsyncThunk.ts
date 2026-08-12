@@ -12,6 +12,32 @@ jest.mock('axios');
 
 const mockedAxios = jest.mocked(axios);
 
+// Автомок отдаёт из axios.create() undefined, а модуль shared/api/api.ts на
+// импорте делает `axios.create(...).interceptors.request.use(...)`. Пока
+// цепочка импортов теста до него не доходила, это не всплывало; стоило
+// добавить RTK Query-эндпоинт в публичный API entities/Article — и сьюты
+// начали падать на ровном месте с «Cannot read properties of undefined».
+//
+// Заглушка возвращает объект нужной формы: перехватчики регистрируются
+// вхолостую, а запросы всё равно идут через this.api из этого хелпера.
+const createInterceptorStub = () => ({
+    use: jest.fn(),
+    eject: jest.fn(),
+    clear: jest.fn(),
+});
+
+mockedAxios.create.mockReturnValue({
+    interceptors: {
+        request: createInterceptorStub(),
+        response: createInterceptorStub(),
+    },
+    request: jest.fn(),
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+} as never);
+
 export class TestAsyncThunk<Arg> {
     dispatch: jest.MockedFn<any>;
 

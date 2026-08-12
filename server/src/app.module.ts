@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { ArticlesModule } from './articles/articles.module';
+import { HighlightsModule } from './highlights/highlights.module';
 import { CommentsModule } from './comments/comments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ProfileModule } from './profile/profile.module';
@@ -19,6 +20,7 @@ import { RatingsModule } from './ratings/ratings.module';
         PrismaModule,
         AuthModule,
         ArticlesModule,
+        HighlightsModule,
         CommentsModule,
         NotificationsModule,
         ProfileModule,

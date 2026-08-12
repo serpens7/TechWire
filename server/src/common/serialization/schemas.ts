@@ -97,6 +97,39 @@ export const loginResponseSchema = z.object({
     token: z.string(),
 });
 
+/**
+ * Тизеры для главной — единственные данные о статьях, доступные без входа.
+ *
+ * Сознательно урезаны: у статьи дня нет `blocks`, у сниппета — только один
+ * блок кода и минимум о статье. Прочитать статью по этим данным нельзя,
+ * поэтому «войдите, чтобы читать» — настоящее ограничение, а не украшение
+ * интерфейса.
+ */
+const articleTeaserSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    subtitle: z.string(),
+    img: z.string(),
+    views: z.number().int(),
+    createdAt: z.string().regex(/^\d{2}\.\d{2}\.\d{4}$/),
+    type: z.array(z.enum(['IT', 'SCIENCE', 'ECONOMICS'])),
+    user: userSchema,
+});
+
+const snippetTeaserSchema = z.object({
+    code: z.string(),
+    article: z.object({
+        id: z.string(),
+        title: z.string(),
+        user: userSchema,
+    }),
+});
+
+export const highlightsSchema = z.object({
+    articleOfTheDay: articleTeaserSchema.nullable(),
+    snippetOfTheDay: snippetTeaserSchema.nullable(),
+});
+
 export const healthSchema = z.object({
     status: z.string(),
     db: z.string(),
@@ -113,6 +146,9 @@ export type ProfileResponse = z.infer<typeof profileSchema>;
 export type NotificationResponse = z.infer<typeof notificationSchema>;
 export type RatingResponse = z.infer<typeof ratingSchema>;
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
+export type ArticleTeaser = z.infer<typeof articleTeaserSchema>;
+export type SnippetTeaser = z.infer<typeof snippetTeaserSchema>;
+export type Highlights = z.infer<typeof highlightsSchema>;
 
 // --- DTO для Swagger -------------------------------------------------------
 // Имена классов становятся именами схем в OpenAPI, а затем — ключами в
@@ -128,3 +164,4 @@ export class NotificationDto extends createZodDto(notificationSchema) {}
 export class RatingDto extends createZodDto(ratingSchema) {}
 export class LoginResponseDto extends createZodDto(loginResponseSchema) {}
 export class HealthDto extends createZodDto(healthSchema) {}
+export class HighlightsDto extends createZodDto(highlightsSchema) {}

@@ -1,10 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import cls from './Navbar.module.scss';
 import { classNames } from '@/shared/lib/classNames/classNames';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { Button, ButtonTheme } from '@/shared/ui/Button/Button';
 import { LoginModal } from '@/features/AuthByUserName';
-import { getUserAuthData, isUserAdmin, userActions } from '@/entities/User';
+import {
+    getIsLoginModalOpen,
+    getUserAuthData,
+    isUserAdmin,
+    userActions,
+} from '@/entities/User';
 import { useDispatch, useSelector } from 'react-redux';
 import { Text, TextTheme } from '@/shared/ui/Text/Text';
 import { getRouteArticleCreate, getRouteMain, getRouteProfile } from '@/shared/const/router';
@@ -20,18 +25,21 @@ interface NavbarProps {
 
 export const Navbar = memo(({ className = '' }: NavbarProps) => {
     const { t } = useTranslation();
-    const [isAuthModal, setIsAuthModal] = useState(false);
     const authData = useSelector(getUserAuthData);
     const isAdmin = useSelector(isUserAdmin);
+    // Состояние модалки живёт в сторе, а не здесь: открыть её просят и другие
+    // места приложения — например главная, когда незалогиненный посетитель
+    // пытается открыть статью.
+    const isAuthModal = useSelector(getIsLoginModalOpen);
     const dispatch = useDispatch();
 
     const onCloseModal = useCallback(() => {
-        setIsAuthModal(false);
-    }, []);
+        dispatch(userActions.closeLoginModal());
+    }, [dispatch]);
 
     const onShowModal = useCallback(() => {
-        setIsAuthModal(true);
-    }, []);
+        dispatch(userActions.openLoginModal());
+    }, [dispatch]);
 
     const onLogout = useCallback(() => {
         dispatch(userActions.logout());

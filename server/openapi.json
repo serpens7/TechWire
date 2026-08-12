@@ -216,6 +216,29 @@
         ]
       }
     },
+    "/highlights": {
+      "get": {
+        "description": "Публичный маршрут. Отдаёт статью дня без содержимого и сниппет дня — по этим данным статью не прочитать.",
+        "operationId": "HighlightsController_find",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HighlightsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Тизеры для главной",
+        "tags": [
+          "highlights"
+        ]
+      }
+    },
     "/comments": {
       "get": {
         "operationId": "CommentsController_findMany",
@@ -1004,6 +1027,152 @@
           "userId",
           "type",
           "blocks"
+        ]
+      },
+      "HighlightsDto": {
+        "type": "object",
+        "properties": {
+          "articleOfTheDay": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "subtitle": {
+                "type": "string"
+              },
+              "img": {
+                "type": "string"
+              },
+              "views": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "createdAt": {
+                "type": "string",
+                "pattern": "^\\d{2}\\.\\d{2}\\.\\d{4}$"
+              },
+              "type": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "IT",
+                    "SCIENCE",
+                    "ECONOMICS"
+                  ]
+                }
+              },
+              "user": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "avatar": {
+                    "type": "string"
+                  },
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "ADMIN",
+                        "MANAGER",
+                        "USER"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "id",
+                  "username",
+                  "roles"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "subtitle",
+              "img",
+              "views",
+              "createdAt",
+              "type",
+              "user"
+            ],
+            "nullable": true
+          },
+          "snippetOfTheDay": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "article": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "avatar": {
+                        "type": "string"
+                      },
+                      "roles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "ADMIN",
+                            "MANAGER",
+                            "USER"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "username",
+                      "roles"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "title",
+                  "user"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "article"
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "articleOfTheDay",
+          "snippetOfTheDay"
         ]
       },
       "CommentWithUserDto": {

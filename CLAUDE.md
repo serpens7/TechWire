@@ -170,6 +170,15 @@ Current slices:
   forbidden `shared → entities` import). `User.roles?: UserRole[]` comes from the
   `/login` response (`{ user, token }`); roles also travel **inside the JWT**, which is
   what the backend's `RolesGuard` actually checks.
+- **The main page is public.** `GET /highlights` is the one `@Public()` article route:
+  it returns the article-of-the-day **without `blocks`** plus the snippet of the day, so
+  a guest sees teasers but cannot read anything. Clicking through to an article opens
+  `AuthRequiredModal` (`shared/ui`) instead of navigating — driven by `useAuthGate`
+  (`entities/User`), which lives there because both main-page features need it and
+  feature→feature imports are forbidden. The login modal's open state moved from
+  Navbar's local state into `userSlice` for the same reason.
+  Watch out in E2E: the main page now renders the article **author's** name, so a
+  page-wide `getByText('admin')` matches twice — scope to `getByRole('banner')`.
 - **Auth is real JWT.** `/login` verifies the password with bcrypt and signs a token
   (`shared/api/api.ts` sends `Authorization: Bearer <token>`; on 401 it clears storage).
   `localStorage` holds the token (`TOKEN_LOCALSTORAGE_KEY`) plus a **cosmetic** cached

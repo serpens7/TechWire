@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Text } from '@/shared/ui/Text/Text';
@@ -7,9 +7,10 @@ import { Avatar } from '@/shared/ui/Avatar/Avatar';
 import { AppLink } from '@/shared/ui/AppLink/AppLink';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { HStack } from '@/shared/ui/Stack';
+import { AuthRequiredModal } from '@/shared/ui/AuthRequiredModal/AuthRequiredModal';
 import { getRouteArticleDetails } from '@/shared/const/router';
-import { useSnippetCandidates } from '../../api/snippetOfTheDayApi';
-import { pickSnippetOfTheDay } from '../../model/lib/pickSnippetOfTheDay';
+import { useHighlights } from '@/entities/Article';
+import { useAuthGate } from '@/entities/User';
 import cls from './SnippetOfTheDay.module.scss';
 
 interface SnippetOfTheDayProps {
@@ -44,11 +45,13 @@ const SnippetOfTheDaySkeleton = () => (
 export const SnippetOfTheDay = memo((props: SnippetOfTheDayProps) => {
     const { className = '' } = props;
     const { t } = useTranslation();
-    const { data: articles, isLoading, error } = useSnippetCandidates();
-
-    // Picked client-side (not in transformResponse) so the day-based rotation
-    // stays live instead of freezing inside the RTK Query cache.
-    const snippet = useMemo(() => pickSnippetOfTheDay(articles), [articles]);
+    const { data, isLoading, error } = useHighlights();
+    // Выбор сниппета делает сервер. Раньше клиент забирал два десятка статей
+    // целиком и выбирал сам, но после закрытия каталога такой запрос
+    // незалогиненному недоступен — и отдавать статьи ради одного блока кода
+    // всё равно было расточительно.
+    const snippet = data?.snippetOfTheDay;
+    const { guard, isPromptOpen, closePrompt, goToLogin } = useAuthGate();
 
     if (isLoading) {
         return (
@@ -80,6 +83,7 @@ export const SnippetOfTheDay = memo((props: SnippetOfTheDayProps) => {
                     <AppLink
                         to={getRouteArticleDetails(snippet.article.id)}
                         className={cls.articleLink}
+                        onClick={guard}
                     >
                         {snippet.article.title}
                     </AppLink>
@@ -89,6 +93,11 @@ export const SnippetOfTheDay = memo((props: SnippetOfTheDayProps) => {
                     </HStack>
                 </div>
             </div>
+            <AuthRequiredModal
+                isOpen={isPromptOpen}
+                onClose={closePrompt}
+                onLogin={goToLogin}
+            />
         </div>
     );
 });

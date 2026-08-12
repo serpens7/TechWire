@@ -4,6 +4,7 @@ import { TOKEN_LOCALSTORAGE_KEY, USER_LOCALSTORAGE_KEY } from '@/shared/const/lo
 
 const initialState: UserSchema = {
     inited: false,
+    isLoginModalOpen: false,
 };
 
 export const userSlice = createSlice({
@@ -35,6 +36,12 @@ export const userSlice = createSlice({
             state.authData = undefined;
             localStorage.removeItem(TOKEN_LOCALSTORAGE_KEY);
             localStorage.removeItem(USER_LOCALSTORAGE_KEY);
+        },
+        openLoginModal: (state) => {
+            state.isLoginModalOpen = true;
+        },
+        closeLoginModal: (state) => {
+            state.isLoginModalOpen = false;
         },
     },
 });

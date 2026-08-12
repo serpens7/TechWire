@@ -103,6 +103,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/highlights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Тизеры для главной
+         * @description Публичный маршрут. Отдаёт статью дня без содержимого и сниппет дня — по этим данным статью не прочитать.
+         */
+        get: operations["HighlightsController_find"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/comments": {
         parameters: {
             query?: never;
@@ -309,6 +329,36 @@ export interface components {
                 title?: string;
                 paragraphs: string[];
             })[];
+        };
+        HighlightsDto: {
+            articleOfTheDay: {
+                id: string;
+                title: string;
+                subtitle: string;
+                img: string;
+                views: number;
+                createdAt: string;
+                type: ("IT" | "SCIENCE" | "ECONOMICS")[];
+                user: {
+                    id: string;
+                    username: string;
+                    avatar?: string;
+                    roles: ("ADMIN" | "MANAGER" | "USER")[];
+                };
+            } | null;
+            snippetOfTheDay: {
+                code: string;
+                article: {
+                    id: string;
+                    title: string;
+                    user: {
+                        id: string;
+                        username: string;
+                        avatar?: string;
+                        roles: ("ADMIN" | "MANAGER" | "USER")[];
+                    };
+                };
+            } | null;
         };
         CommentWithUserDto: {
             id: string;
@@ -531,6 +581,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ArticleDto"];
+                };
+            };
+        };
+    };
+    HighlightsController_find: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HighlightsDto"];
                 };
             };
         };
