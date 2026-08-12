@@ -27,9 +27,7 @@ export const Navbar = memo(({ className = '' }: NavbarProps) => {
     const { t } = useTranslation();
     const authData = useSelector(getUserAuthData);
     const isAdmin = useSelector(isUserAdmin);
-    // Состояние модалки живёт в сторе, а не здесь: открыть её просят и другие
-    // места приложения — например главная, когда незалогиненный посетитель
-    // пытается открыть статью.
+
     const isAuthModal = useSelector(getIsLoginModalOpen);
     const dispatch = useDispatch();
 

@@ -61,7 +61,6 @@ export class TestAsyncThunk<Arg> {
         this.navigate = jest.fn();
     }
 
-    // arg is optional so void-argument thunks can be invoked as callThunk().
     async callThunk(arg?: Arg) {
         const action = this.actionCreator(arg as Arg);
         const result = await action(

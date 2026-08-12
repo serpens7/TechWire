@@ -32,7 +32,6 @@ export const CountrySelect = memo(
 
         return (
             <ListBox
-                // сlassName={className}
                 onChange={onChangeHandler}
                 value={value}
                 label={t('country.select')}

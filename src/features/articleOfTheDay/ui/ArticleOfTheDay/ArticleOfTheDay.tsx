@@ -45,8 +45,7 @@ export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
     const { t } = useTranslation();
     const { data, isLoading, error } = useHighlights();
     const article = data?.articleOfTheDay;
-    // Тизер виден всем, но переход к самой статье требует входа: содержимое
-    // статьи в тизер не приезжает.
+
     const { guard, isPromptOpen, closePrompt, goToLogin } = useAuthGate();
 
     if (isLoading) {
