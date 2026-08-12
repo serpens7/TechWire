@@ -10,11 +10,21 @@ import {
     Post,
     Query,
 } from '@nestjs/common';
+import {
+    ApiBearerAuth,
+    ApiBody,
+    ApiCreatedResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+} from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { PrismaService } from '../prisma/prisma.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { optionalString } from '../common/validation/query';
 import { publicUserSelect, serializeComment } from '../common/serialization/serializers';
+import { CommentWithUserDto } from '../common/serialization/schemas';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthenticatedUser } from '../auth/auth.types';
 
@@ -34,6 +44,8 @@ const createCommentSchema = z.object({
 });
 
 type CreateCommentDto = z.infer<typeof createCommentSchema>;
+
+export class CreateCommentBodyDto extends createZodDto(createCommentSchema) {}
 
 @Injectable()
 export class CommentsService {
@@ -69,15 +81,25 @@ export class CommentsService {
     }
 }
 
+@ApiTags('comments')
+@ApiBearerAuth()
 @Controller('comments')
 export class CommentsController {
     constructor(private readonly comments: CommentsService) {}
 
+    @ApiOperation({ summary: 'Комментарии статьи' })
+    @ApiOkResponse({ type: [CommentWithUserDto] })
     @Get()
     findMany(@Query(new ZodValidationPipe(findCommentsQuerySchema)) query: FindCommentsQuery) {
         return this.comments.findMany(query);
     }
 
+    @ApiOperation({
+        summary: 'Оставить комментарий',
+        description: 'Автор берётся из токена; userId в теле игнорируется.',
+    })
+    @ApiBody({ type: CreateCommentBodyDto })
+    @ApiCreatedResponse({ type: CommentWithUserDto })
     @Post()
     @HttpCode(HttpStatus.CREATED)
     create(

@@ -1,7 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { buildOpenApiDocument } from './openapi';
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
@@ -17,9 +19,15 @@ async function bootstrap(): Promise<void> {
         allowedHeaders: ['Content-Type', 'Authorization'],
     });
 
+    // Живая документация. Сама страница защиты не требует — она лишь
+    // описывает контракт, а каждый запрос из неё всё равно пойдёт через
+    // обычные гварды.
+    SwaggerModule.setup('api', app, buildOpenApiDocument(app));
+
     await app.listen(port, '0.0.0.0');
 
     console.log(`Бэкенд слушает http://localhost:${port}`);
+    console.log(`Документация API: http://localhost:${port}/api`);
 }
 
 void bootstrap();

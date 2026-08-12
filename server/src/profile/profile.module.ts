@@ -10,10 +10,21 @@ import {
     Param,
     Put,
 } from '@nestjs/common';
+import {
+    ApiBearerAuth,
+    ApiBody,
+    ApiConflictResponse,
+    ApiForbiddenResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+} from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { PrismaService } from '../prisma/prisma.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { publicUserSelect, serializeProfile } from '../common/serialization/serializers';
+import { ProfileDto } from '../common/serialization/schemas';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthenticatedUser } from '../auth/auth.types';
 
@@ -32,6 +43,8 @@ const updateProfileSchema = z.object({
 });
 
 type UpdateProfileDto = z.infer<typeof updateProfileSchema>;
+
+export class UpdateProfileBodyDto extends createZodDto(updateProfileSchema) {}
 
 @Injectable()
 export class ProfileService {
@@ -103,15 +116,27 @@ export class ProfileService {
     }
 }
 
+@ApiTags('profile')
+@ApiBearerAuth()
 @Controller('profile')
 export class ProfileController {
     constructor(private readonly profile: ProfileService) {}
 
+    @ApiOperation({
+        summary: 'Профиль',
+        description: 'username и avatar склеиваются из связанного пользователя.',
+    })
+    @ApiOkResponse({ type: ProfileDto })
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.profile.findOne(id);
     }
 
+    @ApiOperation({ summary: 'Изменить профиль', description: 'Только свой собственный.' })
+    @ApiBody({ type: UpdateProfileBodyDto })
+    @ApiOkResponse({ type: ProfileDto })
+    @ApiForbiddenResponse({ description: 'Можно править только свой профиль' })
+    @ApiConflictResponse({ description: 'Такой логин уже занят' })
     @Put(':id')
     update(
         @Param('id') id: string,

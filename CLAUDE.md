@@ -16,6 +16,16 @@ can't provide. Consequently the root `tsconfig.json` and `.eslintignore` **exclu
 `server/`** — it has its own `type:check` and `lint`. See `server/README.md`.
 `json-server/db.json` survives only as the **seed fixture** (`server/prisma/seed.ts`).
 
+**Response shapes are defined once**, as zod schemas in
+`server/src/common/serialization/schemas.ts`. They type the serializers (a serializer
+that stops matching its documented shape fails `tsc`), build the OpenAPI document
+(Swagger UI on `:8000/api`), and generate the frontend's types. Frontend entity types
+stay hand-written — `ArticleType.IT` etc. are used as *values*, and `ArticleType` also
+carries `ALL`, which the server never sends — so the duplication is **verified rather
+than removed**: `src/app/types/apiConformance.ts` asserts that server data fits the
+frontend types, and drift fails `type:check`. That file lives in `app`, not next to the
+schema in `shared`, because `shared → entities` is a forbidden FSD import.
+
 ## Tech stack (current, verified)
 
 | Area | Choice |
@@ -54,7 +64,11 @@ can't provide. Consequently the root `tsconfig.json` and `.eslintignore` **exclu
   Postgres must be running first: `Start-Service postgresql-x64-17` (admin console;
   the service is set to `Manual`).
 - Backend-side: `npm --prefix server run db:migrate` / `db:seed` / `db:seed:fresh`
-  (wipe + reseed) / `db:verify` (check DB against `db.json`) / `type:check`
+  (wipe + reseed) / `db:verify` (check DB against `db.json`) / `type:check` /
+  `lint:check` / `test:e2e` (84 API tests — **wipes and reseeds the DB**) / `openapi`
+- `npm run api:sync` — rebuild `server/openapi.json` **and** the frontend types in
+  `src/shared/api/generated/schema.ts`. Run it after any change to a response shape;
+  CI fails if either is stale.
 
 **Before finishing any change, run the CI chain and keep it green** (this is exactly
 what `.github/workflows/main.yml` runs, on **node 24.x**):

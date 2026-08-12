@@ -8,11 +8,21 @@ import {
     Post,
     Query,
 } from '@nestjs/common';
+import {
+    ApiBearerAuth,
+    ApiBody,
+    ApiCreatedResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+} from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { PrismaService } from '../prisma/prisma.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { optionalString } from '../common/validation/query';
 import { serializeRating } from '../common/serialization/serializers';
+import { RatingDto } from '../common/serialization/schemas';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthenticatedUser } from '../auth/auth.types';
 
@@ -32,6 +42,8 @@ const rateArticleSchema = z.object({
 });
 
 type RateArticleDto = z.infer<typeof rateArticleSchema>;
+
+export class RateArticleBodyDto extends createZodDto(rateArticleSchema) {}
 
 @Injectable()
 export class RatingsService {
@@ -81,15 +93,28 @@ export class RatingsService {
  * «пользователь ещё не оценивал статью», и на этом строится выбор между
  * формой оценки и показом уже выставленной.
  */
+@ApiTags('ratings')
+@ApiBearerAuth()
 @Controller('article-ratings')
 export class RatingsController {
     constructor(private readonly ratings: RatingsService) {}
 
+    @ApiOperation({
+        summary: 'Оценки',
+        description: 'Пустой массив означает, что пользователь ещё не оценивал статью.',
+    })
+    @ApiOkResponse({ type: [RatingDto] })
     @Get()
     findMany(@Query(new ZodValidationPipe(findRatingsQuerySchema)) query: FindRatingsQuery) {
         return this.ratings.findMany(query);
     }
 
+    @ApiOperation({
+        summary: 'Оценить статью',
+        description: 'Повторная отправка перезаписывает оценку. Автор берётся из токена.',
+    })
+    @ApiBody({ type: RateArticleBodyDto })
+    @ApiCreatedResponse({ type: RatingDto })
     @Post()
     rate(
         @Body(new ZodValidationPipe(rateArticleSchema)) dto: RateArticleDto,

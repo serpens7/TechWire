@@ -1,0 +1,1263 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Живость сервиса и доступность БД",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "Единственный публичный маршрут кроме /health. Отвечает одинаково на неверный пароль и несуществующий логин.",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Неверный логин или пароль"
+          }
+        },
+        "summary": "Вход",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Текущий пользователь по токену",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/articles": {
+      "get": {
+        "description": "Имена параметров унаследованы от json-server. Без _expand=user автор не разворачивается, и в ответе остаётся только userId.",
+        "operationId": "ArticlesController_findMany",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ArticleWithUserDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Список статей",
+        "tags": [
+          "articles"
+        ]
+      },
+      "post": {
+        "description": "Требует роль ADMIN.",
+        "operationId": "ArticlesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Создать статью",
+        "tags": [
+          "articles"
+        ]
+      }
+    },
+    "/articles/{id}": {
+      "get": {
+        "operationId": "ArticlesController_findOne",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleWithUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Одна статья",
+        "tags": [
+          "articles"
+        ]
+      },
+      "put": {
+        "description": "Требует роль ADMIN.",
+        "operationId": "ArticlesController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Изменить статью",
+        "tags": [
+          "articles"
+        ]
+      }
+    },
+    "/comments": {
+      "get": {
+        "operationId": "CommentsController_findMany",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentWithUserDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Комментарии статьи",
+        "tags": [
+          "comments"
+        ]
+      },
+      "post": {
+        "description": "Автор берётся из токена; userId в теле игнорируется.",
+        "operationId": "CommentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentWithUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Оставить комментарий",
+        "tags": [
+          "comments"
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "description": "Фронт опрашивает раз в 5 секунд, пока открыт Popover.",
+        "operationId": "NotificationsController_findMany",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Уведомления пользователя",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/profile/{id}": {
+      "get": {
+        "description": "username и avatar склеиваются из связанного пользователя.",
+        "operationId": "ProfileController_findOne",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Профиль",
+        "tags": [
+          "profile"
+        ]
+      },
+      "put": {
+        "description": "Только свой собственный.",
+        "operationId": "ProfileController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Можно править только свой профиль"
+          },
+          "409": {
+            "description": "Такой логин уже занят"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Изменить профиль",
+        "tags": [
+          "profile"
+        ]
+      }
+    },
+    "/article-ratings": {
+      "get": {
+        "description": "Пустой массив означает, что пользователь ещё не оценивал статью.",
+        "operationId": "RatingsController_findMany",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RatingDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Оценки",
+        "tags": [
+          "ratings"
+        ]
+      },
+      "post": {
+        "description": "Повторная отправка перезаписывает оценку. Автор берётся из токена.",
+        "operationId": "RatingsController_rate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateArticleBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Оценить статью",
+        "tags": [
+          "ratings"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "production-project API",
+    "description": "Бэкенд статейной платформы.\n\nИмена query-параметров (`_limit`, `_page`, `_sort`, `_order`, `q`, `_expand`)\nунаследованы от json-server, который этот сервис заменил: так фронт не\nпотребовал правок, а существующий набор e2e стал приёмочным тестом подмены.\n\nВсе маршруты закрыты, кроме `POST /login` и `GET /health`.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Токен из ответа POST /login"
+      }
+    },
+    "schemas": {
+      "HealthDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "db": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "db"
+        ]
+      },
+      "LoginBodyDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "avatar": {
+                "type": "string"
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "ADMIN",
+                    "MANAGER",
+                    "USER"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "id",
+              "username",
+              "roles"
+            ]
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user",
+          "token"
+        ]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ADMIN",
+                "MANAGER",
+                "USER"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "roles"
+        ]
+      },
+      "ArticleWithUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "img": {
+            "type": "string"
+          },
+          "views": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^\\d{2}\\.\\d{2}\\.\\d{4}$"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "IT",
+                "SCIENCE",
+                "ECONOMICS"
+              ]
+            }
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "CODE"
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "code"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "IMAGE"
+                      ]
+                    },
+                    "src": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "src",
+                    "title"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TEXT"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "paragraphs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "paragraphs"
+                  ]
+                }
+              ]
+            }
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "avatar": {
+                "type": "string"
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "ADMIN",
+                    "MANAGER",
+                    "USER"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "id",
+              "username",
+              "roles"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "subtitle",
+          "img",
+          "views",
+          "createdAt",
+          "userId",
+          "type",
+          "blocks",
+          "user"
+        ]
+      },
+      "ArticleBodyDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subtitle": {
+            "type": "string",
+            "minLength": 1
+          },
+          "img": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "IT",
+                "SCIENCE",
+                "ECONOMICS"
+              ]
+            }
+          },
+          "blocks": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "CODE"
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "code"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "IMAGE"
+                      ]
+                    },
+                    "src": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "src",
+                    "title"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TEXT"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "paragraphs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "paragraphs"
+                  ]
+                }
+              ]
+            }
+          },
+          "views": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^\\d{2}\\.\\d{2}\\.\\d{4}$"
+          },
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "subtitle",
+          "img",
+          "type"
+        ]
+      },
+      "ArticleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "img": {
+            "type": "string"
+          },
+          "views": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^\\d{2}\\.\\d{2}\\.\\d{4}$"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "IT",
+                "SCIENCE",
+                "ECONOMICS"
+              ]
+            }
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "CODE"
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "code"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "IMAGE"
+                      ]
+                    },
+                    "src": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "src",
+                    "title"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TEXT"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "paragraphs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "paragraphs"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "subtitle",
+          "img",
+          "views",
+          "createdAt",
+          "userId",
+          "type",
+          "blocks"
+        ]
+      },
+      "CommentWithUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "articleId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "avatar": {
+                "type": "string"
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "ADMIN",
+                    "MANAGER",
+                    "USER"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "id",
+              "username",
+              "roles"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "articleId",
+          "userId",
+          "user"
+        ]
+      },
+      "CreateCommentBodyDto": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "articleId",
+          "text"
+        ]
+      },
+      "NotificationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "isViewed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "title",
+          "isViewed"
+        ]
+      },
+      "ProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "first": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "RUB",
+              "EUR",
+              "USD"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "enum": [
+              "Russia",
+              "Belarus",
+              "Ukraine",
+              "Kazahstan",
+              "Armenia"
+            ]
+          },
+          "city": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username"
+        ]
+      },
+      "UpdateProfileBodyDto": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 150
+          },
+          "city": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "RUB",
+              "EUR",
+              "USD"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "enum": [
+              "Russia",
+              "Belarus",
+              "Ukraine",
+              "Kazahstan",
+              "Armenia"
+            ]
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "RatingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "articleId": {
+            "type": "string"
+          },
+          "rate": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "feedback": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "articleId",
+          "rate"
+        ]
+      },
+      "RateArticleBodyDto": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rate": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "feedback": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "articleId",
+          "rate"
+        ]
+      }
+    }
+  }
+}

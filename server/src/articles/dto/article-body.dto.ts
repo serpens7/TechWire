@@ -1,3 +1,4 @@
+import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
 /**
@@ -44,3 +45,6 @@ export const articleBodySchema = z.object({
 });
 
 export type ArticleBody = z.infer<typeof articleBodySchema>;
+
+/** Тот же контракт для Swagger — попадает в openapi.json и в типы фронта. */
+export class ArticleBodyDto extends createZodDto(articleBodySchema) {}

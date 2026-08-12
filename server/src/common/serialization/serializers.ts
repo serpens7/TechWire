@@ -6,6 +6,16 @@ import type {
     Rating,
     User,
 } from '../../../generated/prisma/client';
+import type {
+    ArticleResponse,
+    ArticleWithUserResponse,
+    CommentResponse,
+    CommentWithUserResponse,
+    NotificationResponse,
+    ProfileResponse,
+    RatingResponse,
+    UserResponse,
+} from './schemas';
 
 /**
  * Слой представления: приводит записи БД к тем формам, которые уже ждёт фронт.
@@ -53,7 +63,7 @@ export function parseRuDate(value: string): Date {
     return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 12));
 }
 
-export function serializeUser(user: PublicUser) {
+export function serializeUser(user: PublicUser): UserResponse {
     return {
         id: user.id,
         username: user.username,
@@ -70,8 +80,8 @@ export function serializeUser(user: PublicUser) {
 export function serializeArticle(
     article: Article & { user?: PublicUser | null },
     options: { expandUser?: boolean } = {},
-) {
-    const base = {
+): ArticleResponse | ArticleWithUserResponse {
+    const base: ArticleResponse = {
         id: article.id,
         title: article.title,
         subtitle: article.subtitle,
@@ -80,7 +90,9 @@ export function serializeArticle(
         createdAt: formatRuDate(article.createdAt),
         userId: article.userId,
         type: article.type,
-        blocks: article.blocks,
+        // blocks — JSON-колонка, Prisma отдаёт её как JsonValue. Форму
+        // гарантирует валидация на записи (articleBodySchema).
+        blocks: article.blocks as ArticleResponse['blocks'],
     };
 
     if (options.expandUser && article.user) {
@@ -93,8 +105,8 @@ export function serializeArticle(
 export function serializeComment(
     comment: Comment & { user?: PublicUser | null },
     options: { expandUser?: boolean } = {},
-) {
-    const base = {
+): CommentResponse | CommentWithUserResponse {
+    const base: CommentResponse = {
         id: comment.id,
         text: comment.text,
         articleId: comment.articleId,
@@ -112,7 +124,7 @@ export function serializeComment(
  * username и avatar в БД лежат только у User (в db.json они дублировались
  * и в profile) — здесь склеиваем обратно, чтобы ответ не изменился.
  */
-export function serializeProfile(profile: Profile & { user: PublicUser }) {
+export function serializeProfile(profile: Profile & { user: PublicUser }): ProfileResponse {
     return {
         id: profile.id,
         first: profile.first ?? undefined,
@@ -126,7 +138,7 @@ export function serializeProfile(profile: Profile & { user: PublicUser }) {
     };
 }
 
-export function serializeNotification(notification: Notification) {
+export function serializeNotification(notification: Notification): NotificationResponse {
     return {
         id: notification.id,
         userId: notification.userId,
@@ -137,7 +149,7 @@ export function serializeNotification(notification: Notification) {
     };
 }
 
-export function serializeRating(rating: Rating) {
+export function serializeRating(rating: Rating): RatingResponse {
     return {
         id: rating.id,
         userId: rating.userId,

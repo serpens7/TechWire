@@ -32,6 +32,8 @@ A production-style application built on **Feature-Sliced Design (FSD)**: an arti
 | Database | PostgreSQL 17 |
 | Auth | JWT (`@nestjs/jwt`) + bcrypt, global guard, role guard |
 | Validation | zod |
+| Docs | `@nestjs/swagger` → Swagger UI на `/api` + `openapi.json` |
+| Tests | Jest + supertest against a real PostgreSQL (84 API tests) |
 
 `server/` is a **separate npm package** with its own `package.json`, `tsconfig` and `node_modules` — Nest needs CommonJS + decorators, which the frontend tsconfig can't provide. See [`server/README.md`](server/README.md).
 
@@ -119,6 +121,8 @@ Passwords are stored as bcrypt hashes; these are the seeded credentials. The adm
 | `npm run build:prod` | Production webpack build |
 | `npm run storybook` / `build-storybook` | Storybook dev / static build |
 | `npm run server:install` | `npm ci` inside `server/` |
+| `npm run api:types` | Regenerate frontend types from `server/openapi.json` |
+| `npm run api:sync` | Rebuild the OpenAPI schema **and** the frontend types |
 
 ### Backend (`npm --prefix server run …`)
 
@@ -132,6 +136,22 @@ Passwords are stored as bcrypt hashes; these are the seeded credentials. The adm
 | `db:seed:fresh` | **Wipe** and re-seed |
 | `db:reset` | Drop and recreate the database from scratch |
 | `db:verify` | Assert the database matches `db.json` |
+| `test:e2e` | 84 API tests against a real database — **wipes and reseeds it** |
+| `openapi` | Rebuild `openapi.json` |
+
+## API contract & types
+
+The backend documents itself: **http://localhost:8000/api** (Swagger UI). Response shapes are defined once as zod schemas (`server/src/common/serialization/schemas.ts`) and reused three ways — to type the serializers (so `tsc` catches a serializer that stops matching the documented shape), to build the OpenAPI schema, and to generate the frontend's types.
+
+`server/openapi.json` is committed and drives `src/shared/api/generated/schema.ts`:
+
+```bash
+npm run api:sync    # rebuild schema + frontend types
+```
+
+Frontend entity types (`Article`, `Profile`, …) are still hand-written — they can't simply be replaced, because values like `ArticleType.IT` are used as values, and `ArticleType` additionally carries `ALL`, a filter value the server never sends. Instead the duplication is **verified**: `src/app/types/apiConformance.ts` asserts at the type level that server data fits the frontend types. Drift stops being silent — it fails `npm run type:check`.
+
+CI additionally checks that regenerating the schema and the types produces no diff, so changing the contract without regenerating is caught too.
 
 ## End-to-end tests (Playwright)
 

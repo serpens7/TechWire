@@ -1,11 +1,21 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+    ApiBearerAuth,
+    ApiBody,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { LoginResponseDto, UserDto } from '../common/serialization/schemas';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
-import { loginSchema, type LoginDto } from './dto/login.dto';
+import { LoginBodyDto, loginSchema, type LoginDto } from './dto/login.dto';
 import type { AuthenticatedUser } from './auth.types';
 
+@ApiTags('auth')
 @Controller()
 export class AuthController {
     constructor(private readonly auth: AuthService) {}
@@ -15,6 +25,14 @@ export class AuthController {
      * Отвечает { user, token }: раньше здесь отдавался голый объект пользователя,
      * который фронт и использовал в качестве «токена».
      */
+    @ApiOperation({
+        summary: 'Вход',
+        description:
+            'Единственный публичный маршрут кроме /health. Отвечает одинаково на неверный пароль и несуществующий логин.',
+    })
+    @ApiBody({ type: LoginBodyDto })
+    @ApiOkResponse({ type: LoginResponseDto })
+    @ApiUnauthorizedResponse({ description: 'Неверный логин или пароль' })
     @Public()
     @Post('login')
     @HttpCode(HttpStatus.OK)
@@ -26,6 +44,9 @@ export class AuthController {
      * Кто я по текущему токену. Фронт пока гидратируется из localStorage, но
      * этот эндпоинт — правильный путь для проверки живости сессии.
      */
+    @ApiOperation({ summary: 'Текущий пользователь по токену' })
+    @ApiBearerAuth()
+    @ApiOkResponse({ type: UserDto })
     @Get('auth/me')
     me(@CurrentUser() user: AuthenticatedUser | undefined) {
         return user;
