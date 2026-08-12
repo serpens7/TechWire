@@ -40,12 +40,26 @@ export default defineConfig({
             },
         },
     ],
-    webServer: {
-        command: 'npm run start:dev',
-        url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
-        // json-server adds a 500ms artificial delay per request and the first
-        // webpack dev build is slow, so give the stack generous headroom.
-        timeout: 180_000,
-    },
+    // Two entries because `start:dev` boots two processes and Playwright can
+    // only wait on one URL per entry. The first launches the whole stack and
+    // waits for the app; the second waits for the backend's /health (it never
+    // starts a second process — `reuseExistingServer` finds the one already
+    // launched above). Without this the suite could start before Nest has
+    // connected to Postgres and the first request would fail.
+    webServer: [
+        {
+            command: 'npm run start:dev',
+            url: 'http://localhost:3000',
+            reuseExistingServer: !process.env.CI,
+            // The backend adds an artificial per-request delay and the first
+            // webpack dev build is slow, so give the stack generous headroom.
+            timeout: 180_000,
+        },
+        {
+            command: 'npm run start:dev:server',
+            url: 'http://localhost:8000/health',
+            reuseExistingServer: true,
+            timeout: 180_000,
+        },
+    ],
 });

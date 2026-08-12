@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { User, userActions } from '@/entities/User';
-import { USER_LOCALSTORAGE_KEY } from '@/shared/const/localStorage';
+import { TOKEN_LOCALSTORAGE_KEY, USER_LOCALSTORAGE_KEY } from '@/shared/const/localStorage';
 import { ThunkConfig } from '@/app/providers/StoreProvider';
 
 interface LoginByUsernameProps {
@@ -8,21 +8,29 @@ interface LoginByUsernameProps {
     password: string;
 }
 
+/** Ответ /login: пользователь для отрисовки + токен для последующих запросов. */
+interface LoginResponse {
+    user: User;
+    token: string;
+}
+
 export const loginByUsername = createAsyncThunk<User, LoginByUsernameProps, ThunkConfig<string>>(
     'login/loginByUsername',
     async (authData, thunkAPI) => {
         try {
-            const response = await thunkAPI.extra.api.post<User>('/login', authData);
+            const response = await thunkAPI.extra.api.post<LoginResponse>('/login', authData);
+            const { user, token } = response.data ?? {};
 
-            if (!response.data) {
-                throw new Error();
+            if (!user || !token) {
+                throw new Error('Некорректный ответ /login');
             }
 
-            localStorage.setItem(USER_LOCALSTORAGE_KEY, JSON.stringify(response.data));
-            thunkAPI.dispatch(userActions.setAuthData(response.data));
-            return response.data;
+            localStorage.setItem(TOKEN_LOCALSTORAGE_KEY, token);
+            localStorage.setItem(USER_LOCALSTORAGE_KEY, JSON.stringify(user));
+            thunkAPI.dispatch(userActions.setAuthData(user));
+
+            return user;
         } catch (e) {
-            console.log(e);
             return thunkAPI.rejectWithValue('login error');
         }
     },

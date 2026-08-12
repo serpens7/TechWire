@@ -1,0 +1,8 @@
+node_modules
+build
+dist
+storybook-static
+
+# Бэкенд — отдельный пакет со своим eslint (typescript-eslint + prettier,
+# без airbnb и react-правил). Линтуется своим `npm run lint` внутри server/.
+server
