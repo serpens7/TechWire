@@ -23,6 +23,6 @@
     // Свойства, которые заполняет Nest DI, не инициализируются в конструкторе.
     "strictPropertyInitialization": false
   },
-  "include": ["src/**/*", "prisma/**/*", "prisma.config.ts"],
+  "include": ["src/**/*", "test/**/*", "prisma/**/*", "prisma.config.ts"],
   "exclude": ["node_modules", "dist", "generated"]
 }
