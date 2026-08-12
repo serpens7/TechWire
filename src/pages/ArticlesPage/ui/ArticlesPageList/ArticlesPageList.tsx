@@ -32,6 +32,28 @@ interface ListContext {
 
 const savedTopIndexByPath: Record<string, number> = {};
 
+/**
+ * На сколько пикселей ниже области просмотра Virtuoso держит отрисованными
+ * элементы. Заодно это сдвигает срабатывание endReached: догрузка начинается
+ * при приближении к концу, а не при упоре в него, и данные обычно успевают
+ * прийти раньше, чем пользователь доскроллит.
+ */
+const PRELOAD_DISTANCE_PX = 800;
+
+/**
+ * Сколько заглушек показывать в подвале во время догрузки.
+ *
+ * Раньше показывалась целая страница (limit): 12 карточек в сетке — это три
+ * ряда, которые появляются и исчезают под областью просмотра. Высота списка
+ * из-за этого скакала в обе стороны (замерено: 3619 → 5037 → 4689), и список
+ * заметно дёргало. Достаточно одного ряда: смысл подвала — показать, что
+ * загрузка идёт, а не зарезервировать место под всю страницу.
+ */
+const FOOTER_SKELETON_COUNT: Record<ArticleView, number> = {
+    [ArticleView.SMALL]: 5,
+    [ArticleView.BIG]: 1,
+};
+
 const getSkeletons = (view: ArticleView, count: number) =>
     new Array(count).fill(0).map((_, index) => (
         <ArticleListItemSkeleton
@@ -55,7 +77,7 @@ const Footer = ({ context }: { context: ListContext }) => {
     const isSmall = context.view === ArticleView.SMALL;
     return (
         <div className={isSmall ? cls.skeletonsGrid : cls.skeletonsList}>
-            {getSkeletons(context.view, context.limit)}
+            {getSkeletons(context.view, FOOTER_SKELETON_COUNT[context.view])}
         </div>
     );
 };
@@ -114,6 +136,7 @@ export const ArticlesPageList = memo((props: ArticlesPageListProps) => {
                     data={articles}
                     context={context}
                     initialTopMostItemIndex={initialTopMostItemIndex}
+                    increaseViewportBy={{ top: 0, bottom: PRELOAD_DISTANCE_PX }}
                     endReached={onLoadNextPart}
                     rangeChanged={onRangeChanged}
                     computeItemKey={computeItemKey}
@@ -126,6 +149,7 @@ export const ArticlesPageList = memo((props: ArticlesPageListProps) => {
                     data={articles}
                     context={context}
                     initialTopMostItemIndex={initialTopMostItemIndex}
+                    increaseViewportBy={{ top: 0, bottom: PRELOAD_DISTANCE_PX }}
                     endReached={onLoadNextPart}
                     rangeChanged={onRangeChanged}
                     computeItemKey={computeItemKey}

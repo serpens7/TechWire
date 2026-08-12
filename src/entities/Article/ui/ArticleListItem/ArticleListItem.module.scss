@@ -114,9 +114,18 @@
 
     /* Two lines before ellipsing: a single line cut most titles mid-word.
      * Line clamping still requires the -webkit-box display value in every
-     * current browser, hence the disable. */
+     * current browser, hence the disable.
+     *
+     * The height is FIXED at two lines rather than clamped-and-shrink-to-fit:
+     * a one-line title used to make its card shorter than its neighbours, so
+     * grid rows had varying heights. react-virtuoso then could not predict the
+     * total scroll height and kept correcting its estimate while scrolling —
+     * the list visibly jumped (measured: 6315 → 5037 → 4689 px on 36 items).
+     * Uniform cards make the estimate exact. */
     .title p {
         width: 200px;
+        line-height: 1.4;
+        height: 2.8em; /* ровно две строки */
 
         /* stylelint-disable-next-line value-no-vendor-prefix */
         display: -webkit-box;

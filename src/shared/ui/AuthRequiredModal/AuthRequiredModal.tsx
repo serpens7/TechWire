@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Modal } from '@/shared/ui/Modal/Modal';
 import { Button, ButtonTheme } from '@/shared/ui/Button/Button';
-import { Text, TextSize } from '@/shared/ui/Text/Text';
+import { Text } from '@/shared/ui/Text/Text';
 import { HStack, VStack } from '@/shared/ui/Stack';
 import cls from './AuthRequiredModal.module.scss';
 
@@ -33,10 +33,10 @@ export const AuthRequiredModal = memo((props: AuthRequiredModalProps) => {
                 max
                 className={classNames(cls.AuthRequiredModal, {}, [className])}
             >
+                {/* Без size — размер по умолчанию, как в остальном приложении. */}
                 <Text
                     title={t('auth.requiredTitle')}
                     text={t('auth.requiredText')}
-                    size={TextSize.L}
                 />
                 <HStack gap='8' justify='end' max>
                     <Button theme={ButtonTheme.OUTLINE} onClick={onClose}>
