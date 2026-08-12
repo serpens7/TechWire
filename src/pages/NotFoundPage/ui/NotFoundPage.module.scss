@@ -1,8 +1,19 @@
 .NotFoundPage {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    font: var(--font-l);
+}
+
+.content {
+    // Page уже занимает высоту экрана за вычетом шапки — центрируем внутри неё.
+    min-height: calc(100vh - var(--navbar-height));
+    padding: var(--space-8);
+}
+
+// Крупная «404» как якорь для взгляда: без неё страница читалась просто как
+// строка текста посреди пустоты.
+.code {
+    font-size: 96px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-secondary);
+    opacity: 0.5;
 }

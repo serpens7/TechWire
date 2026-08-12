@@ -71,7 +71,9 @@
         "switcher": "Русский"
     },
     "notFound": {
-        "title": "Page not found"
+        "title": "Page not found",
+        "description": "The address may contain a typo, or the page no longer exists.",
+        "goHome": "Go to home"
     },
     "forbidden": {
         "title": "Access denied"
@@ -95,7 +97,8 @@
         "noData": "Invalid data",
         "incorrectUserData": "First and last name are required",
         "articleNotFound": "Article not found",
-        "articleError": "An error occurred when uploading the article"
+        "articleError": "An error occurred when uploading the article",
+        "reloadHint": "Try reloading the page — that usually helps."
     },
     "login": {
         "error": "Invalid username or password",
