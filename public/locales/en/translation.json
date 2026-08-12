@@ -1,6 +1,6 @@
 {
     "about": {
-        "title": "IT-news — articles on development, economics and science",
+        "title": "TechWire — articles on development, economics and science",
         "eyebrow": "About the project",
         "lead": "A publication for people who write code and want to understand what is going on around it: technology deep dives, plain explanations, and material that is still useful a week later.",
         "topicsTitle": "What we write about",
@@ -191,7 +191,6 @@
     },
     "search": "Search",
     "edit": "Edit",
-    "IT-NEWS": "IT-news",
     "increment": "Increment",
     "decrement": "Decrement",
     "add5": "Add 5",
@@ -199,5 +198,6 @@
         "requiredTitle": "Sign in required",
         "requiredText": "Reading articles is available after signing in. It only takes a moment.",
         "later": "Later"
-    }
+    },
+    "appName": "TechWire"
 }

@@ -75,7 +75,7 @@ jobs:
                 env:
                     POSTGRES_USER: postgres
                     POSTGRES_PASSWORD: postgres
-                    POSTGRES_DB: production_project
+                    POSTGRES_DB: techwire
                 ports:
                     - 5432:5432
                 # Без health-check шаги стартуют раньше, чем Postgres примет
@@ -87,7 +87,7 @@ jobs:
                     --health-retries 5
 
         env:
-            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/production_project?schema=public
+            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/techwire?schema=public
             JWT_SECRET: ci-secret-not-used-anywhere-else
             JWT_EXPIRES_IN: 7d
             # Искусственная задержка нужна только фронту в разработке.

@@ -4,9 +4,13 @@ Guidance for working in this repo. Read this first, then dive into code.
 
 ## What this is
 
-A production-style React SPA (based on the Ulbi TV "production project") built with
-**Feature-Sliced Design (FSD)**. Absolute imports use the `@/` alias → `src/`
-(webpack + tsconfig `paths`).
+**TechWire** — a production-style React SPA built with **Feature-Sliced Design (FSD)**.
+Absolute imports use the `@/` alias → `src/` (webpack + tsconfig `paths`).
+
+The frontend layout started from the Ulbi TV "production project" course, but has
+since diverged substantially: React 19 + RTK 2, a real NestJS backend replacing
+json-server, JWT auth, the OpenAPI contract, and the Playwright/API test suites are
+all original work.
 
 **Backend is a real app in `server/`** — NestJS 11 (Fastify) + Prisma 7 + PostgreSQL 17,
 replacing the original json-server. It's a **separate npm package** with its own

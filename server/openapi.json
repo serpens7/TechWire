@@ -475,7 +475,7 @@
     }
   },
   "info": {
-    "title": "production-project API",
+    "title": "TechWire API",
     "description": "Бэкенд статейной платформы.\n\nИмена query-параметров (`_limit`, `_page`, `_sort`, `_order`, `q`, `_expand`)\nунаследованы от json-server, который этот сервис заменил: так фронт не\nпотребовал правок, а существующий набор e2e стал приёмочным тестом подмены.\n\nВсе маршруты закрыты, кроме `POST /login` и `GET /health`.",
     "version": "1.0",
     "contact": {}

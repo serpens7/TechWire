@@ -1,7 +1,7 @@
 {
-  "name": "production-project-server",
+  "name": "techwire-server",
   "version": "0.0.1",
-  "description": "Бэкенд production-project: NestJS + Prisma + PostgreSQL",
+  "description": "Бэкенд TechWire: NestJS + Prisma + PostgreSQL",
   "author": "",
   "private": true,
   "license": "UNLICENSED",

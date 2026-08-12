@@ -11,7 +11,7 @@ import { cleanupOpenApiDoc } from 'nestjs-zod';
  */
 export function buildOpenApiDocument(app: INestApplication): OpenAPIObject {
     const config = new DocumentBuilder()
-        .setTitle('production-project API')
+        .setTitle('TechWire API')
         .setDescription(
             [
                 'Бэкенд статейной платформы.',

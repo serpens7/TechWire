@@ -1,4 +1,4 @@
-# Бэкенд production-project
+# Бэкенд TechWire
 
 NestJS 11 (на Fastify) + Prisma 7 + PostgreSQL 17. Заменяет `json-server/`.
 

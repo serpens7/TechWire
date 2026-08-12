@@ -1,4 +1,4 @@
-# IT-news — production-style React SPA + NestJS API
+# TechWire — production-style React SPA + NestJS API
 
 A production-style application built on **Feature-Sliced Design (FSD)**: an articles platform with authentication, role-based access, comments, ratings, notifications, i18n, and theming — backed by a **real REST API** (NestJS + Prisma + PostgreSQL) in `server/`.
 
@@ -71,7 +71,7 @@ Copy `server/.env.example` to `server/.env` and set your postgres password in `D
 npm --prefix server run db:migrate
 ```
 
-This creates the `production_project` database, applies migrations, and seeds it from `json-server/db.json` (36 articles, 2 users, comments, ratings, notifications).
+This creates the `techwire` database, applies migrations, and seeds it from `json-server/db.json` (36 articles, 2 users, comments, ratings, notifications).
 
 ### Run (dev)
 

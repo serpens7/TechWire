@@ -46,7 +46,7 @@ export const Navbar = memo(({ className = '' }: NavbarProps) => {
     return (
         <header className={classNames(cls.Navbar, {}, [className])}>
             <AppLink to={getRouteMain()} className={cls.appName}>
-                <Text title={t('IT-NEWS')} theme={TextTheme.INVERTED} />
+                <Text title={t('appName')} theme={TextTheme.INVERTED} />
             </AppLink>
 
             {authData ? (

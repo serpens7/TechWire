@@ -17,7 +17,7 @@ interface SnippetOfTheDayProps {
     className?: string;
 }
 
-const SNIPPET_PATH = '~/it-news/snippet.js';
+const SNIPPET_PATH = '~/techwire/snippet.js';
 
 const TitleBar = () => (
     <div className={cls.titleBar}>
