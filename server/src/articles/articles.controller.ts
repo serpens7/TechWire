@@ -20,6 +20,7 @@ import {
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { ArticleDto, ArticleWithUserDto } from '../common/serialization/schemas';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import type { AuthenticatedUser } from '../auth/auth.types';
 import { ArticlesService } from './articles.service';
@@ -31,8 +32,17 @@ import {
     type FindArticlesQuery,
 } from './dto/find-articles.query';
 
+/**
+ * Чтение статей открыто всем, запись — нет.
+ *
+ * Раньше был закрыт и просмотр, а гостю показывались только тизеры на
+ * главной. Модель сменилась на обычную для статейной площадки: материалы
+ * читают все, а комментировать, оценивать и редактировать можно после входа.
+ */
+// ApiBearerAuth намеренно НЕ на классе, а на отдельных методах: на классе он
+// пометил бы токеном и публичные маршруты тоже — @Public() влияет на гвард,
+// но не на документацию, и схема начала бы врать про доступ.
 @ApiTags('articles')
-@ApiBearerAuth()
 @Controller('articles')
 export class ArticlesController {
     constructor(private readonly articles: ArticlesService) {}
@@ -43,6 +53,7 @@ export class ArticlesController {
             'Имена параметров унаследованы от json-server. Без _expand=user автор не разворачивается, и в ответе остаётся только userId.',
     })
     @ApiOkResponse({ type: [ArticleWithUserDto] })
+    @Public()
     @Get()
     findMany(@Query(new ZodValidationPipe(findArticlesQuerySchema)) query: FindArticlesQuery) {
         return this.articles.findMany(query);
@@ -50,6 +61,7 @@ export class ArticlesController {
 
     @ApiOperation({ summary: 'Одна статья' })
     @ApiOkResponse({ type: ArticleWithUserDto })
+    @Public()
     @Get(':id')
     findOne(
         @Param('id') id: string,
@@ -64,6 +76,7 @@ export class ArticlesController {
      * но там это лишь UX: настоящий запрет живёт здесь.
      */
     @ApiOperation({ summary: 'Создать статью', description: 'Требует роль ADMIN.' })
+    @ApiBearerAuth()
     @ApiBody({ type: ArticleBodyDto })
     @ApiCreatedResponse({ type: ArticleDto })
     @Roles('ADMIN')
@@ -77,6 +90,7 @@ export class ArticlesController {
     }
 
     @ApiOperation({ summary: 'Изменить статью', description: 'Требует роль ADMIN.' })
+    @ApiBearerAuth()
     @ApiBody({ type: ArticleBodyDto })
     @ApiOkResponse({ type: ArticleDto })
     @Roles('ADMIN')

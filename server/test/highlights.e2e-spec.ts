@@ -2,10 +2,11 @@ import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { createTestApp, http } from './helpers';
 
 /**
- * Единственный публичный маршрут со статьями.
+ * Тизеры для главной: статья дня и сниппет дня одним запросом.
  *
- * Смысл в том, чтобы главная что-то показывала незалогиненному посетителю,
- * не открывая при этом каталог: по этим данным статью прочитать нельзя.
+ * Появились, когда каталог был закрыт целиком и гостю показывали только
+ * анонсы. После открытия чтения эндпоинт остался — он избавляет главную от
+ * двух отдельных запросов и переносит выбор сниппета на сервер.
  */
 describe('тизеры главной', () => {
     let app: NestFastifyApplication;
@@ -36,9 +37,9 @@ describe('тизеры главной', () => {
         });
     });
 
-    it('в статье дня нет содержимого — это тизер', async () => {
-        // Ключевая граница: если бы blocks приезжали, ограничение «войдите,
-        // чтобы читать» было бы фикцией — текст уже был бы у клиента.
+    it('в статье дня нет содержимого — это анонс', async () => {
+        // Главной нужен только заголовок с картинкой; текст статьи она не
+        // показывает, поэтому и тащить его в ответ незачем.
         const { body } = await http(app).get('/highlights').expect(200);
 
         expect(body.articleOfTheDay).not.toHaveProperty('blocks');
@@ -61,9 +62,17 @@ describe('тизеры главной', () => {
         expect(JSON.stringify(body)).not.toContain('password');
     });
 
-    it('остальные маршруты со статьями остались закрытыми', async () => {
-        // Смысл тизеров именно в том, что они не открывают каталог.
-        await http(app).get('/articles').expect(401);
-        await http(app).get('/articles/1').expect(401);
+    it('согласован с каталогом: статья дня открывается по своему id', async () => {
+        // Каталог теперь тоже публичный, поэтому переход с главной в статью
+        // должен работать для гостя без единого токена.
+        const { body } = await http(app).get('/highlights').expect(200);
+
+        const article = await http(app)
+            .get(`/articles/${body.articleOfTheDay.id}?_expand=user`)
+            .expect(200);
+
+        expect(article.body.title).toBe(body.articleOfTheDay.title);
+        // А вот содержимое приезжает уже отсюда, а не из тизера.
+        expect(article.body.blocks.length).toBeGreaterThan(0);
     });
 });

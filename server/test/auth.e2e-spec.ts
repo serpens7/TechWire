@@ -73,15 +73,31 @@ describe('авторизация', () => {
 
     describe('закрытость по умолчанию', () => {
         it.each([
-            ['/articles'],
-            ['/articles/1'],
-            ['/comments?articleId=1'],
             ['/notifications?userId=1'],
             ['/article-ratings?userId=1&articleId=1'],
             ['/profile/1'],
             ['/auth/me'],
         ])('без токена не отдаёт %s', async (path) => {
             await http(app).get(path).expect(401);
+        });
+
+        // Чтение статей и обсуждения открыто всем — закрыто только то, что
+        // создаёт или меняет содержимое. Список специально держится рядом с
+        // предыдущим: видно, где проходит граница.
+        it.each([['/articles?_limit=3'], ['/articles/1'], ['/comments?articleId=1']])(
+            'без токена отдаёт %s',
+            async (path) => {
+                await http(app).get(path).expect(200);
+            },
+        );
+
+        it.each([
+            ['комментарий', 'post', '/comments', { articleId: '1', text: 'от гостя' }],
+            ['оценку', 'post', '/article-ratings', { articleId: '1', rate: 5 }],
+            ['создание статьи', 'post', '/articles', {}],
+            ['правку статьи', 'put', '/articles/1', {}],
+        ])('без токена не даёт оставить %s', async (_label, method, path, body) => {
+            await http(app)[method as 'post'](path).send(body).expect(401);
         });
 
         it.each([
@@ -93,7 +109,9 @@ describe('авторизация', () => {
             ['без схемы Bearer', 'plain-string'],
             ['пустой Bearer', 'Bearer '],
         ])('отвергает %s', async (_label, header) => {
-            await http(app).get('/articles').set('authorization', header).expect(401);
+            // Проверяем на закрытом маршруте: /articles теперь публичный и
+            // пропустил бы что угодно, не заметив негодного токена.
+            await http(app).get('/auth/me').set('authorization', header).expect(401);
         });
 
         it('проверка живости доступна без токена', async () => {

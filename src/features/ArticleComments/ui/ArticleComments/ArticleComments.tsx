@@ -1,11 +1,12 @@
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { useTranslation } from 'react-i18next';
 import { memo, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CommentForm, CommentList } from '@/entities/Comment';
 import { Text, TextSize } from '@/shared/ui/Text/Text';
 import { VStack } from '@/shared/ui/Stack';
-import { getUserAuthData } from '@/entities/User';
+import { AuthRequiredNotice } from '@/shared/ui/AuthRequiredNotice/AuthRequiredNotice';
+import { getUserAuthData, userActions } from '@/entities/User';
 import {
     useAddArticleComment,
     useGetArticleComments,
@@ -19,6 +20,7 @@ interface ArticleCommentsProps {
 export const ArticleComments = memo((props: ArticleCommentsProps) => {
     const { className = '', id } = props;
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     const userData = useSelector(getUserAuthData);
     const {
         data: comments,
@@ -36,10 +38,19 @@ export const ArticleComments = memo((props: ArticleCommentsProps) => {
         [addComment, id, userData],
     );
 
+    const onLogin = useCallback(() => {
+        dispatch(userActions.openLoginModal());
+    }, [dispatch]);
+
     return (
         <VStack gap='16' max className={classNames('', {}, [className])}>
             <Text size={TextSize.L} title={t('article.comments')} />
-            <CommentForm onSendComment={onSendComment} />
+            {/* Обсуждение видно всем, а участвовать в нём можно после входа. */}
+            {userData ? (
+                <CommentForm onSendComment={onSendComment} />
+            ) : (
+                <AuthRequiredNotice text={t('auth.toComment')} onLogin={onLogin} />
+            )}
             <CommentList isLoading={isLoading} comments={comments} />
         </VStack>
     );

@@ -26,6 +26,7 @@ import { optionalString } from '../common/validation/query';
 import { publicUserSelect, serializeComment } from '../common/serialization/serializers';
 import { CommentWithUserDto } from '../common/serialization/schemas';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 import type { AuthenticatedUser } from '../auth/auth.types';
 
 const findCommentsQuerySchema = z.object({
@@ -81,14 +82,18 @@ export class CommentsService {
     }
 }
 
+// ApiBearerAuth на отдельных методах, а не на классе: иначе публичное чтение
+// комментариев было бы задокументировано как требующее токена.
 @ApiTags('comments')
-@ApiBearerAuth()
 @Controller('comments')
 export class CommentsController {
     constructor(private readonly comments: CommentsService) {}
 
+    // Читаются вместе со статьёй, поэтому тоже открыты. Оставить их за входом
+    // означало бы показывать гостю статью с пустым обсуждением.
     @ApiOperation({ summary: 'Комментарии статьи' })
     @ApiOkResponse({ type: [CommentWithUserDto] })
+    @Public()
     @Get()
     findMany(@Query(new ZodValidationPipe(findCommentsQuerySchema)) query: FindCommentsQuery) {
         return this.comments.findMany(query);
@@ -98,6 +103,7 @@ export class CommentsController {
         summary: 'Оставить комментарий',
         description: 'Автор берётся из токена; userId в теле игнорируется.',
     })
+    @ApiBearerAuth()
     @ApiBody({ type: CreateCommentBodyDto })
     @ApiCreatedResponse({ type: CommentWithUserDto })
     @Post()

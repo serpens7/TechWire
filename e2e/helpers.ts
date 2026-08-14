@@ -15,7 +15,10 @@ export const USER = { username: 'user2', password: '321' };
  * gives its <input> an accessible name via aria-label={placeholder}.
  */
 export async function login(page: Page, { username, password }: typeof ADMIN) {
-    await page.getByRole('button', { name: 'Enter' }).click();
+    // Кнопка входа берётся из шапки (<header> → role "banner"): такая же
+    // подпись есть у подсказок «войдите, чтобы...» на странице статьи, и
+    // поиск по всей странице стал бы неоднозначным.
+    await page.getByRole('banner').getByRole('button', { name: 'Enter' }).click();
 
     const dialog = page.getByRole('dialog');
     await dialog.getByLabel('Enter your login').fill(username);

@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { memo, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RatingCard } from '@/entities/Rating';
 import {
     useGetArticleRating,
     useRateArticle,
 } from '../../api/articleRatingApi';
-import { getUserAuthData } from '@/entities/User';
+import { getUserAuthData, userActions } from '@/entities/User';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
+import { AuthRequiredNotice } from '@/shared/ui/AuthRequiredNotice/AuthRequiredNotice';
 
 export interface ArticleRatingProps {
     className?: string;
@@ -17,12 +18,15 @@ export interface ArticleRatingProps {
 const ArticleRating = memo((props: ArticleRatingProps) => {
     const { className, articleId } = props;
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     const userData = useSelector(getUserAuthData);
 
-    const { data, isLoading } = useGetArticleRating({
-        articleId,
-        userId: userData?.id ?? '',
-    });
+    // Оценка привязана к пользователю, поэтому гостю запрашивать нечего:
+    // без skip запрос ушёл бы с пустым userId и вернул 401.
+    const { data, isLoading } = useGetArticleRating(
+        { articleId, userId: userData?.id ?? '' },
+        { skip: !userData },
+    );
     const [rateArticleMutation] = useRateArticle();
 
     const handleRateArticle = useCallback(
@@ -40,6 +44,20 @@ const ArticleRating = memo((props: ArticleRatingProps) => {
         },
         [articleId, rateArticleMutation, userData?.id]
     );
+
+    const onLogin = useCallback(() => {
+        dispatch(userActions.openLoginModal());
+    }, [dispatch]);
+
+    if (!userData) {
+        return (
+            <AuthRequiredNotice
+                text={t('auth.toRate')}
+                onLogin={onLogin}
+                className={className}
+            />
+        );
+    }
 
     if (isLoading) {
         return <Skeleton width='100%' height={120} />;

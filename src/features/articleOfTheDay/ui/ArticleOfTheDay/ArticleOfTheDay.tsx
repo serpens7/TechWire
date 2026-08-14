@@ -11,10 +11,8 @@ import { Button, ButtonTheme } from '@/shared/ui/Button/Button';
 import { Icon } from '@/shared/ui/Icon/Icon';
 import { HStack, VStack } from '@/shared/ui/Stack';
 import EyeIcon from '@/shared/assets/icons/eye-20-20.svg';
-import { AuthRequiredModal } from '@/shared/ui/AuthRequiredModal/AuthRequiredModal';
 import { getRouteArticleDetails } from '@/shared/const/router';
 import { useHighlights } from '@/entities/Article';
-import { useAuthGate } from '@/entities/User';
 import cls from './ArticleOfTheDay.module.scss';
 
 interface ArticleOfTheDayProps {
@@ -45,8 +43,6 @@ export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
     const { t } = useTranslation();
     const { data, isLoading, error } = useHighlights();
     const article = data?.articleOfTheDay;
-
-    const { guard, isPromptOpen, closePrompt, goToLogin } = useAuthGate();
 
     if (isLoading) {
         return (
@@ -96,10 +92,7 @@ export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
                             <Text text={article.createdAt} className={cls.date} />
                         </HStack>
                         <div className={cls.footer}>
-                            <AppLink
-                                to={getRouteArticleDetails(article.id)}
-                                onClick={guard}
-                            >
+                            <AppLink to={getRouteArticleDetails(article.id)}>
                                 <Button theme={ButtonTheme.BACKGROUND}>
                                     {t('main.readArticle')}
                                 </Button>
@@ -112,11 +105,6 @@ export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
                     </VStack>
                 </div>
             </Card>
-            <AuthRequiredModal
-                isOpen={isPromptOpen}
-                onClose={closePrompt}
-                onLogin={goToLogin}
-            />
         </div>
     );
 });

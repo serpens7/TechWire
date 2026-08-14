@@ -40,7 +40,7 @@ A production-style application built on **Feature-Sliced Design (FSD)**: an arti
 ## Features
 
 - **Feature-Sliced Design** — enforced by `steiger`; strict layer boundaries and public APIs.
-- **Real auth** — bcrypt password check, signed JWT, `Authorization: Bearer`. Every backend route is closed by default; only `/login` and `/health` are public.
+- **Real auth** — bcrypt password check, signed JWT, `Authorization: Bearer`. **Reading is public** (articles, a single article, comments); everything that creates or changes content requires a token, as do personal-data routes.
 - **Role-based access (RBAC)** — `UserRole` (ADMIN / MANAGER / USER). Enforced on the server (`@Roles('ADMIN')` on article create/edit); the frontend `RequireAuth` gate is UX on top of it.
 - **RTK Query** — server-state via `injectEndpoints`; a single `axiosBaseQuery` so the auth header lives in one place.
 - **Articles** — virtualized list (grid/list views), pagination, sorting, search, type filter; details with code/image/text blocks, recommendations, comments, and **ratings** (star rating + feedback).

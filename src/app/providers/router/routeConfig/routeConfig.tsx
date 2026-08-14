@@ -44,15 +44,16 @@ export const routeConfig: Record<AppRoutes, AppRouteProps> = {
         path: getRouteForbidden(),
         element: <ForbiddenPage />,
     },
+    // Чтение статей открыто: список и сама статья доступны без входа.
+    // По входу закрыто то, что создаёт или меняет содержимое — комментарий,
+    // оценка, создание и редактирование статьи.
     [AppRoutes.ARTICLES]: {
         path: getRouteArticles(),
         element: <ArticlesPage />,
-        authOnly: true,
     },
     [AppRoutes.ARTICLE_DETAILS]: {
         path: getRouteArticleDetails(':id'),
         element: <ArticleDetailsPage />,
-        authOnly: true,
     },
     [AppRoutes.ARTICLE_CREATE]: {
         path: getRouteArticleCreate(),

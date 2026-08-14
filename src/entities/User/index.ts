@@ -16,8 +16,6 @@ export { getUserInited } from './model/selectors/getUserInited';
 
 export { getIsLoginModalOpen } from './model/selectors/getIsLoginModalOpen';
 
-export { useAuthGate } from './lib/useAuthGate';
-
 export { getUserRoles } from './model/selectors/getUserRoles';
 
 export { isUserAdmin } from './model/selectors/isUserAdmin';

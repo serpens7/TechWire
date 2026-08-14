@@ -195,9 +195,8 @@
     "decrement": "Decrement",
     "add5": "Add 5",
     "auth": {
-        "requiredTitle": "Sign in required",
-        "requiredText": "Reading articles is available after signing in. It only takes a moment.",
-        "later": "Later"
+        "toComment": "Sign in to leave a comment",
+        "toRate": "Sign in to rate this article"
     },
     "appName": "TechWire"
 }

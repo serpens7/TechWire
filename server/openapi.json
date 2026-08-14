@@ -106,11 +106,6 @@
             }
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Список статей",
         "tags": [
           "articles"
@@ -169,11 +164,6 @@
             }
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Одна статья",
         "tags": [
           "articles"
@@ -258,11 +248,6 @@
             }
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Комментарии статьи",
         "tags": [
           "comments"
