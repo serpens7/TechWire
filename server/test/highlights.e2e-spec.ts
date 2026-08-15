@@ -1,5 +1,5 @@
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { createTestApp, http } from './helpers';
+import { ADMIN, bearer, createTestApp, http, login } from './helpers';
 
 /**
  * Тизеры для главной: статья дня и сниппет дня одним запросом.
@@ -10,9 +10,11 @@ import { createTestApp, http } from './helpers';
  */
 describe('тизеры главной', () => {
     let app: NestFastifyApplication;
+    let adminToken: string;
 
     beforeAll(async () => {
         app = await createTestApp();
+        adminToken = (await login(app, ADMIN)).token;
     });
 
     afterAll(async () => {
@@ -74,5 +76,29 @@ describe('тизеры главной', () => {
         expect(article.body.title).toBe(body.articleOfTheDay.title);
         // А вот содержимое приезжает уже отсюда, а не из тизера.
         expect(article.body.blocks.length).toBeGreaterThan(0);
+    });
+
+    it('статья дня — по просмотрам за последние 7 дней, а не за всё время', async () => {
+        // Свежая статья начинает с нуля — если её сделать самой просматриваемой
+        // ЗА ОКНО, она обязана обойти любого пожизненного лидера, у которого
+        // просто накопилось больше просмотров за всю историю.
+        const { body: created } = await http(app)
+            .post('/articles')
+            .set(...bearer(adminToken))
+            .send({
+                title: `Статья дня ${Date.now()}`,
+                subtitle: 'подзаголовок',
+                img: 'https://example.com/img.png',
+                type: ['IT'],
+                blocks: [{ id: '1', type: 'TEXT', title: 'Заголовок', paragraphs: ['абзац'] }],
+            })
+            .expect(201);
+
+        const reads = Array.from({ length: 60 }, () => http(app).get(`/articles/${created.id}`));
+        await Promise.all(reads);
+
+        const { body } = await http(app).get('/highlights').expect(200);
+
+        expect(body.articleOfTheDay.id).toBe(created.id);
     });
 });

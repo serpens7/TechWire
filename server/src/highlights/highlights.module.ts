@@ -5,19 +5,35 @@ import { Public } from '../auth/decorators/public.decorator';
 import { formatRuDate, publicUserSelect, serializeUser } from '../common/serialization/serializers';
 import { HighlightsDto, type Highlights } from '../common/serialization/schemas';
 import { pickSnippetOfTheDay } from './pickSnippetOfTheDay';
+import { pickArticleOfTheDayId } from './pickArticleOfTheDayId';
 
 /** Из скольких свежих статей выбирается сниппет дня. */
 const SNIPPET_POOL_SIZE = 20;
+
+/**
+ * Окно, за которое считается «статья дня». orderBy views:'desc' по всей
+ * таблице фактически выбирал бы одну и ту же статью навсегда — раз попав в
+ * лидеры по пожизненным просмотрам, статья остаётся там независимо от того,
+ * читают ли её сейчас. Окно даёт блоку смысл, заявленный в названии: то, что
+ * читают на этой неделе, а не то, что прочитали больше всего за всю историю.
+ */
+const VIEW_WINDOW_DAYS = 7;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class HighlightsService {
     constructor(private readonly prisma: PrismaService) {}
 
     async find(): Promise<Highlights> {
-        const [mostViewed, recent] = await Promise.all([
-            this.prisma.article.findFirst({
-                orderBy: { views: 'desc' },
-                include: { user: { select: publicUserSelect } },
+        const since = new Date(Date.now() - VIEW_WINDOW_DAYS * MS_PER_DAY);
+
+        const [windowTop, recent] = await Promise.all([
+            this.prisma.articleView.groupBy({
+                by: ['articleId'],
+                where: { viewedAt: { gte: since } },
+                _count: { articleId: true },
+                orderBy: { _count: { articleId: 'desc' } },
+                take: 1,
             }),
             this.prisma.article.findMany({
                 orderBy: { createdAt: 'desc' },
@@ -25,6 +41,21 @@ export class HighlightsService {
                 include: { user: { select: publicUserSelect } },
             }),
         ]);
+
+        const windowWinnerId = pickArticleOfTheDayId(windowTop);
+
+        // Фолбэк на пожизненный счётчик обязателен: сразу после засева
+        // article_views пуста, и без него «статья дня» показывала бы пустоту
+        // до первого прочитанного просмотра.
+        const mostViewed = windowWinnerId
+            ? await this.prisma.article.findUnique({
+                  where: { id: windowWinnerId },
+                  include: { user: { select: publicUserSelect } },
+              })
+            : await this.prisma.article.findFirst({
+                  orderBy: { views: 'desc' },
+                  include: { user: { select: publicUserSelect } },
+              });
 
         const picked = pickSnippetOfTheDay(recent);
 

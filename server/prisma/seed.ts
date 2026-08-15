@@ -122,12 +122,41 @@ function parseRuDate(value: string): Date {
  * справился.
  */
 async function wipe(): Promise<void> {
+    await prisma.articleView.deleteMany();
     await prisma.rating.deleteMany();
     await prisma.comment.deleteMany();
     await prisma.notification.deleteMany();
     await prisma.article.deleteMany();
     await prisma.profile.deleteMany();
     await prisma.user.deleteMany();
+}
+
+/**
+ * Детерминированный PRNG (mulberry32), засеянный хэшем id статьи — при
+ * повторном запуске сида распределение событий одно и то же, что важно и для
+ * стабильности демо, и для воспроизводимости e2e.
+ */
+function hashString(value: string): number {
+    let hash = 0;
+
+    for (let i = 0; i < value.length; i += 1) {
+        hash = (Math.imul(31, hash) + value.charCodeAt(i)) | 0;
+    }
+
+    return hash;
+}
+
+function mulberry32(seed: number): () => number {
+    let state = seed;
+
+    return () => {
+        state |= 0;
+        state = (state + 0x6d2b79f5) | 0;
+        let t = Math.imul(state ^ (state >>> 15), 1 | state);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
 }
 
 async function main() {
@@ -202,6 +231,32 @@ async function main() {
         });
     }
 
+    // --- article_views -------------------------------------------------------
+    // Только счётчика (article.views) недостаточно: "статья дня" на главной
+    // выбирается по просмотрам за последние 7 дней (см. HighlightsService), а
+    // сразу после засева журнал событий пуст. Без синтетической истории демо
+    // показывало бы один и тот же фолбэк на пожизненный счётчик, будто окно
+    // никогда не работает. Пересевается при каждом прогоне (не только
+    // --fresh) — иначе счётчики росли бы дублями при повторном db:seed.
+    const VIEW_WINDOW_DAYS = 7;
+    const MAX_SYNTHETIC_VIEWS = 50;
+
+    for (const article of db.articles) {
+        await prisma.articleView.deleteMany({ where: { articleId: article.id } });
+
+        const eventCount = Math.min(article.views, MAX_SYNTHETIC_VIEWS);
+
+        if (eventCount === 0) continue;
+
+        const random = mulberry32(hashString(article.id));
+        const events = Array.from({ length: eventCount }, () => ({
+            articleId: article.id,
+            viewedAt: new Date(Date.now() - random() * VIEW_WINDOW_DAYS * 24 * 60 * 60 * 1000),
+        }));
+
+        await prisma.articleView.createMany({ data: events });
+    }
+
     // --- comments ----------------------------------------------------------
     for (const comment of db.comments) {
         const data = {
@@ -257,6 +312,7 @@ async function main() {
         comments: await prisma.comment.count(),
         notifications: await prisma.notification.count(),
         ratings: await prisma.rating.count(),
+        articleViews: await prisma.articleView.count(),
     };
 
     const blocks = (await prisma.article.findMany({ select: { blocks: true } })).reduce(
