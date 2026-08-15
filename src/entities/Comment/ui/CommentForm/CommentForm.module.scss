@@ -4,12 +4,14 @@
     padding: 20px;
 }
 
-.input {
-    flex-grow: 1;
+// Мини-форма ответа под конкретным комментарием (в духе YouTube) — легче
+// главной формы: без рамки, минимум отступов, чтобы читаться как продолжение
+// ветки, а не отдельный блок на странице.
+.compact {
+    border: none;
+    padding: 0;
 }
 
-.replyBanner {
-    padding: 4px 8px;
-    border-radius: 8px;
-    background: var(--card-bg);
+.input {
+    flex-grow: 1;
 }

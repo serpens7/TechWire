@@ -43,7 +43,7 @@ describe('features/ArticleComments', () => {
     });
 
     // i18nForTests не подключает реальные переводы — t() возвращает сам ключ.
-    test('вошедший пользователь отвечает на комментарий — parentId уходит в запрос', async () => {
+    test('вошедший пользователь отвечает через мини-форму под комментарием — parentId уходит в запрос', async () => {
         const user = userEvent.setup();
         componentRender(<ArticleComments id='1' />, {
             initialState: {
@@ -52,12 +52,22 @@ describe('features/ArticleComments', () => {
         });
 
         await screen.findByText('root comment');
+
+        // Верхняя форма для новых комментариев остаётся — мини-форма ответа
+        // появляется отдельно, под конкретным комментарием (YouTube-style),
+        // а не переиспользует её.
+        expect(screen.getAllByText('comments.send')).toHaveLength(1);
+
         await user.click(screen.getByText('comments.reply'));
 
-        expect(await screen.findByText('comments.replyingTo')).toBeInTheDocument();
+        const replyInput = await screen.findByLabelText('comments.replyPlaceholder');
+        await user.type(replyInput, 'my reply');
 
-        await user.type(screen.getByLabelText('comments.enterText'), 'my reply');
-        await user.click(screen.getByText('comments.send'));
+        // Теперь на странице два Send: верхняя форма и мини-форма ответа —
+        // последняя появилась только что, под комментарием.
+        const sendButtons = screen.getAllByText('comments.send');
+        expect(sendButtons).toHaveLength(2);
+        await user.click(sendButtons[1]);
 
         await waitFor(() => {
             const postCall = ($api.request as jest.Mock).mock.calls.find(
@@ -71,6 +81,31 @@ describe('features/ArticleComments', () => {
                 parentId: 'root',
             });
         });
+
+        // Мини-форма закрывается после отправки.
+        expect(screen.queryByLabelText('comments.replyPlaceholder')).not.toBeInTheDocument();
+    });
+
+    test('отмена мини-формы ответа скрывает её без отправки', async () => {
+        const user = userEvent.setup();
+        componentRender(<ArticleComments id='1' />, {
+            initialState: {
+                user: { authData: { id: '1', username: 'admin' }, inited: true },
+            },
+        });
+
+        await screen.findByText('root comment');
+        await user.click(screen.getByText('comments.reply'));
+        await screen.findByLabelText('comments.replyPlaceholder');
+
+        await user.click(screen.getByText('comments.cancelReply'));
+
+        expect(screen.queryByLabelText('comments.replyPlaceholder')).not.toBeInTheDocument();
+        expect(
+            ($api.request as jest.Mock).mock.calls.some(
+                ([config]: [AxiosRequestConfig]) => config.method === 'POST',
+            ),
+        ).toBe(false);
     });
 
     test('гость видит кнопку «Ответить», но форму — нет', async () => {

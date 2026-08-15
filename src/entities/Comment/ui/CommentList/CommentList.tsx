@@ -10,12 +10,14 @@ interface CommentListProps {
     className?: string;
     comments?: Comment[];
     isLoading?: boolean;
-    onReply?: (comment: Comment) => void;
+    canReply?: boolean;
+    onReplyClick?: (comment: Comment) => void;
+    onSubmitReply?: (comment: Comment, text: string) => void;
 }
 
 export const CommentList = (props: CommentListProps) => {
     const {
-        className = '', isLoading, comments, onReply,
+        className = '', isLoading, comments, canReply, onReplyClick, onSubmitReply,
     } = props;
     const { t } = useTranslation();
 
@@ -36,12 +38,19 @@ export const CommentList = (props: CommentListProps) => {
             {groups.length ? (
                 groups.map(({ root, replies }) => (
                     <VStack gap='8' max key={root.id}>
-                        <CommentCard comment={root} onReply={onReply} />
+                        <CommentCard
+                            comment={root}
+                            canReply={canReply}
+                            onReplyClick={onReplyClick}
+                            onSubmitReply={onSubmitReply}
+                        />
                         {replies.map((reply) => (
                             <CommentCard
                                 isReply
                                 comment={reply}
-                                onReply={onReply}
+                                canReply={canReply}
+                                onReplyClick={onReplyClick}
+                                onSubmitReply={onSubmitReply}
                                 key={reply.id}
                             />
                         ))}

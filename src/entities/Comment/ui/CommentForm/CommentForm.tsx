@@ -3,22 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { memo, useState } from 'react';
 import { Input } from '@/shared/ui/Input/Input';
 import { Button, ButtonTheme } from '@/shared/ui/Button/Button';
-import { Text } from '@/shared/ui/Text/Text';
-import { HStack, VStack } from '@/shared/ui/Stack';
+import { HStack } from '@/shared/ui/Stack';
 import cls from './CommentForm.module.scss';
-import { Comment } from '../../model/types/comment';
 
 export interface CommentFormProps {
     className?: string;
     onSendComment: (text: string) => void;
-    /** Комментарий, на который сейчас отвечают — показывает плашку над полем. */
-    replyTo?: Comment;
-    onCancelReply?: () => void;
+    /** Показывает Cancel рядом с Send — используется мини-формой ответа. */
+    onCancel?: () => void;
+    /** Переопределяет placeholder — мини-форма ответа подставляет "Reply to @user". */
+    placeholder?: string;
+    autoFocus?: boolean;
+    /** Меньше отступов, без своей рамки — форма ответа встраивается под комментарий. */
+    compact?: boolean;
 }
 
 export const CommentForm = memo((props: CommentFormProps) => {
     const {
-        className = '', onSendComment, replyTo, onCancelReply,
+        className = '', onSendComment, onCancel, placeholder, autoFocus, compact,
     } = props;
     const { t } = useTranslation();
     const [text, setText] = useState('');
@@ -29,28 +31,30 @@ export const CommentForm = memo((props: CommentFormProps) => {
     };
 
     return (
-        <VStack gap='8' max className={classNames(cls.CommentForm, {}, [className])}>
-            {replyTo && (
-                <HStack gap='8' max justify='between' className={cls.replyBanner}>
-                    <Text
-                        text={t('comments.replyingTo', { username: replyTo.user.username })}
-                    />
-                    <Button theme={ButtonTheme.CLEAR} onClick={onCancelReply}>
+        <HStack
+            max
+            justify='between'
+            className={classNames(cls.CommentForm, { [cls.compact]: Boolean(compact) }, [
+                className,
+            ])}
+        >
+            <Input
+                autofocus={autoFocus}
+                className={cls.input}
+                placeholder={placeholder ?? t('comments.enterText')}
+                value={text}
+                onChange={setText}
+            />
+            <HStack gap='8'>
+                {onCancel && (
+                    <Button theme={ButtonTheme.CLEAR} onClick={onCancel}>
                         {t('comments.cancelReply')}
                     </Button>
-                </HStack>
-            )}
-            <HStack max justify='between'>
-                <Input
-                    className={cls.input}
-                    placeholder={t('comments.enterText')}
-                    value={text}
-                    onChange={setText}
-                />
+                )}
                 <Button theme={ButtonTheme.OUTLINE} onClick={onSendHandler}>
                     {t('comments.send')}
                 </Button>
             </HStack>
-        </VStack>
+        </HStack>
     );
 });

@@ -203,8 +203,8 @@
         "send": "Send",
         "enterText": "Enter comment text",
         "reply": "Reply",
-        "replyingTo": "Replying to @{{username}}",
-        "cancelReply": "✕"
+        "replyPlaceholder": "Reply to @{{username}}…",
+        "cancelReply": "Cancel"
     },
     "articles": {
         "allArticles": "All",

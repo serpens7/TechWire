@@ -201,8 +201,8 @@
         "send": "Отправить",
         "enterText": "Введите текст комментария",
         "reply": "Ответить",
-        "replyingTo": "Ответ пользователю @{{username}}",
-        "cancelReply": "✕"
+        "replyPlaceholder": "Ответ пользователю @{{username}}…",
+        "cancelReply": "Отмена"
     },
     "articles": {
         "allArticles": "Все",
