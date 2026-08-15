@@ -140,6 +140,7 @@ export function serializeProfile(profile: Profile & { user: PublicUser }): Profi
         currency: profile.currency ?? undefined,
         country: profile.country ?? undefined,
         city: profile.city ?? undefined,
+        status: profile.status ?? undefined,
         username: profile.user.username,
         avatar: profile.user.avatar ?? undefined,
     };

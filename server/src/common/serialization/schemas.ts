@@ -77,6 +77,8 @@ export const profileSchema = z.object({
     // Опечатка в значении Казахстана унаследована от фронта.
     country: z.enum(['Russia', 'Belarus', 'Ukraine', 'Kazahstan', 'Armenia']).optional(),
     city: z.string().optional(),
+    /** Короткая цитата/статус — то, что человек сам хочет о себе сказать. */
+    status: z.string().optional(),
     /** Склеивается из связанного User — в таблице профиля этих полей нет. */
     username: z.string(),
     avatar: z.string().optional(),

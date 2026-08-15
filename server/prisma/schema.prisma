@@ -75,6 +75,9 @@ model Profile {
   currency Currency?
   country  Country?
   city     String?
+  /// Короткая цитата/статус — то, что человек сам хочет сказать о себе.
+  /// Публично видна на карточке автора, как и age/city.
+  status   String?
 
   // username и avatar сознательно НЕ дублируются здесь (в db.json они
   // лежали и в users, и в profile) — в ответе API берутся из связанного User.

@@ -35,6 +35,8 @@ const updateProfileSchema = z.object({
     city: z.string().optional(),
     currency: z.enum(['RUB', 'EUR', 'USD']).optional(),
     country: z.enum(['Russia', 'Belarus', 'Ukraine', 'Kazahstan', 'Armenia']).optional(),
+    // Короткая цитата/статус — то же поле видно на публичной карточке автора.
+    status: z.string().max(200, 'Не длиннее 200 символов').optional(),
     // Форма профиля правит и эти два поля, но хранятся они в User —
     // раскладываем обратно по таблицам.
     username: z.string().min(1).optional(),
@@ -99,6 +101,7 @@ export class ProfileService {
                         city: dto.city ?? null,
                         currency: dto.currency ?? null,
                         country: dto.country ?? null,
+                        status: dto.status ?? null,
                     },
                     include: { user: { select: publicUserSelect } },
                 });

@@ -448,6 +448,7 @@ export interface components {
             /** @enum {string} */
             country?: "Russia" | "Belarus" | "Ukraine" | "Kazahstan" | "Armenia";
             city?: string;
+            status?: string;
             username: string;
             avatar?: string;
         };
@@ -460,6 +461,7 @@ export interface components {
             currency?: "RUB" | "EUR" | "USD";
             /** @enum {string} */
             country?: "Russia" | "Belarus" | "Ukraine" | "Kazahstan" | "Armenia";
+            status?: string;
             username?: string;
             avatar?: string;
             id?: string;

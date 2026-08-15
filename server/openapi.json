@@ -1434,6 +1434,9 @@
           "city": {
             "type": "string"
           },
+          "status": {
+            "type": "string"
+          },
           "username": {
             "type": "string"
           },
@@ -1480,6 +1483,10 @@
               "Kazahstan",
               "Armenia"
             ]
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 200
           },
           "username": {
             "type": "string",

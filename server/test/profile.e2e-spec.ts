@@ -53,6 +53,25 @@ describe('профиль', () => {
         expect(body).toMatchObject({ age: 26, currency: 'EUR', city: 'Saint-Petersburg' });
     });
 
+    it('сохраняет и отдаёт статус', async () => {
+        const status = 'Пью кофе и пишу код';
+
+        const { body } = await http(app)
+            .put('/profile/1')
+            .set(...bearer(adminToken))
+            .send({ status })
+            .expect(200);
+
+        expect(body.status).toBe(status);
+
+        const fetched = await http(app)
+            .get('/profile/1')
+            .set(...bearer(adminToken))
+            .expect(200);
+
+        expect(fetched.body.status).toBe(status);
+    });
+
     it('изменения сохраняются', async () => {
         await http(app)
             .put('/profile/1')
@@ -91,6 +110,7 @@ describe('профиль', () => {
         ['неизвестная валюта', { currency: 'BTC' }],
         ['неизвестная страна', { country: 'Atlantis' }],
         ['пустой логин', { username: '' }],
+        ['слишком длинный статус', { status: 'a'.repeat(201) }],
     ])('отвергает: %s', async (_label, patch) => {
         await http(app)
             .put('/profile/1')
