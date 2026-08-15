@@ -195,6 +195,34 @@ describe('статьи', () => {
         });
     });
 
+    describe('токен на публичном маршруте — необязателен', () => {
+        // JwtAuthGuard на @Public() маршрутах пытается разобрать токен (чтобы
+        // знать читателя — например, не засчитывать автору просмотр своей же
+        // статьи), но ошибка разбора не должна ронять запрос: маршрут публичный.
+        it.each([
+            ['без заголовка вовсе', undefined],
+            ['битый токен', 'Bearer not-a-real-token'],
+            ['без схемы Bearer', 'plain-string'],
+        ])('отдаёт статью, даже если Authorization %s', async (_label, header) => {
+            const req = http(app).get('/articles/1');
+
+            if (header) req.set('authorization', header);
+
+            const { body } = await req.expect(200);
+
+            expect(body).toMatchObject({ id: '1' });
+        });
+
+        it('с валидным токеном ведёт себя как обычно', async () => {
+            const { body } = await http(app)
+                .get('/articles/1')
+                .set(...bearer(userToken))
+                .expect(200);
+
+            expect(body).toMatchObject({ id: '1' });
+        });
+    });
+
     describe('создание', () => {
         it('обычному пользователю запрещено', async () => {
             await http(app)
