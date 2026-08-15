@@ -164,6 +164,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Удалить комментарий
+         * @description Только свой собственный. Если это корень ветки, ответы удаляются вместе с ним.
+         */
+        delete: operations["CommentsController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/notifications": {
         parameters: {
             query?: never;
@@ -769,6 +789,37 @@ export interface operations {
                 content?: never;
             };
             /** @description Статья или родительский комментарий не найдены */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CommentsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Можно удалить только свой комментарий */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Комментарий не найден */
             404: {
                 headers: {
                     [name: string]: unknown;

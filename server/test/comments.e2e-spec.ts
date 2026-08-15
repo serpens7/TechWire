@@ -205,4 +205,88 @@ describe('комментарии', () => {
             );
         });
     });
+
+    describe('удаление', () => {
+        it('автор удаляет свой комментарий', async () => {
+            const created = await http(app)
+                .post('/comments')
+                .set(...bearer(userToken))
+                .send({ articleId: ARTICLE_ID, text: 'удалю сам' })
+                .expect(201);
+
+            await http(app)
+                .delete(`/comments/${created.body.id}`)
+                .set(...bearer(userToken))
+                .expect(204);
+
+            const { body } = await http(app)
+                .get(`/comments?articleId=${ARTICLE_ID}`)
+                .set(...bearer(userToken))
+                .expect(200);
+
+            expect(body.map((c: { id: string }) => c.id)).not.toContain(created.body.id);
+        });
+
+        it('удаление корня забирает с собой ответы', async () => {
+            const root = await http(app)
+                .post('/comments')
+                .set(...bearer(adminToken))
+                .send({ articleId: ARTICLE_ID, text: 'корень на удаление' })
+                .expect(201);
+
+            const reply = await http(app)
+                .post('/comments')
+                .set(...bearer(userToken))
+                .send({
+                    articleId: ARTICLE_ID,
+                    text: 'ответ на удаляемый корень',
+                    parentId: root.body.id,
+                })
+                .expect(201);
+
+            await http(app)
+                .delete(`/comments/${root.body.id}`)
+                .set(...bearer(adminToken))
+                .expect(204);
+
+            const { body } = await http(app)
+                .get(`/comments?articleId=${ARTICLE_ID}`)
+                .set(...bearer(userToken))
+                .expect(200);
+
+            const ids = body.map((c: { id: string }) => c.id);
+            expect(ids).not.toContain(root.body.id);
+            expect(ids).not.toContain(reply.body.id);
+        });
+
+        it('чужой комментарий удалить нельзя — 403', async () => {
+            const created = await http(app)
+                .post('/comments')
+                .set(...bearer(adminToken))
+                .send({ articleId: ARTICLE_ID, text: 'не трогай' })
+                .expect(201);
+
+            await http(app)
+                .delete(`/comments/${created.body.id}`)
+                .set(...bearer(userToken))
+                .expect(403);
+        });
+
+        it('несуществующий комментарий — 404', async () => {
+            await http(app)
+                .delete('/comments/нет-такого')
+                .set(...bearer(userToken))
+                .expect(404);
+        });
+
+        it('без токена не удаляется', async () => {
+            const created = await http(app)
+                .post('/comments')
+                .set(...bearer(userToken))
+                .send({ articleId: ARTICLE_ID, text: 'защищённый от гостя' })
+                .expect(201);
+
+            await http(app).delete(`/comments/${created.body.id}`).expect(401);
+        });
+    });
 });

@@ -341,6 +341,33 @@
         ]
       }
     },
+    "/comments/{id}": {
+      "delete": {
+        "description": "Только свой собственный. Если это корень ветки, ответы удаляются вместе с ним.",
+        "operationId": "CommentsController_remove",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "403": {
+            "description": "Можно удалить только свой комментарий"
+          },
+          "404": {
+            "description": "Комментарий не найден"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Удалить комментарий",
+        "tags": [
+          "comments"
+        ]
+      }
+    },
     "/notifications": {
       "get": {
         "description": "Фронт опрашивает раз в 5 секунд, пока открыт Popover.",

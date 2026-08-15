@@ -10,7 +10,7 @@ import { Comment } from '../../model/types/comment';
 import { CommentForm } from '../CommentForm/CommentForm';
 import { AppLink } from '@/shared/ui/AppLink/AppLink';
 import { getRouteAuthor } from '@/shared/const/router';
-import { VStack } from '@/shared/ui/Stack';
+import { HStack, VStack } from '@/shared/ui/Stack';
 
 interface CommentCardProps {
     className?: string;
@@ -28,11 +28,22 @@ interface CommentCardProps {
     onReplyClick?: (comment: Comment) => void;
     /** Отправка мини-формы ответа под этим комментарием. */
     onSubmitReply?: (comment: Comment, text: string) => void;
+    /** Комментарий принадлежит текущему пользователю — только тогда есть «Удалить». */
+    isOwn?: boolean;
+    onDeleteClick?: (comment: Comment) => void;
 }
 
 export const CommentCard = (props: CommentCardProps) => {
     const {
-        className = '', comment, isLoading, isReply, canReply, onReplyClick, onSubmitReply,
+        className = '',
+        comment,
+        isLoading,
+        isReply,
+        canReply,
+        onReplyClick,
+        onSubmitReply,
+        isOwn,
+        onDeleteClick,
     } = props;
     const { t } = useTranslation();
     const [isReplying, setIsReplying] = useState(false);
@@ -94,14 +105,27 @@ export const CommentCard = (props: CommentCardProps) => {
                         : comment.text
                 }
             />
-            {onReplyClick && (
-                <Button
-                    theme={ButtonTheme.CLEAR}
-                    className={cls.replyBtn}
-                    onClick={handleReplyClick}
-                >
-                    {t('comments.reply')}
-                </Button>
+            {(onReplyClick || (isOwn && onDeleteClick)) && (
+                <HStack gap='16' className={cls.actions}>
+                    {onReplyClick && (
+                        <Button
+                            theme={ButtonTheme.CLEAR}
+                            className={cls.replyBtn}
+                            onClick={handleReplyClick}
+                        >
+                            {t('comments.reply')}
+                        </Button>
+                    )}
+                    {isOwn && onDeleteClick && (
+                        <Button
+                            theme={ButtonTheme.CLEAR}
+                            className={cls.deleteBtn}
+                            onClick={() => onDeleteClick(comment)}
+                        >
+                            {t('comments.delete')}
+                        </Button>
+                    )}
+                </HStack>
             )}
             {isReplying && canReply && (
                 <CommentForm

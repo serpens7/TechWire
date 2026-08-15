@@ -9,6 +9,7 @@ import { AuthRequiredNotice } from '@/shared/ui/AuthRequiredNotice/AuthRequiredN
 import { getUserAuthData, userActions } from '@/entities/User';
 import {
     useAddArticleComment,
+    useDeleteArticleComment,
     useGetArticleComments,
 } from '../../api/articleCommentsApi';
 
@@ -27,6 +28,7 @@ export const ArticleComments = memo((props: ArticleCommentsProps) => {
         isLoading,
     } = useGetArticleComments(id ?? '', { skip: !id });
     const [addComment] = useAddArticleComment();
+    const [deleteComment] = useDeleteArticleComment();
 
     const onSendComment = useCallback(
         (text: string) => {
@@ -60,6 +62,14 @@ export const ArticleComments = memo((props: ArticleCommentsProps) => {
         [addComment, id, userData],
     );
 
+    const onDeleteClick = useCallback(
+        (comment: Comment) => {
+            if (!id) return;
+            deleteComment({ id: comment.id, articleId: id });
+        },
+        [deleteComment, id],
+    );
+
     return (
         <VStack gap='16' max className={classNames('', {}, [className])}>
             <Text size={TextSize.L} title={t('article.comments')} />
@@ -75,6 +85,8 @@ export const ArticleComments = memo((props: ArticleCommentsProps) => {
                 canReply={Boolean(userData)}
                 onReplyClick={onReplyClick}
                 onSubmitReply={onSubmitReply}
+                currentUserId={userData?.id}
+                onDeleteClick={onDeleteClick}
             />
         </VStack>
     );

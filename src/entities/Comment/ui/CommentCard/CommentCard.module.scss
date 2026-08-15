@@ -25,8 +25,12 @@
     margin-left: 40px;
 }
 
-.replyBtn {
+.actions {
     align-self: flex-start;
+}
+
+.replyBtn,
+.deleteBtn {
     padding: 0;
 }
 

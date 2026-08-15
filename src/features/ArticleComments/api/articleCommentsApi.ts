@@ -9,6 +9,12 @@ interface AddCommentArg {
     parentId?: string;
 }
 
+interface DeleteCommentArg {
+    id: string;
+    /** Не уходит в запрос — нужен только чтобы инвалидировать нужный тег. */
+    articleId: string;
+}
+
 const articleCommentsApi = rtkApi.injectEndpoints({
     endpoints: (build) => ({
         getArticleComments: build.query<Comment[], string>({
@@ -33,6 +39,15 @@ const articleCommentsApi = rtkApi.injectEndpoints({
                 { type: 'Comments', id: articleId },
             ],
         }),
+        deleteArticleComment: build.mutation<void, DeleteCommentArg>({
+            query: ({ id }) => ({
+                url: `/comments/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: (result, error, { articleId }) => [
+                { type: 'Comments', id: articleId },
+            ],
+        }),
     }),
 });
 
@@ -40,3 +55,5 @@ export const useGetArticleComments =
     articleCommentsApi.useGetArticleCommentsQuery;
 export const useAddArticleComment =
     articleCommentsApi.useAddArticleCommentMutation;
+export const useDeleteArticleComment =
+    articleCommentsApi.useDeleteArticleCommentMutation;

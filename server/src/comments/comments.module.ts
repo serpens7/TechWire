@@ -2,12 +2,15 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Delete,
+    ForbiddenException,
     Get,
     HttpCode,
     HttpStatus,
     Injectable,
     Module,
     NotFoundException,
+    Param,
     Post,
     Query,
 } from '@nestjs/common';
@@ -16,6 +19,8 @@ import {
     ApiBearerAuth,
     ApiBody,
     ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiNoContentResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
     ApiOperation,
@@ -130,6 +135,29 @@ export class CommentsService {
 
         return serializeComment(comment, { expandUser: true });
     }
+
+    /**
+     * Удаляет только свой комментарий. Если это корень ветки — ответы уходят
+     * с ним же (onDelete: Cascade на Comment.parentId в схеме), как и должно
+     * быть у схлопнутого дерева: оставлять «осиротевшие» ответы без корня
+     * было бы странно и на фронте нечего было бы под ними показывать.
+     */
+    async remove(id: string, currentUserId: string): Promise<void> {
+        const comment = await this.prisma.comment.findUnique({
+            where: { id },
+            select: { id: true, userId: true },
+        });
+
+        if (!comment) {
+            throw new NotFoundException(`Комментарий ${id} не найден`);
+        }
+
+        if (comment.userId !== currentUserId) {
+            throw new ForbiddenException('Можно удалить только свой комментарий');
+        }
+
+        await this.prisma.comment.delete({ where: { id } });
+    }
 }
 
 // ApiBearerAuth на отдельных методах, а не на классе: иначе публичное чтение
@@ -166,6 +194,21 @@ export class CommentsController {
         @CurrentUser() user: AuthenticatedUser,
     ) {
         return this.comments.create(dto, user.id);
+    }
+
+    @ApiOperation({
+        summary: 'Удалить комментарий',
+        description:
+            'Только свой собственный. Если это корень ветки, ответы удаляются вместе с ним.',
+    })
+    @ApiBearerAuth()
+    @ApiNoContentResponse()
+    @ApiNotFoundResponse({ description: 'Комментарий не найден' })
+    @ApiForbiddenResponse({ description: 'Можно удалить только свой комментарий' })
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    remove(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+        return this.comments.remove(id, user.id);
     }
 }
 

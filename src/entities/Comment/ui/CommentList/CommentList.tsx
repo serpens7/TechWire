@@ -13,11 +13,21 @@ interface CommentListProps {
     canReply?: boolean;
     onReplyClick?: (comment: Comment) => void;
     onSubmitReply?: (comment: Comment, text: string) => void;
+    /** Чей это комментарий — только владелец видит «Удалить». Простое равенство id. */
+    currentUserId?: string;
+    onDeleteClick?: (comment: Comment) => void;
 }
 
 export const CommentList = (props: CommentListProps) => {
     const {
-        className = '', isLoading, comments, canReply, onReplyClick, onSubmitReply,
+        className = '',
+        isLoading,
+        comments,
+        canReply,
+        onReplyClick,
+        onSubmitReply,
+        currentUserId,
+        onDeleteClick,
     } = props;
     const { t } = useTranslation();
 
@@ -43,6 +53,8 @@ export const CommentList = (props: CommentListProps) => {
                             canReply={canReply}
                             onReplyClick={onReplyClick}
                             onSubmitReply={onSubmitReply}
+                            isOwn={Boolean(currentUserId) && root.user.id === currentUserId}
+                            onDeleteClick={onDeleteClick}
                         />
                         {replies.map((reply) => (
                             <CommentCard
@@ -51,6 +63,8 @@ export const CommentList = (props: CommentListProps) => {
                                 canReply={canReply}
                                 onReplyClick={onReplyClick}
                                 onSubmitReply={onSubmitReply}
+                                isOwn={Boolean(currentUserId) && reply.user.id === currentUserId}
+                                onDeleteClick={onDeleteClick}
                                 key={reply.id}
                             />
                         ))}

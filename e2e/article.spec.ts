@@ -60,6 +60,48 @@ test.describe('comments', () => {
         await page.reload();
         await expect(page.getByText(text)).toBeVisible();
     });
+
+    test('a logged-in user can delete their own comment', async ({ page }) => {
+        await page.goto('/');
+        await login(page, ADMIN);
+        await page.goto(ARTICLE);
+
+        const text = `E2E comment to delete ${Date.now()}`;
+
+        const posted = page.waitForResponse(
+            (r) =>
+                r.url().includes('/comments') &&
+                r.request().method() === 'POST' &&
+                r.status() === 201,
+        );
+
+        await page.getByLabel('Enter comment text').fill(text);
+        await page.getByRole('button', { name: 'Send' }).click();
+        await posted;
+        await expect(page.getByText(text)).toBeVisible();
+
+        const deleted = page.waitForResponse(
+            (r) =>
+                r.url().includes('/comments/') &&
+                r.request().method() === 'DELETE' &&
+                r.status() === 204,
+        );
+
+        // Кнопка «Delete» видна только на своих комментариях — этот только
+        // что создан этим же пользователем, так что она есть рядом с Reply.
+        // Матчим CommentCard по фрагменту CSS-module класса (та же техника,
+        // что и для звёзд рейтинга ниже в этом файле) и ищем внутри неё.
+        const commentCard = page.locator('[class*="CommentCard"]', { hasText: text });
+        await commentCard.getByRole('button', { name: 'Delete' }).click();
+        await deleted;
+
+        await expect(page.getByText(text)).toHaveCount(0);
+
+        // Не оживает после перезагрузки — реальное удаление, а не только
+        // локальное состояние кеша RTK Query.
+        await page.reload();
+        await expect(page.getByText(text)).toHaveCount(0);
+    });
 });
 
 test.describe('rating', () => {

@@ -32,6 +32,16 @@ describe('features/ArticleComments', () => {
                 };
             }
 
+            if (config.method === 'DELETE') {
+                return {
+                    data: undefined,
+                    status: 204,
+                    statusText: 'No Content',
+                    headers: {},
+                    config: config as never,
+                };
+            }
+
             return {
                 data: [rootComment],
                 status: 200,
@@ -118,6 +128,40 @@ describe('features/ArticleComments', () => {
         expect(screen.getByText('comments.reply')).toBeInTheDocument();
         expect(screen.getByText('auth.toComment')).toBeInTheDocument();
         expect(screen.queryByLabelText('comments.enterText')).not.toBeInTheDocument();
+    });
+
+    test('владелец видит «Удалить» и может удалить свой комментарий', async () => {
+        const user = userEvent.setup();
+        componentRender(<ArticleComments id='1' />, {
+            initialState: {
+                // rootComment.userId === '2' — тот же id, что у вошедшего.
+                user: { authData: { id: '2', username: 'user2' }, inited: true },
+            },
+        });
+
+        await screen.findByText('root comment');
+        await user.click(screen.getByText('comments.delete'));
+
+        await waitFor(() => {
+            const deleteCall = ($api.request as jest.Mock).mock.calls.find(
+                ([config]: [AxiosRequestConfig]) => config.method === 'DELETE',
+            );
+            expect(deleteCall).toBeDefined();
+            expect(deleteCall[0].url).toBe('/comments/root');
+        });
+    });
+
+    test('чужой комментарий не показывает «Удалить»', async () => {
+        componentRender(<ArticleComments id='1' />, {
+            initialState: {
+                // rootComment.userId === '2', вошедший — '1'.
+                user: { authData: { id: '1', username: 'admin' }, inited: true },
+            },
+        });
+
+        await screen.findByText('root comment');
+
+        expect(screen.queryByText('comments.delete')).not.toBeInTheDocument();
     });
 
     test('клик «Ответить» гостем открывает модалку входа', async () => {
