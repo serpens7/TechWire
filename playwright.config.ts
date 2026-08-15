@@ -72,6 +72,11 @@ export default defineConfig({
             url: 'http://localhost:8000/health',
             reuseExistingServer: true,
             timeout: 180_000,
+            // Тот же лимит, что и у первой записи: обычно этот сервер уже
+            // поднят первой (reuseExistingServer его находит), но если он
+            // выиграет гонку и стартует сам — без env весь прогон упрётся
+            // в 429 на входе.
+            env: { AUTH_THROTTLE_LIMIT: '1000' },
         },
     ],
 });

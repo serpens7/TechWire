@@ -14,7 +14,7 @@ import { ADMIN, login } from './helpers';
  * (в духе YouTube) — не через общую форму нового комментария вверху блока,
  * поэтому на странице в момент отправки два поля "Enter comment text"-подобных
  * инпута и две кнопки Send: различаем их по тому, что у мини-формы свой
- * placeholder "Reply to @username…".
+ * placeholder "Reply to @username".
  */
 
 const ARTICLE = '/articles/1';
@@ -32,7 +32,7 @@ test.describe('ответы на комментарии', () => {
         // Отвечаем на первый же комментарий в сиде — все они от admin.
         await page.getByRole('button', { name: 'Reply' }).first().click();
 
-        const replyInput = page.getByLabel('Reply to @admin…');
+        const replyInput = page.getByLabel('Reply to @admin');
         await expect(replyInput).toBeVisible();
 
         const replyText = `E2E reply ${Date.now()}`;
@@ -56,7 +56,7 @@ test.describe('ответы на комментарии', () => {
         expect(created.replyToUserId).toEqual(expect.any(String));
 
         // Мини-форма закрылась после отправки.
-        await expect(page.getByLabel('Reply to @admin…')).toHaveCount(0);
+        await expect(page.getByLabel('Reply to @admin')).toHaveCount(0);
 
         // Пришёл через настоящий query hook, а не оптимистичное обновление.
         await expect(page.getByText(replyText)).toBeVisible();
@@ -74,10 +74,10 @@ test.describe('ответы на комментарии', () => {
         await page.goto(ARTICLE);
 
         await page.getByRole('button', { name: 'Reply' }).first().click();
-        await expect(page.getByLabel('Reply to @admin…')).toBeVisible();
+        await expect(page.getByLabel('Reply to @admin')).toBeVisible();
 
         await page.getByRole('button', { name: 'Cancel' }).click();
 
-        await expect(page.getByLabel('Reply to @admin…')).toHaveCount(0);
+        await expect(page.getByLabel('Reply to @admin')).toHaveCount(0);
     });
 });
