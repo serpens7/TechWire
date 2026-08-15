@@ -299,7 +299,7 @@
         ]
       },
       "post": {
-        "description": "Автор берётся из токена; userId в теле игнорируется.",
+        "description": "Автор берётся из токена; userId в теле игнорируется. С parentId — ответ; схлопывается до корневого комментария, replyToUserId выставляется сервером.",
         "operationId": "CommentsController_create",
         "parameters": [],
         "requestBody": {
@@ -322,6 +322,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Родительский комментарий из другой статьи"
+          },
+          "404": {
+            "description": "Статья или родительский комментарий не найдены"
           }
         },
         "security": [
@@ -1263,7 +1269,43 @@
           "userId": {
             "type": "string"
           },
+          "parentId": {
+            "type": "string"
+          },
+          "replyToUserId": {
+            "type": "string"
+          },
           "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "avatar": {
+                "type": "string"
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "ADMIN",
+                    "MANAGER",
+                    "USER"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "id",
+              "username",
+              "roles"
+            ]
+          },
+          "replyToUser": {
             "type": "object",
             "properties": {
               "id": {
@@ -1314,6 +1356,9 @@
             "minLength": 1
           },
           "userId": {
+            "type": "string"
+          },
+          "parentId": {
             "type": "string"
           }
         },

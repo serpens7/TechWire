@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Get,
@@ -11,9 +12,11 @@ import {
     Query,
 } from '@nestjs/common';
 import {
+    ApiBadRequestResponse,
     ApiBearerAuth,
     ApiBody,
     ApiCreatedResponse,
+    ApiNotFoundResponse,
     ApiOkResponse,
     ApiOperation,
     ApiTags,
@@ -42,6 +45,9 @@ const createCommentSchema = z.object({
     // Фронт присылает userId, но автором становится владелец токена —
     // иначе можно было бы оставить комментарий от чужого имени.
     userId: z.string().optional(),
+    // Комментарий, на который отвечают. Схлопывается до корня и получает
+    // проверенный replyToUserId — см. CommentsService.create.
+    parentId: z.string().optional(),
 });
 
 type CreateCommentDto = z.infer<typeof createCommentSchema>;
@@ -57,7 +63,17 @@ export class CommentsService {
 
         const comments = await this.prisma.comment.findMany({
             where: query.articleId ? { articleId: query.articleId } : {},
-            ...(expandUser ? { include: { user: { select: publicUserSelect } } } : {}),
+            // Устойчивый порядок нужен именно ради веток: без него ответы и
+            // корневые комментарии перемешивались бы между перезагрузками.
+            orderBy: { createdAt: 'asc' },
+            ...(expandUser
+                ? {
+                      include: {
+                          user: { select: publicUserSelect },
+                          replyToUser: { select: publicUserSelect },
+                      },
+                  }
+                : {}),
         });
 
         return comments.map((comment) => serializeComment(comment, { expandUser }));
@@ -73,9 +89,43 @@ export class CommentsService {
             throw new NotFoundException(`Статья ${dto.articleId} не найдена`);
         }
 
+        // Схлопывание в один уровень: ответ на ответ прикрепляется к тому же
+        // корню, что и его родитель, а не образует более глубокую ветку.
+        // replyToUserId берётся с сервера (кто автор родителя), а не из
+        // тела — иначе подпись "@username" можно было бы подделать.
+        let parentId: string | undefined;
+        let replyToUserId: string | undefined;
+
+        if (dto.parentId) {
+            const parent = await this.prisma.comment.findUnique({
+                where: { id: dto.parentId },
+                select: { id: true, articleId: true, parentId: true, userId: true },
+            });
+
+            if (!parent) {
+                throw new NotFoundException(`Комментарий ${dto.parentId} не найден`);
+            }
+
+            if (parent.articleId !== dto.articleId) {
+                throw new BadRequestException('Родительский комментарий из другой статьи');
+            }
+
+            parentId = parent.parentId ?? parent.id;
+            replyToUserId = parent.userId;
+        }
+
         const comment = await this.prisma.comment.create({
-            data: { text: dto.text, articleId: dto.articleId, userId: authorId },
-            include: { user: { select: publicUserSelect } },
+            data: {
+                text: dto.text,
+                articleId: dto.articleId,
+                userId: authorId,
+                parentId,
+                replyToUserId,
+            },
+            include: {
+                user: { select: publicUserSelect },
+                replyToUser: { select: publicUserSelect },
+            },
         });
 
         return serializeComment(comment, { expandUser: true });
@@ -101,11 +151,14 @@ export class CommentsController {
 
     @ApiOperation({
         summary: 'Оставить комментарий',
-        description: 'Автор берётся из токена; userId в теле игнорируется.',
+        description:
+            'Автор берётся из токена; userId в теле игнорируется. С parentId — ответ; схлопывается до корневого комментария, replyToUserId выставляется сервером.',
     })
     @ApiBearerAuth()
     @ApiBody({ type: CreateCommentBodyDto })
     @ApiCreatedResponse({ type: CommentWithUserDto })
+    @ApiNotFoundResponse({ description: 'Статья или родительский комментарий не найдены' })
+    @ApiBadRequestResponse({ description: 'Родительский комментарий из другой статьи' })
     @Post()
     @HttpCode(HttpStatus.CREATED)
     create(

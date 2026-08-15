@@ -104,7 +104,7 @@ export function serializeArticle(
 }
 
 export function serializeComment(
-    comment: Comment & { user?: PublicUser | null },
+    comment: Comment & { user?: PublicUser | null; replyToUser?: PublicUser | null },
     options: { expandUser?: boolean } = {},
 ): CommentResponse | CommentWithUserResponse {
     const base: CommentResponse = {
@@ -112,10 +112,16 @@ export function serializeComment(
         text: comment.text,
         articleId: comment.articleId,
         userId: comment.userId,
+        parentId: comment.parentId ?? undefined,
+        replyToUserId: comment.replyToUserId ?? undefined,
     };
 
     if (options.expandUser && comment.user) {
-        return { ...base, user: serializeUser(comment.user) };
+        return {
+            ...base,
+            user: serializeUser(comment.user),
+            replyToUser: comment.replyToUser ? serializeUser(comment.replyToUser) : undefined,
+        };
     }
 
     return base;

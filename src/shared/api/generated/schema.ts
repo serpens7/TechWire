@@ -155,7 +155,7 @@ export interface paths {
         put?: never;
         /**
          * Оставить комментарий
-         * @description Автор берётся из токена; userId в теле игнорируется.
+         * @description Автор берётся из токена; userId в теле игнорируется. С parentId — ответ; схлопывается до корневого комментария, replyToUserId выставляется сервером.
          */
         post: operations["CommentsController_create"];
         delete?: never;
@@ -409,7 +409,15 @@ export interface components {
             text: string;
             articleId: string;
             userId: string;
+            parentId?: string;
+            replyToUserId?: string;
             user: {
+                id: string;
+                username: string;
+                avatar?: string;
+                roles: ("ADMIN" | "MANAGER" | "USER")[];
+            };
+            replyToUser?: {
                 id: string;
                 username: string;
                 avatar?: string;
@@ -420,6 +428,7 @@ export interface components {
             articleId: string;
             text: string;
             userId?: string;
+            parentId?: string;
         };
         NotificationDto: {
             id: string;
@@ -746,6 +755,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CommentWithUserDto"];
                 };
+            };
+            /** @description Родительский комментарий из другой статьи */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Статья или родительский комментарий не найдены */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

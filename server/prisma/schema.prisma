@@ -57,7 +57,10 @@ model User {
 
   profile       Profile?
   articles      Article[]
-  comments      Comment[]
+  comments      Comment[]      @relation("CommentAuthor")
+  /// Комментарии, чьим адресатом ответа (replyToUserId) значится этот
+  /// пользователь — не то же самое, что comments выше: это чужие комментарии.
+  repliedInComments Comment[]  @relation("CommentReplyTo")
   notifications Notification[]
   ratings       Rating[]
 
@@ -131,16 +134,36 @@ model ArticleView {
 }
 
 model Comment {
-  id   String @id @default(cuid())
-  text String
+  id        String   @id @default(cuid())
+  text      String
+  /// Нужен для устойчивого порядка: раньше findMany шёл вовсе без orderBy,
+  /// и в ветке ответов это было особенно заметно. Наружу не отдаётся —
+  /// контракт ответа не меняется, только порядок элементов в массиве.
+  createdAt DateTime @default(now())
 
   articleId String
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation("CommentAuthor", fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Самоссылка "схлопнутого" (Reddit-style) дерева: у ответа всегда указывает
+  /// на КОРНЕВОЙ комментарий, даже когда отвечают на ответ — схлопывание
+  /// делает CommentsService.create. onDelete: Cascade — удаление корня
+  /// забирает с собой все ответы на него.
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+
+  /// Кому адресован ответ — источник подписи "@username" в схлопнутой ветке
+  /// (parentId сам по себе указывает на корень, а не на непосредственного
+  /// адресата). SetNull, а не Cascade: удаление адресата не должно стирать
+  /// сам комментарий, только терять подпись под кем он был.
+  replyToUserId String?
+  replyToUser   User?   @relation("CommentReplyTo", fields: [replyToUserId], references: [id], onDelete: SetNull)
 
   @@index([articleId])
+  @@index([parentId])
   @@map("comments")
 }
 

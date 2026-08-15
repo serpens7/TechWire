@@ -56,10 +56,17 @@ const commentBaseSchema = z.object({
     text: z.string(),
     articleId: z.string(),
     userId: z.string(),
+    /** Есть только у ответа — всегда указывает на корневой комментарий. */
+    parentId: z.string().optional(),
+    /** Кому адресован ответ. Отсутствует у корневых комментариев. */
+    replyToUserId: z.string().optional(),
 });
 
 export const commentSchema = commentBaseSchema;
-export const commentWithUserSchema = commentBaseSchema.extend({ user: userSchema });
+export const commentWithUserSchema = commentBaseSchema.extend({
+    user: userSchema,
+    replyToUser: userSchema.optional(),
+});
 
 export const profileSchema = z.object({
     id: z.string(),
