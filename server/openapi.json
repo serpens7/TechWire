@@ -194,6 +194,7 @@
     },
     "/articles/{id}": {
       "get": {
+        "description": "Засчитывает просмотр (кроме случая, когда читает сам автор). Токен необязателен — см. JwtAuthGuard.",
         "operationId": "ArticlesController_findOne",
         "parameters": [],
         "responses": {
@@ -499,6 +500,29 @@
         "summary": "Оценить статью",
         "tags": [
           "ratings"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "description": "Уже профиля: только то, что не является личными данными, плюс число опубликованных статей.",
+        "operationId": "UsersController_findOne",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicAuthorDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Публичная карточка автора",
+        "tags": [
+          "users"
         ]
       }
     }
@@ -1474,6 +1498,36 @@
         "required": [
           "articleId",
           "rate"
+        ]
+      },
+      "PublicAuthorDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "first": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "articlesCount": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "articlesCount"
         ]
       }
     }

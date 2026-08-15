@@ -13,6 +13,7 @@ import type {
     CommentWithUserResponse,
     NotificationResponse,
     ProfileResponse,
+    PublicAuthorResponse,
     RatingResponse,
     UserResponse,
 } from './schemas';
@@ -135,6 +136,26 @@ export function serializeProfile(profile: Profile & { user: PublicUser }): Profi
         city: profile.city ?? undefined,
         username: profile.user.username,
         avatar: profile.user.avatar ?? undefined,
+    };
+}
+
+/**
+ * Публичная карточка автора — сознательно уже serializeProfile: не отдаёт
+ * age/currency/city/country, которые на /profile/:id закрыты токеном именно
+ * потому что это личные данные.
+ */
+export function serializePublicAuthor(
+    user: PublicUser,
+    profile: Pick<Profile, 'first' | 'lastname'> | null,
+    articlesCount: number,
+): PublicAuthorResponse {
+    return {
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar ?? undefined,
+        first: profile?.first ?? undefined,
+        lastname: profile?.lastname ?? undefined,
+        articlesCount,
     };
 }
 

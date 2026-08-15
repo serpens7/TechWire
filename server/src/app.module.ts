@@ -13,6 +13,7 @@ import { CommentsModule } from './comments/comments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ProfileModule } from './profile/profile.module';
 import { RatingsModule } from './ratings/ratings.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { RatingsModule } from './ratings/ratings.module';
         NotificationsModule,
         ProfileModule,
         RatingsModule,
+        UsersModule,
     ],
     controllers: [HealthController],
     providers: [

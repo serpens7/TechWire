@@ -92,6 +92,21 @@ export const ratingSchema = z.object({
     feedback: z.string().optional(),
 });
 
+/**
+ * Публичная карточка автора (GET /users/:id) — сознательно намного уже
+ * profileSchema. age, currency, city, country там не просто так закрыты
+ * токеном (см. /profile/:id) — это персональные данные, и открытая страница
+ * автора не повод их обнажить.
+ */
+export const publicAuthorSchema = z.object({
+    id: z.string(),
+    username: z.string(),
+    avatar: z.string().optional(),
+    first: z.string().optional(),
+    lastname: z.string().optional(),
+    articlesCount: z.number().int(),
+});
+
 export const loginResponseSchema = z.object({
     user: userSchema,
     token: z.string(),
@@ -143,6 +158,7 @@ export type ArticleWithUserResponse = z.infer<typeof articleWithUserSchema>;
 export type CommentResponse = z.infer<typeof commentSchema>;
 export type CommentWithUserResponse = z.infer<typeof commentWithUserSchema>;
 export type ProfileResponse = z.infer<typeof profileSchema>;
+export type PublicAuthorResponse = z.infer<typeof publicAuthorSchema>;
 export type NotificationResponse = z.infer<typeof notificationSchema>;
 export type RatingResponse = z.infer<typeof ratingSchema>;
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
@@ -160,6 +176,7 @@ export class ArticleWithUserDto extends createZodDto(articleWithUserSchema) {}
 export class CommentDto extends createZodDto(commentSchema) {}
 export class CommentWithUserDto extends createZodDto(commentWithUserSchema) {}
 export class ProfileDto extends createZodDto(profileSchema) {}
+export class PublicAuthorDto extends createZodDto(publicAuthorSchema) {}
 export class NotificationDto extends createZodDto(notificationSchema) {}
 export class RatingDto extends createZodDto(ratingSchema) {}
 export class LoginResponseDto extends createZodDto(loginResponseSchema) {}

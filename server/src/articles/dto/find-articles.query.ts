@@ -20,6 +20,8 @@ export const findArticlesQuerySchema = z.object({
         (value) => (value === '' || value === 'ALL' ? undefined : value),
         z.enum(['IT', 'SCIENCE', 'ECONOMICS']).optional(),
     ),
+    // Статьи одного автора — для страницы /users/:id.
+    userId: optionalString,
 });
 
 export type FindArticlesQuery = z.infer<typeof findArticlesQuerySchema>;

@@ -23,6 +23,7 @@ export class ArticlesService {
             _order: order = 'asc',
             q,
             type,
+            userId,
         } = query;
 
         const expandUser = query._expand === 'user';
@@ -49,6 +50,8 @@ export class ArticlesService {
                           ],
                       }
                     : {}),
+                // Статьи одного автора — страница /users/:id.
+                ...(userId ? { userId } : {}),
             },
             orderBy: { [sort]: order },
             skip: (page - 1) * limit,

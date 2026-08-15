@@ -106,7 +106,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Одна статья */
+        /**
+         * Одна статья
+         * @description Засчитывает просмотр (кроме случая, когда читает сам автор). Токен необязателен — см. JwtAuthGuard.
+         */
         get: operations["ArticlesController_findOne"];
         /**
          * Изменить статью
@@ -223,6 +226,26 @@ export interface paths {
          * @description Повторная отправка перезаписывает оценку. Автор берётся из токена.
          */
         post: operations["RatingsController_rate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Публичная карточка автора
+         * @description Уже профиля: только то, что не является личными данными, плюс число опубликованных статей.
+         */
+        get: operations["UsersController_findOne"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -444,6 +467,14 @@ export interface components {
             rate: number;
             feedback?: string;
             userId?: string;
+        };
+        PublicAuthorDto: {
+            id: string;
+            username: string;
+            avatar?: string;
+            first?: string;
+            lastname?: string;
+            articlesCount: number;
         };
     };
     responses: never;
@@ -831,6 +862,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RatingDto"];
+                };
+            };
+        };
+    };
+    UsersController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicAuthorDto"];
                 };
             };
         };
