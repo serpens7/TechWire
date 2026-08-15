@@ -8,6 +8,7 @@ import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
 import { registerUser } from '../../model/services/registerUser';
 import { validateRegisterData } from '../../model/services/validateRegisterData';
 import { RegisterValidateError } from '../../model/types/registerSchema';
+import { AuthErrorCode } from '../../model/types/authError';
 import cls from './RegisterForm.module.scss';
 
 export interface RegisterFormProps {
@@ -27,7 +28,7 @@ const RegisterForm = memo(({ onSuccess }: RegisterFormProps) => {
     const [password, setPassword] = useState('');
     const [passwordRepeat, setPasswordRepeat] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string>();
+    const [error, setError] = useState<AuthErrorCode>();
     const [validationErrors, setValidationErrors] = useState<RegisterValidateError[]>([]);
 
     const validateErrorTranslates: Record<RegisterValidateError, string> = {
@@ -36,6 +37,14 @@ const RegisterForm = memo(({ onSuccess }: RegisterFormProps) => {
         [RegisterValidateError.PASSWORD_TOO_SHORT]: t('register.errors.passwordLength'),
         [RegisterValidateError.PASSWORDS_DO_NOT_MATCH]: t('register.errors.passwordsMismatch'),
     };
+
+    // Только эти два кода различимы для регистрации: неверный пароль
+    // (INVALID_CREDENTIALS) сюда прийти не может.
+    const errorText = (() => {
+        if (error === AuthErrorCode.USERNAME_TAKEN) return t('register.usernameTaken');
+        if (error === AuthErrorCode.TOO_MANY_ATTEMPTS) return t('login.tooManyAttempts');
+        return t('register.error');
+    })();
 
     const onSubmit = useCallback(
         async (e: FormEvent<HTMLFormElement>) => {
@@ -56,16 +65,16 @@ const RegisterForm = memo(({ onSuccess }: RegisterFormProps) => {
             if (result.meta.requestStatus === 'fulfilled') {
                 onSuccess?.();
             } else {
-                setError(t('register.error'));
+                setError(result.payload as AuthErrorCode | undefined);
             }
         },
-        [dispatch, username, password, passwordRepeat, onSuccess, t],
+        [dispatch, username, password, passwordRepeat, onSuccess],
     );
 
     return (
         <form className={classNames(cls.RegisterForm, {}, [])} onSubmit={onSubmit}>
             <Text title={t('register.title')} />
-            {Boolean(error) && <Text theme={TextTheme.ERROR} text={error} />}
+            {Boolean(error) && <Text theme={TextTheme.ERROR} text={errorText} />}
             {validationErrors.map((err) => (
                 <Text key={err} theme={TextTheme.ERROR} text={validateErrorTranslates[err]} />
             ))}

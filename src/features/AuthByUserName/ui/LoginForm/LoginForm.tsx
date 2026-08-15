@@ -19,6 +19,7 @@ import {
 import { loginByUsername } from '../../model/services/loginByUsername';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { useAppDispatch } from '@/shared/lib/hooks/useAppDispatch';
+import { AuthErrorCode } from '../../model/types/authError';
 
 export interface LoginFormProps {
     onSuccess?: () => void;
@@ -36,6 +37,13 @@ const LoginForm = memo(({ onSuccess }: LoginFormProps) => {
     const password = useSelector(getLoginPassword);
     const isLoading = useSelector(getLoginIsLoading);
     const error = useSelector(getLoginError);
+
+    // TOO_MANY_ATTEMPTS — единственный код, который login-форме есть смысл
+    // показывать отдельно: остальное (неверный пароль, сетевой сбой) для
+    // вошедшего гостя выглядит одинаково — «попробуйте ещё раз».
+    const errorText = error === AuthErrorCode.TOO_MANY_ATTEMPTS
+        ? t('login.tooManyAttempts')
+        : t('login.error');
 
     const onChangeUsername = useCallback(
         (value: string) => {
@@ -68,7 +76,7 @@ const LoginForm = memo(({ onSuccess }: LoginFormProps) => {
             >
                 <Text title={t('login.authorization')} />
                 {Boolean(error) && (
-                    <Text theme={TextTheme.ERROR} text={t('login.error')} />
+                    <Text theme={TextTheme.ERROR} text={errorText} />
                 )}
                 <Input
                     autofocus

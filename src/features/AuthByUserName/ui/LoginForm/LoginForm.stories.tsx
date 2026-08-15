@@ -1,5 +1,6 @@
 import { Meta, StoryFn } from '@storybook/react';
 import { StoreDecorator } from '@/shared/config/storybook/StoreDecorator/StoreDecorator';
+import { AuthErrorCode } from '../../model/types/authError';
 import LoginForm from './LoginForm';
 
 export default {
@@ -27,7 +28,7 @@ WithError.decorators = [
         loginForm: {
             username: '123',
             password: 'asd',
-            error: 'ERROR',
+            error: AuthErrorCode.INVALID_CREDENTIALS,
             isLoading: false,
         },
     }),

@@ -56,4 +56,16 @@ describe('features/RegisterForm', () => {
         expect(screen.getByText('register.errors.usernameLength')).toBeInTheDocument();
         expect($api.post).not.toHaveBeenCalled();
     });
+
+    test('занятый логин показывает понятную ошибку', async () => {
+        jest.spyOn($api, 'post').mockRejectedValue({ response: { status: 409 } });
+
+        componentRender(<RegisterForm />);
+        await fillForm('admin', 'password123', 'password123');
+        await userEvent.click(screen.getByText('register.submit'));
+
+        await waitFor(() => {
+            expect(screen.getByText('register.usernameTaken')).toBeInTheDocument();
+        });
+    });
 });
