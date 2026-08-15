@@ -1,6 +1,7 @@
 /**
- * Публичная карточка автора (GET /users/:id) — заметно уже Profile: только
- * то, что не персональные данные, плюс число опубликованных статей.
+ * Публичная карточка автора (GET /users/:id) — уже Profile: без
+ * currency/country. age/city/status пользователь сам решает показать здесь —
+ * это то же, что он вводит в форме профиля.
  */
 export interface Author {
     id: string;
@@ -8,5 +9,8 @@ export interface Author {
     avatar?: string;
     first?: string;
     lastname?: string;
+    age?: number;
+    city?: string;
+    status?: string;
     articlesCount: number;
 }

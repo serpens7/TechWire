@@ -1,3 +1,25 @@
 .AuthorCard {
-    padding: 16px;
+    padding: 24px;
+}
+
+// Цитата пользователя о себе — курсивом, чтобы визуально отличаться от
+// служебных строк вроде имени и города.
+.status {
+    p {
+        font-style: italic;
+        color: var(--text-secondary);
+    }
+}
+
+.facts {
+    p {
+        color: var(--text-secondary);
+    }
+}
+
+.articlesCount {
+    p {
+        color: var(--text-secondary);
+        font: var(--font-s);
+    }
 }

@@ -16,6 +16,9 @@ Normal.args = {
         first: 'Иван',
         lastname: 'Иванов',
         avatar: 'https://loremflickr.com/320/240/face',
+        status: 'Пью кофе и пишу код',
+        age: 28,
+        city: 'Москва',
         articlesCount: 12,
     },
 };

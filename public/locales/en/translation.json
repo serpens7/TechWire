@@ -132,6 +132,8 @@
     "author": {
         "articlesCount_one": "{{count}} article",
         "articlesCount_other": "{{count}} articles",
+        "age_one": "{{count}} year old",
+        "age_other": "{{count}} years old",
         "showMore": "Show more"
     },
     "profile": {

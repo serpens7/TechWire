@@ -27,6 +27,25 @@ describe('AuthorCard', () => {
         expect(screen.getByText('admin')).toBeInTheDocument();
     });
 
+    test('renders status, age and city when present', () => {
+        componentRender(
+            <AuthorCard
+                author={{
+                    ...baseAuthor, status: 'Coffee and code', age: 28, city: 'Moscow',
+                }}
+            />,
+        );
+
+        expect(screen.getByText('«Coffee and code»')).toBeInTheDocument();
+        expect(screen.getByText('Moscow')).toBeInTheDocument();
+    });
+
+    test('does not render status/age/city rows when absent', () => {
+        componentRender(<AuthorCard author={baseAuthor} />);
+
+        expect(screen.queryByText(/«.*»/)).not.toBeInTheDocument();
+    });
+
     test('renders skeletons when isLoading', () => {
         const { container } = componentRender(<AuthorCard isLoading />);
 

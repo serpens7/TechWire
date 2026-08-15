@@ -21,11 +21,12 @@ export const AuthorCard = memo((props: AuthorCardProps) => {
 
     if (isLoading) {
         return (
-            <Card className={classNames(cls.AuthorCard, {}, [className])}>
+            <Card max className={classNames(cls.AuthorCard, {}, [className])}>
                 <HStack gap='16' max>
                     <Skeleton width={80} height={80} border='50%' />
-                    <VStack gap='8'>
+                    <VStack gap='8' max>
                         <Skeleton width={150} height={24} />
+                        <Skeleton width='60%' height={16} />
                         <Skeleton width={100} height={16} />
                     </VStack>
                 </HStack>
@@ -36,16 +37,31 @@ export const AuthorCard = memo((props: AuthorCardProps) => {
     if (!author) return null;
 
     const displayName = [author.first, author.lastname].filter(Boolean).join(' ');
+    const hasAge = typeof author.age === 'number';
+    const hasFacts = hasAge || Boolean(author.city);
 
     return (
-        <Card className={classNames(cls.AuthorCard, {}, [className])}>
-            <HStack gap='16' max>
+        <Card max className={classNames(cls.AuthorCard, {}, [className])}>
+            <HStack gap='16' max align='start'>
                 <Avatar size={80} src={author.avatar} />
-                <VStack gap='4'>
+                <VStack gap='8' max>
                     <Text title={author.username} size={TextSize.L} />
                     {Boolean(displayName) && <Text text={displayName} />}
+                    {Boolean(author.status) && (
+                        <Text text={`«${author.status}»`} className={cls.status} />
+                    )}
+                    {hasFacts && (
+                        <HStack gap='8' className={cls.facts}>
+                            {hasAge && (
+                                <Text text={t('author.age', { count: author.age })} />
+                            )}
+                            {hasAge && Boolean(author.city) && <Text text='·' />}
+                            {Boolean(author.city) && <Text text={author.city} />}
+                        </HStack>
+                    )}
                     <Text
                         text={t('author.articlesCount', { count: author.articlesCount })}
+                        className={cls.articlesCount}
                     />
                 </VStack>
             </HStack>

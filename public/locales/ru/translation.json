@@ -134,6 +134,10 @@
         "articlesCount_few": "{{count}} статьи",
         "articlesCount_many": "{{count}} статей",
         "articlesCount_other": "{{count}} статьи",
+        "age_one": "{{count}} год",
+        "age_few": "{{count}} года",
+        "age_many": "{{count}} лет",
+        "age_other": "{{count}} года",
         "showMore": "Показать ещё"
     },
     "button": {
