@@ -105,7 +105,25 @@
         "authorization": "Authorization form",
         "username": "Enter your login",
         "password": "Enter your password",
-        "submit": "Login"
+        "submit": "Login",
+        "goToRegister": "No account? Register",
+        "goToLogin": "Already have an account? Login",
+        "tooManyAttempts": "Too many login attempts, try again later"
+    },
+    "register": {
+        "title": "Registration",
+        "username": "Choose a login",
+        "password": "Choose a password",
+        "passwordRepeat": "Repeat password",
+        "submit": "Register",
+        "error": "Failed to register",
+        "usernameTaken": "This login is already taken",
+        "errors": {
+            "usernameLength": "Login must be between 3 and 32 characters",
+            "usernameChars": "Login can only contain latin letters, digits, _ and -",
+            "passwordLength": "Password must be at least 6 characters",
+            "passwordsMismatch": "Passwords do not match"
+        }
     },
     "navbar": {
         "exit": "Exit",
