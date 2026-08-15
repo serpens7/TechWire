@@ -8,6 +8,14 @@
         align-items: center;
     }
 
+    // Оборачивает аватар + имя автора в AppLink — свой flex-row вместо
+    // унаследованного от .header, и без подчёркивания при ховере.
+    .authorLink {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
     .username {
         margin-left: 8px;
     }

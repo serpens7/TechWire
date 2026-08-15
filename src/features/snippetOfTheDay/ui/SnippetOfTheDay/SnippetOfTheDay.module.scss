@@ -105,6 +105,11 @@
     margin-right: auto;
 }
 
+.authorLink {
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
 .author {
     flex-shrink: 0;
 }

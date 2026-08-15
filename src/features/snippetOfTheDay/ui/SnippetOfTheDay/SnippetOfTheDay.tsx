@@ -7,7 +7,7 @@ import { Avatar } from '@/shared/ui/Avatar/Avatar';
 import { AppLink } from '@/shared/ui/AppLink/AppLink';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { HStack } from '@/shared/ui/Stack';
-import { getRouteArticleDetails } from '@/shared/const/router';
+import { getRouteArticleDetails, getRouteAuthor } from '@/shared/const/router';
 import { useHighlights } from '@/entities/Article';
 import cls from './SnippetOfTheDay.module.scss';
 
@@ -83,10 +83,15 @@ export const SnippetOfTheDay = memo((props: SnippetOfTheDayProps) => {
                     >
                         {snippet.article.title}
                     </AppLink>
-                    <HStack gap='8' className={cls.author}>
-                        <Avatar size={24} src={snippet.article.user.avatar} />
-                        <Text text={snippet.article.user.username} />
-                    </HStack>
+                    <AppLink
+                        to={getRouteAuthor(snippet.article.user.id)}
+                        className={cls.authorLink}
+                    >
+                        <HStack gap='8' className={cls.author}>
+                            <Avatar size={24} src={snippet.article.user.avatar} />
+                            <Text text={snippet.article.user.username} />
+                        </HStack>
+                    </AppLink>
                 </div>
             </div>
         </div>
