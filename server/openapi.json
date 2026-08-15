@@ -25,7 +25,7 @@
     },
     "/login": {
       "post": {
-        "description": "Единственный публичный маршрут кроме /health. Отвечает одинаково на неверный пароль и несуществующий логин.",
+        "description": "Отвечает одинаково на неверный пароль и несуществующий логин.",
         "operationId": "AuthController_login",
         "parameters": [],
         "requestBody": {
@@ -51,9 +51,50 @@
           },
           "401": {
             "description": "Неверный логин или пароль"
+          },
+          "429": {
+            "description": "Слишком много попыток входа, попробуйте позже"
           }
         },
         "summary": "Вход",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Такой логин уже занят"
+          },
+          "429": {
+            "description": "Слишком много попыток входа, попробуйте позже"
+          }
+        },
+        "summary": "Регистрация",
         "tags": [
           "auth"
         ]
@@ -73,6 +114,9 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Слишком много попыток входа, попробуйте позже"
           }
         },
         "security": [
@@ -549,6 +593,26 @@
         "required": [
           "user",
           "token"
+        ]
+      },
+      "RegisterBodyDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 32,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 72
+          }
+        },
+        "required": [
+          "username",
+          "password"
         ]
       },
       "UserDto": {

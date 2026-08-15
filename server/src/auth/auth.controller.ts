@@ -2,6 +2,8 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@n
 import {
     ApiBearerAuth,
     ApiBody,
+    ApiConflictResponse,
+    ApiCreatedResponse,
     ApiOkResponse,
     ApiOperation,
     ApiTags,
@@ -15,6 +17,7 @@ import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
 import { LoginBodyDto, loginSchema, type LoginDto } from './dto/login.dto';
+import { RegisterBodyDto, registerSchema, type RegisterDto } from './dto/register.dto';
 import type { AuthenticatedUser } from './auth.types';
 
 // ThrottlerGuard навешан только здесь, а не глобально через APP_GUARD:
@@ -33,8 +36,7 @@ export class AuthController {
      */
     @ApiOperation({
         summary: 'Вход',
-        description:
-            'Единственный публичный маршрут кроме /health. Отвечает одинаково на неверный пароль и несуществующий логин.',
+        description: 'Отвечает одинаково на неверный пароль и несуществующий логин.',
     })
     @ApiBody({ type: LoginBodyDto })
     @ApiOkResponse({ type: LoginResponseDto })
@@ -44,6 +46,23 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     login(@Body(new ZodValidationPipe(loginSchema)) dto: LoginDto) {
         return this.auth.login(dto);
+    }
+
+    /**
+     * Регистрация. Отвечает той же формой, что и /login ({ user, token }) —
+     * фронт сразу входит только что созданным пользователем, без второго запроса.
+     * Роль всегда USER: назначить ADMIN/MANAGER через API нельзя, только сидом
+     * или прямой правкой БД.
+     */
+    @ApiOperation({ summary: 'Регистрация' })
+    @ApiBody({ type: RegisterBodyDto })
+    @ApiCreatedResponse({ type: LoginResponseDto })
+    @ApiConflictResponse({ description: 'Такой логин уже занят' })
+    @Public()
+    @Post('register')
+    @HttpCode(HttpStatus.CREATED)
+    register(@Body(new ZodValidationPipe(registerSchema)) dto: RegisterDto) {
+        return this.auth.register(dto);
     }
 
     /**

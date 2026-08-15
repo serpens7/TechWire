@@ -32,9 +32,26 @@ export interface paths {
         put?: never;
         /**
          * Вход
-         * @description Единственный публичный маршрут кроме /health. Отвечает одинаково на неверный пароль и несуществующий логин.
+         * @description Отвечает одинаково на неверный пароль и несуществующий логин.
          */
         post: operations["AuthController_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Регистрация */
+        post: operations["AuthController_register"];
         delete?: never;
         options?: never;
         head?: never;
@@ -232,6 +249,10 @@ export interface components {
                 roles: ("ADMIN" | "MANAGER" | "USER")[];
             };
             token: string;
+        };
+        RegisterBodyDto: {
+            username: string;
+            password: string;
         };
         UserDto: {
             id: string;
@@ -480,6 +501,50 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Слишком много попыток входа, попробуйте позже */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterBodyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponseDto"];
+                };
+            };
+            /** @description Такой логин уже занят */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Слишком много попыток входа, попробуйте позже */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     AuthController_me: {
@@ -498,6 +563,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserDto"];
                 };
+            };
+            /** @description Слишком много попыток входа, попробуйте позже */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
