@@ -57,6 +57,15 @@ export default defineConfig({
             // The backend adds an artificial per-request delay and the first
             // webpack dev build is slow, so give the stack generous headroom.
             timeout: 180_000,
+            // fullyParallel workers each log in independently — auth.spec,
+            // guestMain.spec and article.spec alone add up to more than the
+            // default 5-per-minute /login limit (see server/src/auth). Same
+            // reasoning as test/helpers.ts on the API-test side: this raises
+            // the ceiling for the whole e2e run, it doesn't touch production
+            // defaults. Ignored if reuseExistingServer finds an already
+            // running dev stack — start that one with the same override if
+            // you hit 429s locally.
+            env: { AUTH_THROTTLE_LIMIT: '1000' },
         },
         {
             command: 'npm run start:dev:server',
