@@ -59,7 +59,7 @@ export class ArticlesService {
         return articles.map((article) => serializeArticle(article, { expandUser }));
     }
 
-    async findOne(id: string, params: FindArticleParams) {
+    async findOne(id: string, params: FindArticleParams, viewerId?: string) {
         const expandUser = params._expand === 'user';
 
         const article = await this.prisma.article.findUnique({
@@ -71,7 +71,54 @@ export class ArticlesService {
             throw new NotFoundException(`Статья ${id} не найдена`);
         }
 
-        return serializeArticle(article, { expandUser });
+        const views = await this.registerView(article.id, article.userId, viewerId);
+
+        return serializeArticle({ ...article, views }, { expandUser });
+    }
+
+    /**
+     * Засчитывает просмотр и возвращает актуальное число просмотров.
+     *
+     * Не считает просмотр автору собственной статьи — иначе автор,
+     * просто открывающий свой черновик, накручивал бы себе счётчик.
+     * Ошибка записи не должна ронять чтение статьи: счётчик — не то, ради
+     * чего люди читают статьи, поэтому она проглатывается, а не пробрасывается.
+     */
+    private async registerView(
+        articleId: string,
+        authorId: string,
+        viewerId?: string,
+    ): Promise<number> {
+        if (viewerId && viewerId === authorId) {
+            const current = await this.prisma.article.findUnique({
+                where: { id: articleId },
+                select: { views: true },
+            });
+
+            return current?.views ?? 0;
+        }
+
+        try {
+            const [updated] = await this.prisma.$transaction([
+                this.prisma.article.update({
+                    where: { id: articleId },
+                    data: { views: { increment: 1 } },
+                    select: { views: true },
+                }),
+                this.prisma.articleView.create({
+                    data: { articleId, userId: viewerId },
+                }),
+            ]);
+
+            return updated.views;
+        } catch {
+            const current = await this.prisma.article.findUnique({
+                where: { id: articleId },
+                select: { views: true },
+            });
+
+            return current?.views ?? 0;
+        }
     }
 
     async create(body: ArticleBody, authorId: string) {

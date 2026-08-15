@@ -59,15 +59,20 @@ export class ArticlesController {
         return this.articles.findMany(query);
     }
 
-    @ApiOperation({ summary: 'Одна статья' })
+    @ApiOperation({
+        summary: 'Одна статья',
+        description:
+            'Засчитывает просмотр (кроме случая, когда читает сам автор). Токен необязателен — см. JwtAuthGuard.',
+    })
     @ApiOkResponse({ type: ArticleWithUserDto })
     @Public()
     @Get(':id')
     findOne(
         @Param('id') id: string,
         @Query(new ZodValidationPipe(findArticleParamsSchema)) params: FindArticleParams,
+        @CurrentUser() user: AuthenticatedUser | undefined,
     ) {
-        return this.articles.findOne(id, params);
+        return this.articles.findOne(id, params, user?.id);
     }
 
     /**

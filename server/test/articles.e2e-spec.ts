@@ -223,6 +223,49 @@ describe('статьи', () => {
         });
     });
 
+    describe('просмотры', () => {
+        let ownArticleId: string;
+
+        beforeAll(async () => {
+            const { body } = await http(app)
+                .post('/articles')
+                .set(...bearer(adminToken))
+                .send(newArticle())
+                .expect(201);
+
+            ownArticleId = body.id;
+        });
+
+        it('чтение гостем увеличивает счётчик', async () => {
+            const before = await http(app).get(`/articles/${ownArticleId}`).expect(200);
+            const after = await http(app).get(`/articles/${ownArticleId}`).expect(200);
+
+            expect(after.body.views).toBe(before.body.views + 1);
+        });
+
+        it('чтение другим пользователем увеличивает счётчик', async () => {
+            const before = await http(app).get(`/articles/${ownArticleId}`).expect(200);
+
+            const after = await http(app)
+                .get(`/articles/${ownArticleId}`)
+                .set(...bearer(userToken))
+                .expect(200);
+
+            expect(after.body.views).toBe(before.body.views + 1);
+        });
+
+        it('чтение автором собственной статьи не увеличивает счётчик', async () => {
+            const before = await http(app).get(`/articles/${ownArticleId}`).expect(200);
+
+            const after = await http(app)
+                .get(`/articles/${ownArticleId}`)
+                .set(...bearer(adminToken))
+                .expect(200);
+
+            expect(after.body.views).toBe(before.body.views);
+        });
+    });
+
     describe('создание', () => {
         it('обычному пользователю запрещено', async () => {
             await http(app)
@@ -343,7 +386,9 @@ describe('статьи', () => {
             // получил на GET — включая views. Раньше он шёл прямо в колонку
             // (`views ?? 0`), и любая правка обнуляла реальный счётчик
             // просмотров; здесь проверяем обратное — клиентское значение
-            // игнорируется полностью, не только «не обнуляет».
+            // игнорируется полностью, не только «не обнуляет». Точное число
+            // не фиксируем: предыдущие тесты этого describe уже читали
+            // статью и легитимно увеличили счётчик через GET.
             await http(app)
                 .put(`/articles/${articleId}`)
                 .set(...bearer(adminToken))
@@ -355,7 +400,8 @@ describe('статьи', () => {
                 .set(...bearer(userToken))
                 .expect(200);
 
-            expect(body.views).toBe(0);
+            expect(body.views).not.toBe(999);
+            expect(body.views).toBeLessThan(10);
         });
     });
 });

@@ -100,13 +100,34 @@ model Article {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  comments Comment[]
-  ratings  Rating[]
+  comments   Comment[]
+  ratings    Rating[]
+  viewEvents ArticleView[]
 
   @@index([createdAt])
   @@index([views])
   @@index([title])
   @@map("articles")
+}
+
+/// Журнал просмотров — отдельно от Article.views (счётчика). Views — то, что
+/// сериализуется в ответ и что видит пользователь; эта таблица нужна только
+/// для "статьи дня" по окну в 7 дней (см. HighlightsService): без истории
+/// нельзя было бы отличить просмотр вчера от просмотра год назад, оставался
+/// бы только пожизненный счётчик, который не меняется практически никогда.
+model ArticleView {
+  id       String   @id @default(cuid())
+  viewedAt DateTime @default(now())
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  /// Гость тоже засчитывается — id пользователя есть, только если он вошёл.
+  userId String?
+
+  @@index([articleId, viewedAt])
+  @@index([viewedAt])
+  @@map("article_views")
 }
 
 model Comment {
