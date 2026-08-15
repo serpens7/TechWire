@@ -23,7 +23,7 @@ import type { Article, ArticleType } from '@/entities/Article';
 import type { Comment } from '@/entities/Comment';
 import type { Notification } from '@/entities/Notification';
 import type { Profile } from '@/entities/Profile';
-import type { User, UserRole } from '@/entities/User';
+import type { Author, User, UserRole } from '@/entities/User';
 import type { components } from '@/shared/api/generated/schema';
 
 type Schemas = components['schemas'];
@@ -88,6 +88,10 @@ export type _CommentAuthorFits = Assert<Fits<Schemas['CommentWithUserDto']['user
 // --- профиль ---------------------------------------------------------------
 
 export type _ProfileFits = Assert<Fits<Schemas['ProfileDto'], Profile>>;
+
+// --- публичная карточка автора ----------------------------------------------
+
+export type _AuthorFits = Assert<Fits<Schemas['PublicAuthorDto'], Author>>;
 
 // --- уведомление -----------------------------------------------------------
 

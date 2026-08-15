@@ -129,6 +129,11 @@
         "exit": "Exit",
         "login": "Enter"
     },
+    "author": {
+        "articlesCount_one": "{{count}} article",
+        "articlesCount_other": "{{count}} articles",
+        "showMore": "Show more"
+    },
     "profile": {
         "page": "Profile",
         "profile": "Profile",

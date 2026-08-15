@@ -129,6 +129,13 @@
         "exit": "Выйти",
         "login": "Войти"
     },
+    "author": {
+        "articlesCount_one": "{{count}} статья",
+        "articlesCount_few": "{{count}} статьи",
+        "articlesCount_many": "{{count}} статей",
+        "articlesCount_other": "{{count}} статьи",
+        "showMore": "Показать ещё"
+    },
     "button": {
         "save": "Сохранить",
         "edit": "Изменить",

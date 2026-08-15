@@ -11,6 +11,7 @@ export enum AppRoutes {
     ARTICLE_CREATE = 'article_create',
     ARTICLE_EDIT = 'article_edit',
     ARTICLES = 'articles',
+    AUTHOR = 'author',
 }
 
 export type AppRouteProps = RouteProps & {
@@ -25,5 +26,9 @@ export const getRouteArticleCreate = () => '/articles/new';
 export const getRouteArticleDetails = (id: string) => `/articles/${id}`;
 export const getRouteArticleEdit = (id: string) => `/articles/${id}/edit`;
 export const getRouteProfile = (id: string) => `/profile/${id}`;
+// Публичная карточка автора. Отдельно от /profile/:id: тот закрыт токеном и
+// нужен только для редактирования собственного профиля, а сюда ведут ссылки
+// с именем автора в статье, комментарии и на главной — доступные гостю.
+export const getRouteAuthor = (id: string) => `/users/${id}`;
 export const getRouteForbidden = () => '/forbidden';
 export const getRouteNotFound = () => '*';

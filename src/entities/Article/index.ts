@@ -38,4 +38,6 @@ export type {
 
 export { useHighlights } from './api/highlightsApi';
 
+export { useGetArticlesByAuthorQuery } from './api/authorArticlesApi';
+
 export { getArticleDetailsData } from './model/selectors/articleDetails';
