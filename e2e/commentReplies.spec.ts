@@ -9,12 +9,18 @@ import { ADMIN, login } from './helpers';
  * предсказуемо. Проверяет то, что не проверить юнит-тестами: что ответ
  * переживает перезагрузку страницы, а не только присутствует в кеше RTK Query
  * сразу после отправки.
+ *
+ * Ответ отправляется через отдельную мини-форму под конкретным комментарием
+ * (в духе YouTube) — не через общую форму нового комментария вверху блока,
+ * поэтому на странице в момент отправки два поля "Enter comment text"-подобных
+ * инпута и две кнопки Send: различаем их по тому, что у мини-формы свой
+ * placeholder "Reply to @username…".
  */
 
 const ARTICLE = '/articles/1';
 
 test.describe('ответы на комментарии', () => {
-    test('ответ отправляется, отображается со ссылкой на адресата и переживает перезагрузку', async ({
+    test('ответ отправляется через мини-форму, отображается со ссылкой на адресата и переживает перезагрузку', async ({
         page,
     }) => {
         await page.goto('/');
@@ -25,7 +31,9 @@ test.describe('ответы на комментарии', () => {
 
         // Отвечаем на первый же комментарий в сиде — все они от admin.
         await page.getByRole('button', { name: 'Reply' }).first().click();
-        await expect(page.getByText('Replying to @admin')).toBeVisible();
+
+        const replyInput = page.getByLabel('Reply to @admin…');
+        await expect(replyInput).toBeVisible();
 
         const replyText = `E2E reply ${Date.now()}`;
 
@@ -36,13 +44,19 @@ test.describe('ответы на комментарии', () => {
                 r.status() === 201,
         );
 
-        await page.getByLabel('Enter comment text').fill(replyText);
-        await page.getByRole('button', { name: 'Send' }).click();
+        await replyInput.fill(replyText);
+        // Две формы на странице — общая для новых комментариев и мини-форма
+        // ответа — значит, и Send теперь два; мини-форма смонтировалась
+        // последней, поэтому её кнопка последняя в DOM-порядке.
+        await page.getByRole('button', { name: 'Send' }).last().click();
         const response = await posted;
 
         const created = await response.json();
         expect(created.parentId).toEqual(expect.any(String));
         expect(created.replyToUserId).toEqual(expect.any(String));
+
+        // Мини-форма закрылась после отправки.
+        await expect(page.getByLabel('Reply to @admin…')).toHaveCount(0);
 
         // Пришёл через настоящий query hook, а не оптимистичное обновление.
         await expect(page.getByText(replyText)).toBeVisible();
@@ -52,5 +66,18 @@ test.describe('ответы на комментарии', () => {
         // в БД, а не только состояние кеша RTK Query после мутации.
         await page.reload();
         await expect(page.getByText(`@admin ${replyText}`)).toBeVisible();
+    });
+
+    test('отмена мини-формы ответа закрывает её без отправки', async ({ page }) => {
+        await page.goto('/');
+        await login(page, ADMIN);
+        await page.goto(ARTICLE);
+
+        await page.getByRole('button', { name: 'Reply' }).first().click();
+        await expect(page.getByLabel('Reply to @admin…')).toBeVisible();
+
+        await page.getByRole('button', { name: 'Cancel' }).click();
+
+        await expect(page.getByLabel('Reply to @admin…')).toHaveCount(0);
     });
 });
