@@ -149,7 +149,7 @@
         "lastname": "Your lastname",
         "age": "Your age",
         "city": "Your city",
-        "status": "Status (a short quote about you)",
+        "status": "Status",
         "username": "Your login",
         "avatar": "Your avatar",
         "button": {
@@ -203,8 +203,9 @@
         "send": "Send",
         "enterText": "Enter comment text",
         "reply": "Reply",
-        "replyPlaceholder": "Reply to @{{username}}…",
-        "cancelReply": "Cancel"
+        "replyPlaceholder": "Reply to @{{username}}",
+        "cancelReply": "Cancel",
+        "delete": "Delete"
     },
     "articles": {
         "allArticles": "All",

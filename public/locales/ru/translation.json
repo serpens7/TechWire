@@ -157,7 +157,7 @@
         "lastname": "Ваша фамилия",
         "age": "Ваш возраст",
         "city": "Ваш город",
-        "status": "Статус (короткая цитата о себе)",
+        "status": "Статус",
         "username": "Ваш логин",
         "avatar": "Ваш аватар"
     },
@@ -201,8 +201,9 @@
         "send": "Отправить",
         "enterText": "Введите текст комментария",
         "reply": "Ответить",
-        "replyPlaceholder": "Ответ пользователю @{{username}}…",
-        "cancelReply": "Отмена"
+        "replyPlaceholder": "Ответ пользователю @{{username}}",
+        "cancelReply": "Отмена",
+        "delete": "Удалить"
     },
     "articles": {
         "allArticles": "Все",
