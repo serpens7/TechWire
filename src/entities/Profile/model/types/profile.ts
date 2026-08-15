@@ -9,6 +9,8 @@ export interface Profile {
     currency?: Currency,
     country?: Country;
     city?: string,
+    /** Короткая цитата/статус — виден и на публичной карточке автора. */
+    status?: string;
     username?: string;
     avatar?: string;
 }

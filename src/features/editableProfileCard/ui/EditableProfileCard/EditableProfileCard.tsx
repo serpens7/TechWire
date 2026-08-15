@@ -83,6 +83,10 @@ export const EditableProfileCard = ({ className, id }: EditableProfileCardProps)
         dispatch(profileActions.updateProfile({ age }));
     };
 
+    const onChangeStatus = (value?: string) => {
+        dispatch(profileActions.updateProfile({ status: value || '' }));
+    };
+
     const onChangeUsername = (value?: string) => {
         dispatch(profileActions.updateProfile({ username: value || '' }));
     };
@@ -123,6 +127,7 @@ export const EditableProfileCard = ({ className, id }: EditableProfileCardProps)
                     onChangeLastname={onChangeLastname}
                     onChangeAge={onChangeAge}
                     onChangeCity={onChangeCity}
+                    onChangeStatus={onChangeStatus}
                     onChangeUsername={onChangeUsername}
                     onChangeAvatar={onChangeAvatar}
                     onChangeCurrency={onChangeCurrency}

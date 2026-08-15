@@ -147,6 +147,7 @@
         "lastname": "Your lastname",
         "age": "Your age",
         "city": "Your city",
+        "status": "Status (a short quote about you)",
         "username": "Your login",
         "avatar": "Your avatar",
         "button": {

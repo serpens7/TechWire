@@ -20,6 +20,7 @@ interface ProfileCardProps {
     onChangeFirstname?: (value?: string) => void;
     onChangeCity?: (value?: string) => void;
     onChangeAge?: (value?: string) => void;
+    onChangeStatus?: (value?: string) => void;
     onChangeUsername?: (value?: string) => void;
     onChangeAvatar?: (value?: string) => void;
     onChangeCurrency?: (currency: Currency) => void;
@@ -36,6 +37,7 @@ export const ProfileCard = ({
     onChangeLastname,
     onChangeAge,
     onChangeCity,
+    onChangeStatus,
     onChangeAvatar,
     onChangeUsername,
     onChangeCountry,
@@ -121,6 +123,14 @@ export const ProfileCard = ({
                 className={cls.input}
                 onChange={onChangeCity}
                 readonly={readonly}
+            />
+            <Input
+                value={data?.status}
+                placeholder={t('profile.status')}
+                className={cls.input}
+                onChange={onChangeStatus}
+                readonly={readonly}
+                data-testid='ProfileCard.status'
             />
             <Input
                 value={data?.username}
