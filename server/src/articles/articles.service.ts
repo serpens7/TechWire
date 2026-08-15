@@ -78,6 +78,11 @@ export class ArticlesService {
         const article = await this.prisma.article.create({
             data: {
                 ...this.toWriteData(body),
+                // Новая статья начинает с нуля просмотров независимо от того,
+                // что прислано в теле — тело всё равно то же самое, что фронт
+                // получает на GET (см. ArticleFormData), а не то, что вводит
+                // пользователь.
+                views: 0,
                 // Автор — тот, кто авторизован. userId из тела игнорируется:
                 // иначе можно было бы опубликовать статью от чужого имени.
                 userId: authorId,
@@ -96,14 +101,21 @@ export class ArticlesService {
 
         const article = await this.prisma.article.update({
             where: { id },
-            // Автора при правке не меняем — статья остаётся за тем, кто её создал.
+            // Автора при правке не меняем — статья остаётся за тем, кто её
+            // создал. views тоже не трогаем: раньше сюда попадало
+            // body.views ?? 0, и правка статьи без явного views в теле
+            // обнуляла реальный счётчик просмотров.
             data: this.toWriteData(body),
         });
 
         return serializeArticle(article);
     }
 
-    /** Общая часть create/update: приведение тела запроса к колонкам таблицы. */
+    /**
+     * Общая часть create/update: приведение тела запроса к колонкам таблицы.
+     * Views сюда намеренно не входит — create и update решают его судьбу
+     * по-разному (см. выше), и общая функция не должна это скрывать.
+     */
     private toWriteData(body: ArticleBody) {
         return {
             title: body.title,
@@ -111,7 +123,6 @@ export class ArticlesService {
             img: body.img,
             type: body.type,
             blocks: body.blocks,
-            views: body.views ?? 0,
             createdAt: body.createdAt ? parseRuDate(body.createdAt) : new Date(),
         };
     }

@@ -337,5 +337,25 @@ describe('статьи', () => {
                 .send(newArticle())
                 .expect(404);
         });
+
+        it('не даёт клиенту выставить views правкой', async () => {
+            // ArticleFormData фронта отправляет обратно тот же объект, что
+            // получил на GET — включая views. Раньше он шёл прямо в колонку
+            // (`views ?? 0`), и любая правка обнуляла реальный счётчик
+            // просмотров; здесь проверяем обратное — клиентское значение
+            // игнорируется полностью, не только «не обнуляет».
+            await http(app)
+                .put(`/articles/${articleId}`)
+                .set(...bearer(adminToken))
+                .send({ ...newArticle(), views: 999 })
+                .expect(200);
+
+            const { body } = await http(app)
+                .get(`/articles/${articleId}`)
+                .set(...bearer(userToken))
+                .expect(200);
+
+            expect(body.views).toBe(0);
+        });
     });
 });

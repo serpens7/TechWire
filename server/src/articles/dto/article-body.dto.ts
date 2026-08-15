@@ -35,11 +35,14 @@ export const articleBodySchema = z.object({
     img: z.string().min(1, 'Изображение обязательно'),
     type: z.array(z.enum(['IT', 'SCIENCE', 'ECONOMICS'])).min(1, 'Нужен хотя бы один тип'),
     blocks: z.array(articleBlockSchema).default([]),
+    // Фронт присылает id, userId и views (он отправляет обратно тот же
+    // объект, что получил на GET). Принимаем, чтобы не отвергать запрос, но
+    // НЕ используем ни одно из трёх: автор берётся из токена, id — из пути,
+    // а views при создании всегда 0 и при правке не трогается вовсе (см.
+    // ArticlesService.toWriteData) — иначе правка статьи без явного поля
+    // обнуляла бы реальный счётчик просмотров.
     views: z.coerce.number().int().min(0).optional(),
     createdAt: ruDate.optional(),
-    // Фронт присылает id и userId (он отправляет обратно тот же объект, что
-    // получил на GET). Принимаем, чтобы не отвергать запрос, но НЕ используем:
-    // автор берётся из токена, id — из пути.
     id: z.string().optional(),
     userId: z.string().optional(),
 });
