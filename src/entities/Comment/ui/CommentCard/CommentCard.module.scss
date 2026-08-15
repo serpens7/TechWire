@@ -18,3 +18,14 @@
     background: none;
     box-shadow: none;
 }
+
+// Схлопнутая ветка: ответ выглядит как вложенный элемент, но остаётся тем же
+// плоским CommentCard — глубже одного уровня отступ не растёт.
+.reply {
+    margin-left: 40px;
+}
+
+.replyBtn {
+    align-self: flex-start;
+    padding: 0;
+}

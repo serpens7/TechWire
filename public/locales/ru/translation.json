@@ -194,7 +194,10 @@
     "comments": {
         "notFound": "Нет комментариев",
         "send": "Отправить",
-        "enterText": "Введите текст комментария"
+        "enterText": "Введите текст комментария",
+        "reply": "Ответить",
+        "replyingTo": "Ответ пользователю @{{username}}",
+        "cancelReply": "✕"
     },
     "articles": {
         "allArticles": "Все",

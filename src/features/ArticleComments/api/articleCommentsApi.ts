@@ -5,6 +5,8 @@ interface AddCommentArg {
     articleId: string;
     userId: string;
     text: string;
+    /** Комментарий, на который отвечают. Сервер схлопывает вложенность сам. */
+    parentId?: string;
 }
 
 const articleCommentsApi = rtkApi.injectEndpoints({
