@@ -22,6 +22,10 @@ export async function createTestApp(): Promise<NestFastifyApplication> {
     // Искусственная задержка ответа нужна фронту, но в тестах это только
     // потерянные секунды. ConfigModule не перетирает уже заданный process.env.
     process.env.RESPONSE_DELAY_MS = '0';
+    // Каждый спек логинится в beforeAll, а их больше семи — без большого лимита
+    // они упёрлись бы в троттлинг друг о друга. throttle.e2e-spec.ts проверяет
+    // реальные лимиты на отдельном инстансе приложения, не через этот хелпер.
+    process.env.AUTH_THROTTLE_LIMIT = process.env.AUTH_THROTTLE_LIMIT ?? '1000';
 
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
 

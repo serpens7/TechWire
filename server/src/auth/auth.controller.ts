@@ -1,12 +1,14 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import {
     ApiBearerAuth,
     ApiBody,
     ApiOkResponse,
     ApiOperation,
     ApiTags,
+    ApiTooManyRequestsResponse,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { LoginResponseDto, UserDto } from '../common/serialization/schemas';
 import { AuthService } from './auth.service';
@@ -15,7 +17,11 @@ import { Public } from './decorators/public.decorator';
 import { LoginBodyDto, loginSchema, type LoginDto } from './dto/login.dto';
 import type { AuthenticatedUser } from './auth.types';
 
+// ThrottlerGuard навешан только здесь, а не глобально через APP_GUARD:
+// перебор пароля имеет смысл ограничивать в auth-маршрутах, а не во всём API.
 @ApiTags('auth')
+@ApiTooManyRequestsResponse({ description: 'Слишком много попыток входа, попробуйте позже' })
+@UseGuards(ThrottlerGuard)
 @Controller()
 export class AuthController {
     constructor(private readonly auth: AuthService) {}
