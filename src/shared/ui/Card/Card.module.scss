@@ -3,6 +3,15 @@
     border-radius: 12px;
 }
 
+/* Проп max у Card существовал с самого начала, а этого класса не было —
+ * classNames получал undefined и подставлял в разметку литерал "undefined",
+ * то есть проп молча ничего не делал. Из-за этого карточки внутри колоночных
+ * флексов (VStack с align-items: flex-start) съёживались по ширине своего
+ * текста вместо того, чтобы занимать колонку. */
+.max {
+    width: 100%;
+}
+
 .normal {
     background: var(--card-bg);
     box-shadow: 0 2px 8px var(--card-shadow);

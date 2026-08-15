@@ -102,7 +102,7 @@ const AboutPage = () => {
                     />
                 </section>
 
-                <Card className={cls.cta}>
+                <Card max className={cls.cta}>
                     <Text size={TextSize.S} title={t('about.ctaTitle')} />
                     <Text className={cls.ctaText} text={t('about.ctaText')} />
                     <AppLink to={getRouteArticles()}>
