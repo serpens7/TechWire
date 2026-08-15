@@ -147,13 +147,13 @@ export function serializeProfile(profile: Profile & { user: PublicUser }): Profi
 }
 
 /**
- * Публичная карточка автора — сознательно уже serializeProfile: не отдаёт
- * age/currency/city/country, которые на /profile/:id закрыты токеном именно
- * потому что это личные данные.
+ * Публичная карточка автора — уже serializeProfile: currency/country туда не
+ * попадают (они не несут смысла вне формы редактирования), а age/city/status
+ * пользователь сам решает показать на публичной странице.
  */
 export function serializePublicAuthor(
     user: PublicUser,
-    profile: Pick<Profile, 'first' | 'lastname'> | null,
+    profile: Pick<Profile, 'first' | 'lastname' | 'age' | 'city' | 'status'> | null,
     articlesCount: number,
 ): PublicAuthorResponse {
     return {
@@ -162,6 +162,9 @@ export function serializePublicAuthor(
         avatar: user.avatar ?? undefined,
         first: profile?.first ?? undefined,
         lastname: profile?.lastname ?? undefined,
+        age: profile?.age ?? undefined,
+        city: profile?.city ?? undefined,
+        status: profile?.status ?? undefined,
         articlesCount,
     };
 }

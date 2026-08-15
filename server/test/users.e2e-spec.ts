@@ -1,5 +1,5 @@
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { createTestApp, http } from './helpers';
+import { ADMIN, bearer, createTestApp, http, login } from './helpers';
 
 /**
  * Публичная карточка автора. Появилась, чтобы клик по имени автора в статье
@@ -27,14 +27,32 @@ describe('публичная карточка автора', () => {
         await http(app).get('/users/99999').expect(404);
     });
 
-    it('не отдаёт пароль и личные данные', async () => {
+    it('не отдаёт пароль, currency и country', async () => {
         const { body } = await http(app).get('/users/1').expect(200);
 
         expect(JSON.stringify(body)).not.toContain('password');
-        expect(body).not.toHaveProperty('age');
         expect(body).not.toHaveProperty('currency');
         expect(body).not.toHaveProperty('country');
-        expect(body).not.toHaveProperty('city');
+    });
+
+    it('отдаёт age, city и status — пользователь сам решает их показывать', async () => {
+        // Не полагаемся на значения из сида: profile.e2e-spec.ts правит тот же
+        // профиль (id "1"), и порядок файлов в общем прогоне не гарантирован —
+        // выставляем то, что проверяем, сами.
+        const { token } = await login(app, ADMIN);
+        const status = 'Пью кофе и пишу код';
+
+        await http(app)
+            .put('/profile/1')
+            .set(...bearer(token))
+            .send({ age: 42, city: 'Saint-Petersburg', status })
+            .expect(200);
+
+        const { body } = await http(app).get('/users/1').expect(200);
+
+        expect(body.age).toBe(42);
+        expect(body.city).toBe('Saint-Petersburg');
+        expect(body.status).toBe(status);
     });
 
     it('articlesCount совпадает с длиной /articles?userId=', async () => {

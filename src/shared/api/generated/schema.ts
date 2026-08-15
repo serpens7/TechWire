@@ -241,7 +241,7 @@ export interface paths {
         };
         /**
          * Публичная карточка автора
-         * @description Уже профиля: только то, что не является личными данными, плюс число опубликованных статей.
+         * @description Уже профиля: без currency/country, плюс число опубликованных статей.
          */
         get: operations["UsersController_findOne"];
         put?: never;
@@ -485,6 +485,9 @@ export interface components {
             avatar?: string;
             first?: string;
             lastname?: string;
+            age?: number;
+            city?: string;
+            status?: string;
             articlesCount: number;
         };
     };

@@ -102,10 +102,11 @@ export const ratingSchema = z.object({
 });
 
 /**
- * Публичная карточка автора (GET /users/:id) — сознательно намного уже
- * profileSchema. age, currency, city, country там не просто так закрыты
- * токеном (см. /profile/:id) — это персональные данные, и открытая страница
- * автора не повод их обнажить.
+ * Публичная карточка автора (GET /users/:id) — уже profileSchema, но не
+ * настолько: пользователь сам решает показать возраст, город и статус на
+ * публичной странице (это то же самое, что он вводит в форме профиля).
+ * currency и country остаются закрыты токеном (/profile/:id) — они не несут
+ * смысла вне формы редактирования и не то, что стоит выставлять напоказ.
  */
 export const publicAuthorSchema = z.object({
     id: z.string(),
@@ -113,6 +114,9 @@ export const publicAuthorSchema = z.object({
     avatar: z.string().optional(),
     first: z.string().optional(),
     lastname: z.string().optional(),
+    age: z.number().int().optional(),
+    city: z.string().optional(),
+    status: z.string().optional(),
     articlesCount: z.number().int(),
 });
 

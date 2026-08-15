@@ -511,7 +511,7 @@
     },
     "/users/{id}": {
       "get": {
-        "description": "Уже профиля: только то, что не является личными данными, плюс число опубликованных статей.",
+        "description": "Уже профиля: без currency/country, плюс число опубликованных статей.",
         "operationId": "UsersController_findOne",
         "parameters": [],
         "responses": {
@@ -1568,6 +1568,17 @@
             "type": "string"
           },
           "lastname": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "city": {
+            "type": "string"
+          },
+          "status": {
             "type": "string"
           },
           "articlesCount": {

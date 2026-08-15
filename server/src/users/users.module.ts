@@ -14,7 +14,9 @@ export class UsersService {
             where: { id },
             select: {
                 ...publicUserSelect,
-                profile: { select: { first: true, lastname: true } },
+                profile: {
+                    select: { first: true, lastname: true, age: true, city: true, status: true },
+                },
             },
         });
 
@@ -40,8 +42,7 @@ export class UsersController {
 
     @ApiOperation({
         summary: 'Публичная карточка автора',
-        description:
-            'Уже профиля: только то, что не является личными данными, плюс число опубликованных статей.',
+        description: 'Уже профиля: без currency/country, плюс число опубликованных статей.',
     })
     @ApiOkResponse({ type: PublicAuthorDto })
     @Public()
