@@ -221,9 +221,6 @@
     },
     "search": "Search",
     "edit": "Edit",
-    "increment": "Increment",
-    "decrement": "Decrement",
-    "add5": "Add 5",
     "auth": {
         "toComment": "Sign in to leave a comment",
         "toRate": "Sign in to rate this article"

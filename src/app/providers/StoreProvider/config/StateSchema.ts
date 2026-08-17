@@ -9,12 +9,7 @@ import { AxiosInstance } from "axios";
 import { NavigateOptions, To } from "react-router-dom";
 import { rtkApi } from "@/shared/api/rtkApi";
 
-export interface CounterSchema {
-    value: number;
-}
-
 export interface StateSchema {
-    counter: CounterSchema;
     user: UserSchema;
     profile?: ProfileSchema;
     loginForm?: LoginSchema;
