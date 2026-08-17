@@ -7,3 +7,7 @@ storybook-static
 /test-results
 /playwright-report
 /playwright/.cache
+
+# Claude Code: локальные разрешения на команды у каждого свои.
+# Общие настройки проекта (.claude/settings.json) при этом коммитятся.
+/.claude/settings.local.json
