@@ -34,15 +34,15 @@ schema in `shared`, because `shared → entities` is a forbidden FSD import.
 
 | Area | Choice |
 |---|---|
-| UI | React **18.3** (`createRoot` in `src/index.tsx`) |
-| State | Redux Toolkit **1.9.7** (NOT v2) + react-redux **8.1.3** (redux 4) |
+| UI | React **19.2** (`createRoot` in `src/index.tsx`) |
+| State | Redux Toolkit **2.12** + react-redux **9.3** (redux **5**) |
 | Server-state | **RTK Query** (`shared/api/rtkApi.ts`) — the modern path; coexists with thunks |
 | Router | react-router-dom **6.2** |
 | i18n | react-i18next **15** / i18next **23** |
 | TS | `typescript@^5.4` (resolves to 5.9); `moduleResolution: "bundler"` |
 | Build | webpack **5** (config in `config/build`); **swc-loader** transpiles (not ts-loader), dev filesystem cache + React Fast Refresh, prod `splitChunks` vendor chunk |
 | Stories | Storybook **8.6** (webpack5 + SWC compiler) |
-| Tests | jest **29** + `@swc/jest` + testing-library **14** (unit/component, jsdom) |
+| Tests | jest **29** + `@swc/jest` + testing-library **16** (unit/component, jsdom) |
 | E2E | **Playwright** — real Chromium against the dev stack (`e2e/`, `playwright.config.ts`) |
 | HTTP | **axios `$api`** (`shared/api/api.ts`) for both thunks and RTK Query — `rtkApi.ts` uses `axiosBaseQuery` (`shared/api/axiosBaseQuery.ts`), not `fetchBaseQuery`, so the auth interceptor lives in one place |
 | Virtualization | react-virtuoso (articles list; already inside a lazy page chunk) |
@@ -69,7 +69,7 @@ schema in `shared`, because `shared → entities` is a forbidden FSD import.
   the service is set to `Manual`).
 - Backend-side: `npm --prefix server run db:migrate` / `db:seed` / `db:seed:fresh`
   (wipe + reseed) / `db:verify` (check DB against `db.json`) / `type:check` /
-  `lint:check` / `test:e2e` (84 API tests — **wipes and reseeds the DB**) / `openapi`
+  `lint:check` / `test:e2e` (133 API tests — **wipes and reseeds the DB**) / `openapi`
 - `npm run api:sync` — rebuild `server/openapi.json` **and** the frontend types in
   `src/shared/api/generated/schema.ts`. Run it after any change to a response shape;
   CI fails if either is stale.
@@ -88,10 +88,10 @@ app → pages → widgets → features → entities → shared
 ```
 
 Current slices:
-- **entities**: Article, Comment, Counter, Country, Currency, Notification, Profile, User
-- **features**: ArticleComments, articleRating, AuthByUserName, articleRecommendationsList, editableArticleCard, editableProfileCard, LangSwitcher, NotificationButton, ThemeSwitcher
+- **entities**: Article, Comment, Country, Currency, Notification, Profile, Rating, User
+- **features**: ArticleComments, ArticleSortSelector, ArticleViewSelector, articleOfTheDay, articleRating, articleRecommendationsList, AuthByUserName, editableArticleCard, editableProfileCard, LangSwitcher, NotificationButton, snippetOfTheDay, ThemeSwitcher
 - **widgets**: Navbar, Page, PageError, PageLoader, Sidebar
-- **pages**: About, ArticleDetails, ArticleEdit, Articles, Forbidden, Main, NotFound, Profile
+- **pages**: About, ArticleDetails, ArticleEdit, Articles, Author, Forbidden, Main, NotFound, Profile
 - **shared/ui**: AppLink, Avatar, Button, Card, Code, Drawer, Dropdown, Icon, Input, ListBox, Loader, Modal, PageLoader, Popover, Portal, Select, Skeleton, Stack (HStack/VStack), Tabs, Text
 - **app/providers**: ErrorBoundary, StoreProvider, ThemeProvider, router
 
@@ -128,12 +128,12 @@ Current slices:
   plain `useDispatch` only for plain actions. It stays FSD-clean by typing through
   `AppDispatch` in `shared/types/store.ts` (a generic, store-agnostic type) instead of
   importing the concrete store from `app`.
-- **`shared/lib/store/buildSelector.ts`** follows the same pattern: it's generic over
-  `TState` (no hardcoded `StateSchema`, no `shared → app` import) — callers annotate the
-  concrete type at the call site, e.g. `entities/Counter/model/selectors/getCounterValue.ts`
-  does `buildSelector((state: StateSchema) => ...)`. That call site is under `model/**`,
-  already covered by the steiger warn-override below; `shared/lib/store/**` itself needs
-  no override because it no longer references `app` at all.
+- **`shared/lib/store/`** (`buildSelector`, `buildSlice`) follows the same pattern:
+  generic over `TState`, no hardcoded `StateSchema`, no `shared → app` import — the
+  caller annotates the concrete type at the call site. **Both are currently unused**:
+  the only `buildSelector` call site lived in `entities/Counter`, removed along with
+  that tutorial leftover. Kept as reference implementations of the RTK 2 patterns;
+  delete them if that stops being worth it.
 
 ## RTK Query (server-state — preferred direction)
 
@@ -175,7 +175,8 @@ Current slices:
   `/login` response (`{ user, token }`); roles also travel **inside the JWT**, which is
   what the backend's `RolesGuard` actually checks.
 - **Reading is public, writing is not.** `@Public()` routes: `GET /articles`,
-  `GET /articles/:id`, `GET /comments`, `GET /highlights`, `POST /login`, `GET /health`.
+  `GET /articles/:id`, `GET /comments`, `GET /highlights`, `GET /users/:id`,
+  `POST /login`, `POST /register`, `GET /health`.
   Everything that creates or changes content needs a token, as do personal data routes
   (`/notifications`, `/profile`, `/article-ratings` — a rating belongs to a user).
   On the frontend the article routes are no longer `authOnly`; instead `ArticleComments`
@@ -192,8 +193,27 @@ Current slices:
   (`shared/api/api.ts` sends `Authorization: Bearer <token>`; on 401 it clears storage).
   `localStorage` holds the token (`TOKEN_LOCALSTORAGE_KEY`) plus a **cosmetic** cached
   user for instant paint — `initAuthData` requires both. Nothing is trusted client-side:
-  the backend closes every route by default (global `JwtAuthGuard`; `@Public()` opts out
-  — only `/login` and `/health`). `RequireAuth` on the frontend is UX only.
+  the backend closes every route by default (global `JwtAuthGuard`; `@Public()` opts out).
+  `RequireAuth` on the frontend is UX only.
+- **Registration** (`POST /register`) answers with the same `{ user, token }` shape as
+  `/login`, so the frontend logs straight in without a second request. Role is always
+  `USER`. The profile is created **in the same transaction with `id = user.id`** — the
+  `/profile/:id` route is keyed by *profile* id while the whole frontend passes a *user*
+  id, and seeded rows happen to satisfy that. Break the invariant and a fresh user gets
+  a 404 on their own profile. `features/AuthByUserName` holds both forms; `LoginModal`
+  switches between them with local state.
+- **Login attempts are throttled** — `@nestjs/throttler` on `AuthController` only (not
+  via `APP_GUARD`), 5/min by default, tunable through `AUTH_THROTTLE_LIMIT` /
+  `AUTH_THROTTLE_TTL_MS`. Global throttling would have broken the API suite and
+  Playwright, which hammer the API from one IP: `server/test/helpers.ts` and both
+  `webServer` entries in `playwright.config.ts` raise the ceiling for tests.
+- **Auth errors are typed**, not one flag: thunks reject with `AuthErrorCode`
+  (`INVALID_CREDENTIALS` / `USERNAME_TAKEN` / `TOO_MANY_ATTEMPTS` / `UNKNOWN`), derived
+  from the HTTP status by `getAuthErrorCode`; forms map codes to translation keys.
+- **`@Public()` routes still parse a token if one is present.** `JwtAuthGuard` used to
+  `return true` immediately, so `request.user` was empty even for a logged-in reader.
+  Now it tries, ignoring failures — a bad token on a public route is not an error. This
+  is what lets `GET /articles/:id` skip counting the author's own view.
 - **Route gating**: `AppRouteProps` has an optional `roles?: UserRole[]`; `RequireAuth`
   (`app/providers/router/ui/RequireAuth`) checks auth **and** role intersection — a
   role mismatch redirects to **`ForbiddenPage`** (`/forbidden`), missing auth redirects to
@@ -202,6 +222,42 @@ Current slices:
   the "create article" link via `isUserAdmin`, and `getCanEditArticle`
   (`pages/ArticleDetailsPage/model/selectors/article.ts`) checks the admin role.
 - Role selectors: `getUserRoles`, `isUserAdmin`, `isUserManager` (`entities/User`).
+
+## Domain mechanics worth knowing
+
+- **Views are counted server-side, on read.** `GET /articles/:id` increments the column
+  *and* appends a row to `article_views` — a transaction, awaited (not fire-and-forget,
+  or e2e couldn't assert it) and wrapped in try/catch, because a counter must never
+  break reading an article. The author's own views don't count. `views` is **not**
+  writable by the client: `create` always sets `0`, `update` doesn't touch the column at
+  all — `toWriteData` used to write `body.views ?? 0`, so any edit silently reset the
+  counter.
+- **"Article of the day" uses a 7-day window**, not the all-time counter: `groupBy` over
+  `article_views` since `now - 7d`. All-time `views: 'desc'` meant one article held the
+  spot forever, which made the name a lie. **Falls back to the all-time counter when the
+  window is empty** — right after `db:seed:fresh` the events table is empty and the main
+  page would otherwise render nothing. The seed backfills synthetic events (deterministic
+  mulberry32 PRNG seeded from the article id) so the demo is alive on first run.
+- **Author pages are public** (`/users/:id` → `pages/AuthorPage`), unlike the
+  authOnly `/profile/:id`, which stays the *edit* screen. `GET /users/:id` returns a
+  deliberately narrower shape than the profile: no `currency`/`country`, but `age`,
+  `city` and `status` (the user opted into showing those). Article lists filter by
+  `userId`; the page fetches via RTK Query (`entities/Article/api/authorArticlesApi`)
+  rather than reusing the `articlesPage` slice, which is bound to filters and URL sync.
+- **Comment replies are one level (Reddit-style flatten).** `Comment.parentId` is a
+  self-relation, but the server **collapses**: replying to a reply attaches to the same
+  root (`parent.parentId ?? parent.id`). `replyToUserId` is set server-side from the
+  parent's author — it's what makes `@username` in a flattened thread honest, and it
+  can't be forged from the body. `GET /comments` orders by `createdAt` (a column added
+  for exactly this and deliberately *not* exposed in the response). The frontend groups
+  the flat array with `entities/Comment/model/lib/groupComments`.
+- **Reply UI is per-comment, YouTube-style**: each `CommentCard` owns its own mini-form
+  (`CommentForm` in `compact` mode), rather than the page's single form morphing into a
+  reply box. `canReply` decides whether clicking opens the form; the feature — not the
+  entity — decides that a guest gets the login modal instead.
+- **Deleting a comment** (`DELETE /comments/:id`) is owner-only; deleting a root takes
+  its replies with it (`onDelete: Cascade` on the self-relation), which is the right
+  call for a flattened tree — orphaned replies would have nothing to hang under.
 
 ## Conventions
 
@@ -276,17 +332,22 @@ Current slices:
   `cross-env PW_CHANNEL=chrome`** so headed/UI mode just works out of the box (needs system
   Chrome installed). Base `npm run e2e` leaves `PW_CHANNEL` unset → bundled Chromium
   (headless, CI default). Manual override still works: `$env:PW_CHANNEL="msedge"` etc.
-- **E2E is NOT in the CI chain** (`main.yml`) yet — it's a separate `npm run e2e`. The
-  green-before-done chain below stays jest-only. Coverage so far: `e2e/auth.spec.ts`
-  (login, token persistence, RBAC redirect) and `e2e/article.spec.ts` (posting a comment,
-  rating an article, creating an article — including validation). **Writes are no longer
-  stubbed**: with a real database there is nothing to protect, so the tests assert actual
-  persistence (a comment survives a reload; a rating flips the card permanently). The old
-  `page.route` stubs only proved the frontend *sent* the right request. Repeatability now
-  comes from `globalSetup` reseeding instead.
+- **E2E is NOT in the CI chain** (`main.yml`) — deliberately; it's a separate
+  `npm run e2e`. The green-before-done chain below stays jest-only. 27 specs across
+  7 files: `auth` (login, token persistence, RBAC redirect), `article` (comment, rating,
+  article creation with validation, deleting your own comment), `commentReplies`
+  (mini-form, persistence, cancel), `author` (guest → public author page),
+  `guestMain`, `articlesPagination`, `notFound`. **Writes are not stubbed**: with a real
+  database there is nothing to protect, so the tests assert actual persistence (a comment
+  survives a reload; a rating flips the card permanently). The old `page.route` stubs only
+  proved the frontend *sent* the right request. Repeatability comes from `globalSetup`
+  reseeding instead.
   Watch out for seeded state when writing new specs: article ids are **not contiguous**
   (1, 3, 18…51), and admin already rates articles 1, 28 and 29 — the rating spec uses
   article 34 for that reason. Shared login/creds live in `e2e/helpers.ts`.
+- **`articlesPagination` "scroll doesn't jump back" is occasionally flaky** — it drives
+  20 wheel events against a virtualized list. A single failure there is usually not a
+  regression; rerun before digging.
 - **`lint:fsd` (steiger) has a known nondeterministic false-positive**: an import that's
   correctly downgraded to a warning by a `steiger.config.ts` override (e.g. the
   `model/**` or `shared/lib/tests/**` glob) can occasionally get reported as a hard
@@ -301,8 +362,9 @@ Current slices:
 - After edits, prefer running only the affected checks first (type:check, eslint on
   changed files, stylelint on changed scss), then the full chain before declaring done.
 - `type:check` is the source of truth for type errors and matches the IDE (bundler).
-- Do NOT commit/push unless asked. If on `main`, branch first. Current branch:
-  **`feat/headlessui`** (working branch for this stream of work).
+- Do NOT commit/push unless asked. If on `main`, branch first — `main` is protected
+  by a GitHub ruleset (no direct pushes, no force-push, no deletion; `frontend` and
+  `backend` checks must pass), so work lands through a PR.
 - Do NOT manually verify in the browser (Chrome MCP: navigate, screenshot, click through
   flows, check console/network) by default. Running the CI chain (type:check, lint, unit,
   build) is enough to call a change done. Only do live browser verification when the user

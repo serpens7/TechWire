@@ -46,7 +46,7 @@ jobs:
             # Типы фронта генерируются из server/openapi.json. Если файл
             # обновили, а типы — нет, расхождение всплывёт здесь, а не в
             # рантайме. Сверка типов со схемой живёт в
-            # src/shared/api/generated/conformance.ts и проверяется type:check.
+            # src/app/types/apiConformance.ts и проверяется type:check.
             - name: API types are in sync
               run: |
                   npm run api:types
