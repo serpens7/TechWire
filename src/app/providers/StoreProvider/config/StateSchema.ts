@@ -4,7 +4,7 @@ import { LoginSchema } from "@/features/AuthByUserName";
 import { ProfileSchema } from "@/features/editableProfileCard";
 import { EditableArticleCardSchema } from "@/features/editableArticleCard";
 import { ArticlesPageSchema } from "@/pages/ArticlesPage";
-import { AnyAction, Dispatch, EnhancedStore, Reducer, ReducersMapObject } from "@reduxjs/toolkit";
+import { Dispatch, EnhancedStore, Reducer, ReducersMapObject, UnknownAction } from "@reduxjs/toolkit";
 import { AxiosInstance } from "axios";
 import { NavigateOptions, To } from "react-router-dom";
 import { rtkApi } from "@/shared/api/rtkApi";
@@ -29,7 +29,7 @@ export type StateSchemaKey = keyof StateSchema;
 
 export interface ReducerManager {
     getReducerMap: () => ReducersMapObject<StateSchema>;
-    reduce: (state: StateSchema, action: AnyAction) => StateSchema;
+    reduce: (state: StateSchema, action: UnknownAction) => StateSchema;
     add: (key: StateSchemaKey, reducer: Reducer) => void;
     remove: (key: StateSchemaKey) => void;
     getMountedReducers: () => OptionalRecord<StateSchemaKey, boolean>;

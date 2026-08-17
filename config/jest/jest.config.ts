@@ -34,9 +34,6 @@ export default {
         '__IS_DEV__': true,
         '__API__': 'http://localhost/api',
         '__PROJECT__': 'jest',
-        'ts-jest': {
-            isolatedModules: true,
-        },
     },
     transformIgnorePatterns: [
         'node_modules/',

@@ -1,5 +1,4 @@
 import { StateSchema } from "@/app/providers/StoreProvider";
-import { DeepPartial } from '@reduxjs/toolkit';
 import { ValidateProfileError } from "../types/editableProfileCardSchema";
 import { getProfileData, getProfileForm, getProfileReadonly, getProfileValidateErrors } from "./getProfile";
 
