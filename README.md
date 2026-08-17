@@ -33,17 +33,23 @@ A production-style application built on **Feature-Sliced Design (FSD)**: an arti
 | Auth | JWT (`@nestjs/jwt`) + bcrypt, global guard, role guard |
 | Validation | zod |
 | Docs | `@nestjs/swagger` → Swagger UI на `/api` + `openapi.json` |
-| Tests | Jest + supertest against a real PostgreSQL (84 API tests) |
+| Tests | Jest + supertest against a real PostgreSQL (133 API tests) |
 
 `server/` is a **separate npm package** with its own `package.json`, `tsconfig` and `node_modules` — Nest needs CommonJS + decorators, which the frontend tsconfig can't provide. See [`server/README.md`](server/README.md).
 
 ## Features
 
 - **Feature-Sliced Design** — enforced by `steiger`; strict layer boundaries and public APIs.
-- **Real auth** — bcrypt password check, signed JWT, `Authorization: Bearer`. **Reading is public** (articles, a single article, comments); everything that creates or changes content requires a token, as do personal-data routes.
+- **Real auth** — bcrypt password check, signed JWT, `Authorization: Bearer`. **Reading is public** (articles, a single article, comments, author cards); everything that creates or changes content requires a token, as do personal-data routes.
+- **Sign-up** — `POST /register` answers with the same `{ user, token }` shape as `/login`, so a new account is signed in immediately. The profile row is created in the same transaction.
+- **Brute-force protection** — login and registration are rate-limited (`@nestjs/throttler`, 5/min per IP by default, env-tunable). Auth failures come back as typed codes, so the UI can say *why* it refused.
 - **Role-based access (RBAC)** — `UserRole` (ADMIN / MANAGER / USER). Enforced on the server (`@Roles('ADMIN')` on article create/edit); the frontend `RequireAuth` gate is UX on top of it.
 - **RTK Query** — server-state via `injectEndpoints`; a single `axiosBaseQuery` so the auth header lives in one place.
 - **Articles** — virtualized list (grid/list views), pagination, sorting, search, type filter; details with code/image/text blocks, recommendations, comments, and **ratings** (star rating + feedback).
+- **View counting** — reading an article really increments its counter (the author's own views don't count), and every read is logged to `article_views`. The homepage's "article of the day" picks the most-read article **of the last 7 days**, not of all time — otherwise one article would hold the spot forever.
+- **Threaded comments** — one-level replies (Reddit-style flatten: replying to a reply attaches to the same root). Each comment has its own inline reply form, YouTube-style. You can delete your own comments; deleting a root removes its replies with it.
+- **Author pages** — a public `/users/:id` with the author's card and their articles; the author's name is clickable everywhere it appears. Distinct from `/profile/:id`, which stays the private edit screen.
+- **Profiles** — name, age, city, avatar, currency, country and a short free-form **status**; age, city and status are also shown on the public author card.
 - **Notifications** — bell in the navbar, polled via RTK Query; anchored Popover on desktop, swipe-to-dismiss Drawer on mobile.
 - **i18n** — Russian / English, all user-facing text via `t()`.
 - **Theming** — light / dark, persisted; theme vars on `<body>`.
@@ -136,7 +142,7 @@ Passwords are stored as bcrypt hashes; these are the seeded credentials. The adm
 | `db:seed:fresh` | **Wipe** and re-seed |
 | `db:reset` | Drop and recreate the database from scratch |
 | `db:verify` | Assert the database matches `db.json` |
-| `test:e2e` | 84 API tests against a real database — **wipes and reseeds it** |
+| `test:e2e` | 133 API tests against a real database — **wipes and reseeds it** |
 | `openapi` | Rebuild `openapi.json` |
 
 ## API contract & types
@@ -173,7 +179,19 @@ npm run e2e
 
 > **Warning:** `globalSetup` **wipes the database and re-seeds it from `db.json`** before every run. Anything you created by hand in the app will be lost. This is what makes the suite repeatable now that writes are real: the rating spec needs an article the user hasn't rated yet.
 
-Coverage: auth + RBAC (`e2e/auth.spec.ts`), commenting / rating / article creation with validation (`e2e/article.spec.ts`), infinite-scroll pagination (`e2e/articlesPagination.spec.ts`). Writes are **not** stubbed — the assertions check that data actually persisted (a comment survives a reload, a rating permanently flips the card).
+Coverage — 27 specs across 7 files:
+
+| Spec | What it covers |
+| --- | --- |
+| `auth.spec.ts` | login, token surviving a reload, RBAC redirect to `/forbidden` |
+| `article.spec.ts` | commenting, rating, article creation with validation, deleting your own comment |
+| `commentReplies.spec.ts` | the inline reply mini-form, `@author` attribution, cancel |
+| `author.spec.ts` | guest clicks an author → public `/users/:id` page |
+| `guestMain.spec.ts` | what a signed-out visitor can read and what asks them to sign in |
+| `articlesPagination.spec.ts` | infinite scroll, no scroll jump while loading |
+| `notFound.spec.ts` | unknown URL renders the 404 page, not a crash |
+
+Writes are **not** stubbed — the assertions check that data actually persisted (a comment survives a reload, a rating permanently flips the card, a deleted comment stays deleted).
 
 **Headed / UI mode & `PW_CHANNEL`.** Headless (`npm run e2e`) uses Playwright's bundled Chromium and always works. If the bundled Chromium can't launch **headed** on your machine (some Windows boxes throw a "side-by-side configuration is incorrect" error — a broken OS runtime, unrelated to this project), fall back to an installed system browser:
 
@@ -207,7 +225,7 @@ src/                # frontend (FSD)
 └── shared/         # ui kit, hooks, api, consts, test utils
 server/             # NestJS API — separate package
 ├── prisma/         # schema, migrations, seed, verify
-└── src/            # auth, articles, comments, ratings, notifications, profile
+└── src/            # auth, articles, comments, ratings, notifications, profile, users
 config/             # webpack, jest, storybook configs
 e2e/                # Playwright specs + globalSetup (DB reseed)
 json-server/        # db.json — seed fixture only; json-server itself is gone
@@ -216,10 +234,22 @@ public/locales/     # i18n resources (ru, en)
 
 ## CI
 
-GitHub Actions (`.github/workflows/main.yml`, node 24.x) runs the frontend chain on every push / PR:
+GitHub Actions (`.github/workflows/main.yml`, node 24.x) runs two jobs in parallel on every push / PR to `main` — split so a red cross immediately says *which side* broke.
+
+**`frontend`:**
 
 ```
-type:check · lint:ts · lint:scss · lint:fsd · unit · build:prod · build-storybook
+type:check · lint:ts · lint:scss · lint:fsd · unit · api-types-in-sync · build:prod · build-storybook
 ```
 
-E2E and the backend checks are **not** in CI yet — they need a PostgreSQL service in the workflow. Run them locally: `npm run e2e`, `npm --prefix server run type:check`.
+**`backend`** — against a real PostgreSQL 17 service container, not mocks:
+
+```
+type:check · lint · build · openapi-in-sync · test:e2e (133 API tests)
+```
+
+Both jobs also assert that regenerating the OpenAPI schema and the frontend types produces no diff, so changing the contract without running `npm run api:sync` is caught here.
+
+`main` is protected by a branch ruleset: no direct pushes, no force-push, no deletion, and both checks must pass — work lands through a pull request.
+
+**Playwright is deliberately not in CI** — it boots the whole dev stack and takes about a minute; it stays a local gate. Run it before anything that touches routing, auth or the comment flows: `npm run e2e`.
