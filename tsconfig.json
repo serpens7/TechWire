@@ -24,5 +24,15 @@
             "types": ["node"]
         }
     },
-    "exclude": ["node_modules", "dist", "steiger.config.ts", "e2e", "playwright.config.ts"]
+    "exclude": [
+        "node_modules",
+        "dist",
+        "steiger.config.ts",
+        "e2e",
+        "playwright.config.ts",
+        // Бэкенд — отдельный пакет со своим tsconfig (CommonJS, декораторы,
+        // emitDecoratorMetadata). Этим конфигом он не проверяется и не должен:
+        // у него свой `npm run type:check` внутри server/.
+        "server"
+    ]
 }

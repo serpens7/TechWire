@@ -129,4 +129,29 @@ describe('features/EditableProfileCard', () => {
         );
         expect(putCall).toBeDefined();
     });
+
+    test('Status field edits and is sent in the PUT request', async () => {
+        componentRender(<EditableProfileCard id='1' />, options);
+        await userEvent.click(
+            screen.getByTestId('EditableProfileCardHeader.EditButton')
+        );
+
+        await userEvent.type(
+            screen.getByTestId('ProfileCard.status'),
+            'Coffee and code'
+        );
+
+        expect(screen.getByTestId('ProfileCard.status')).toHaveValue(
+            'Coffee and code'
+        );
+
+        await userEvent.click(
+            screen.getByTestId('EditableProfileCardHeader.SaveButton')
+        );
+
+        const putCall = ($api.request as jest.Mock).mock.calls.find(
+            ([config]: [AxiosRequestConfig]) => config.method === 'PUT'
+        );
+        expect(putCall?.[0].data).toMatchObject({ status: 'Coffee and code' });
+    });
 });

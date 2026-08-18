@@ -14,6 +14,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
     testDir: './e2e',
+    // Возвращает БД к состоянию из db.json перед прогоном: тесты теперь пишут
+    // по-настоящему, а тест оценки требует, чтобы статья ещё не была оценена.
+    globalSetup: './e2e/globalSetup.ts',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
@@ -40,12 +43,40 @@ export default defineConfig({
             },
         },
     ],
-    webServer: {
-        command: 'npm run start:dev',
-        url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
-        // json-server adds a 500ms artificial delay per request and the first
-        // webpack dev build is slow, so give the stack generous headroom.
-        timeout: 180_000,
-    },
+    // Two entries because `start:dev` boots two processes and Playwright can
+    // only wait on one URL per entry. The first launches the whole stack and
+    // waits for the app; the second waits for the backend's /health (it never
+    // starts a second process — `reuseExistingServer` finds the one already
+    // launched above). Without this the suite could start before Nest has
+    // connected to Postgres and the first request would fail.
+    webServer: [
+        {
+            command: 'npm run start:dev',
+            url: 'http://localhost:3000',
+            reuseExistingServer: !process.env.CI,
+            // The backend adds an artificial per-request delay and the first
+            // webpack dev build is slow, so give the stack generous headroom.
+            timeout: 180_000,
+            // fullyParallel workers each log in independently — auth.spec,
+            // guestMain.spec and article.spec alone add up to more than the
+            // default 5-per-minute /login limit (see server/src/auth). Same
+            // reasoning as test/helpers.ts on the API-test side: this raises
+            // the ceiling for the whole e2e run, it doesn't touch production
+            // defaults. Ignored if reuseExistingServer finds an already
+            // running dev stack — start that one with the same override if
+            // you hit 429s locally.
+            env: { AUTH_THROTTLE_LIMIT: '1000' },
+        },
+        {
+            command: 'npm run start:dev:server',
+            url: 'http://localhost:8000/health',
+            reuseExistingServer: true,
+            timeout: 180_000,
+            // Тот же лимит, что и у первой записи: обычно этот сервер уже
+            // поднят первой (reuseExistingServer его находит), но если он
+            // выиграет гонку и стартует сам — без env весь прогон упрётся
+            // в 429 на входе.
+            env: { AUTH_THROTTLE_LIMIT: '1000' },
+        },
+    ],
 });

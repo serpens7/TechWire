@@ -1,7 +1,11 @@
 .PageError {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    box-sizing: border-box;
+
+    // Занимает весь экран и центрирует содержимое: раньше блок был flex без
+    // направления, без gap и без высоты — текст с кнопкой стояли вплотную в
+    // одну строку и прижимались к самому верху страницы.
     width: 100%;
-    font: var(--font-l);
+    min-height: 100vh;
+    padding: var(--space-8);
+    text-align: center;
 }

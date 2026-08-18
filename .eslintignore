@@ -1,0 +1,12 @@
+node_modules
+build
+dist
+storybook-static
+
+# Бэкенд — отдельный пакет со своим eslint (typescript-eslint + prettier,
+# без airbnb и react-правил). Линтуется своим `npm run lint` внутри server/.
+server
+
+# Типы, сгенерированные из openapi.json (npm run api:types). Машинный код,
+# править его руками нельзя — правки затрутся следующей генерацией.
+src/shared/api/generated

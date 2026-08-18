@@ -6,6 +6,7 @@ import { ProfilePage } from '@/pages/ProfilePage';
 import { ArticlesPage } from '@/pages/ArticlesPage';
 import { ArticleDetailsPage } from '@/pages/ArticleDetailsPage';
 import { ArticleEditPage } from '@/pages/ArticleEditPage';
+import { AuthorPage } from '@/pages/AuthorPage';
 import {
     AppRoutes,
     AppRouteProps,
@@ -14,6 +15,7 @@ import {
     getRouteArticleDetails,
     getRouteArticleEdit,
     getRouteArticles,
+    getRouteAuthor,
     getRouteForbidden,
     getRouteMain,
     getRouteNotFound,
@@ -44,15 +46,16 @@ export const routeConfig: Record<AppRoutes, AppRouteProps> = {
         path: getRouteForbidden(),
         element: <ForbiddenPage />,
     },
+    // Чтение статей открыто: список и сама статья доступны без входа.
+    // По входу закрыто то, что создаёт или меняет содержимое — комментарий,
+    // оценка, создание и редактирование статьи.
     [AppRoutes.ARTICLES]: {
         path: getRouteArticles(),
         element: <ArticlesPage />,
-        authOnly: true,
     },
     [AppRoutes.ARTICLE_DETAILS]: {
         path: getRouteArticleDetails(':id'),
         element: <ArticleDetailsPage />,
-        authOnly: true,
     },
     [AppRoutes.ARTICLE_CREATE]: {
         path: getRouteArticleCreate(),
@@ -65,5 +68,12 @@ export const routeConfig: Record<AppRoutes, AppRouteProps> = {
         element: <ArticleEditPage />,
         authOnly: true,
         roles: [UserRole.ADMIN],
+    },
+    // Публичная карточка автора — намеренно без authOnly, в отличие от
+    // PROFILE выше: та служит редактированию своего профиля, эта — витрина,
+    // на которую ведут ссылки из статей и комментариев для любого гостя.
+    [AppRoutes.AUTHOR]: {
+        path: getRouteAuthor(':id'),
+        element: <AuthorPage />,
     },
 };

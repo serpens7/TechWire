@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { AppLink, AppLinkTheme } from '@/shared/ui/AppLink/AppLink';
 import { memo } from 'react';
-import { classNames } from '@/shared/lib/classNames/classNames';
-import cls from './SidebarItem.module.scss';
-import { SidebarItemType } from '../../model/types/sidebar';
-import { getUserAuthData } from '@/entities/User';
 import { useSelector } from 'react-redux';
+import { classNames } from '@/shared/lib/classNames/classNames';
+import { getUserAuthData } from '@/entities/User';
+import { SidebarItemType } from '../../model/types/sidebar';
+import cls from './SidebarItem.module.scss';
 
 interface SidebarItemProps {
     item: SidebarItemType;
@@ -14,11 +14,15 @@ interface SidebarItemProps {
 
 export const SidebarItem = memo(({ item, collapsed }: SidebarItemProps) => {
     const { t } = useTranslation();
-    const isAuth = useSelector(getUserAuthData);
+    const authData = useSelector(getUserAuthData);
 
-    if (item.authOnly && !isAuth) {
+    // Флаг остаётся, хотя сейчас его не ставит ни один пункт: чтение открыто
+    // всем, и прятать в меню нечего. Пригодится, когда появится пункт вроде
+    // «Мои черновики».
+    if (item.authOnly && !authData) {
         return null;
     }
+
     return (
         <AppLink
             theme={AppLinkTheme.SECONDARY}

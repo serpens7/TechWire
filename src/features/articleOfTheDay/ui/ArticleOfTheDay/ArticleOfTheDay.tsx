@@ -11,8 +11,8 @@ import { Button, ButtonTheme } from '@/shared/ui/Button/Button';
 import { Icon } from '@/shared/ui/Icon/Icon';
 import { HStack, VStack } from '@/shared/ui/Stack';
 import EyeIcon from '@/shared/assets/icons/eye-20-20.svg';
-import { getRouteArticleDetails } from '@/shared/const/router';
-import { useArticleOfTheDay } from '../../api/articleOfTheDayApi';
+import { getRouteArticleDetails, getRouteAuthor } from '@/shared/const/router';
+import { useHighlights } from '@/entities/Article';
 import cls from './ArticleOfTheDay.module.scss';
 
 interface ArticleOfTheDayProps {
@@ -41,7 +41,8 @@ const ArticleOfTheDaySkeleton = () => (
 export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
     const { className = '' } = props;
     const { t } = useTranslation();
-    const { data: article, isLoading, error } = useArticleOfTheDay();
+    const { data, isLoading, error } = useHighlights();
+    const article = data?.articleOfTheDay;
 
     if (isLoading) {
         return (
@@ -83,11 +84,16 @@ export const ArticleOfTheDay = memo((props: ArticleOfTheDayProps) => {
                             className={cls.types}
                         />
                         <HStack gap='8' className={cls.meta}>
-                            <Avatar size={30} src={article.user.avatar} />
-                            <Text
-                                text={article.user.username}
-                                className={cls.username}
-                            />
+                            <AppLink
+                                to={getRouteAuthor(article.user.id)}
+                                className={cls.authorLink}
+                            >
+                                <Avatar size={30} src={article.user.avatar} />
+                                <Text
+                                    text={article.user.username}
+                                    className={cls.username}
+                                />
+                            </AppLink>
                             <Text text={article.createdAt} className={cls.date} />
                         </HStack>
                         <div className={cls.footer}>

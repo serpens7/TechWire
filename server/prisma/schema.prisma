@@ -1,0 +1,201 @@
+// Схема БД для TechWire.
+//
+// Источник данных — json-server/db.json (см. prisma/seed.ts). Идентификаторы
+// существующих записей (1, 3, 18…51 — они не сплошные) сохраняются один в один: на них завязаны
+// e2e-тесты и моки сторисов. Для новых записей — cuid().
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "cjs"
+}
+
+// В Prisma 7 строка подключения больше не живёт в схеме: для CLI/миграций
+// она берётся из prisma.config.ts, а клиент в рантайме получает её через
+// driver adapter (@prisma/adapter-pg) — см. prisma/seed.ts и src/prisma.
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+}
+
+enum ArticleType {
+  IT
+  SCIENCE
+  ECONOMICS
+}
+
+enum Currency {
+  RUB
+  EUR
+  USD
+}
+
+enum Country {
+  Russia
+  Belarus
+  Ukraine
+  // Опечатка унаследована от фронта: в enum Country значение
+  // Kazakhstan описано как 'Kazahstan'. Значение важнее ключа —
+  // именно оно ходит по API.
+  Kazahstan
+  Armenia
+}
+
+model User {
+  id       String     @id @default(cuid())
+  username String     @unique
+  /// bcrypt-хэш, никогда не отдаётся наружу
+  password String
+  avatar   String?
+  roles    UserRole[]
+
+  profile       Profile?
+  articles      Article[]
+  comments      Comment[]      @relation("CommentAuthor")
+  /// Комментарии, чьим адресатом ответа (replyToUserId) значится этот
+  /// пользователь — не то же самое, что comments выше: это чужие комментарии.
+  repliedInComments Comment[]  @relation("CommentReplyTo")
+  notifications Notification[]
+  ratings       Rating[]
+
+  @@map("users")
+}
+
+model Profile {
+  id       String    @id @default(cuid())
+  first    String?
+  lastname String?
+  age      Int?
+  currency Currency?
+  country  Country?
+  city     String?
+  /// Короткая цитата/статус — то, что человек сам хочет сказать о себе.
+  /// Публично видна на карточке автора, как и age/city.
+  status   String?
+
+  // username и avatar сознательно НЕ дублируются здесь (в db.json они
+  // лежали и в users, и в profile) — в ответе API берутся из связанного User.
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Article {
+  id       String        @id @default(cuid())
+  title    String
+  subtitle String
+  img      String
+  views    Int           @default(0)
+  /// В db.json хранилась строка "DD.MM.YYYY", из-за чего сортировка по дате
+  /// была лексической и работала неверно. Здесь — настоящая дата; обратно в
+  /// "DD.MM.YYYY" сериализует слой представления.
+  createdAt DateTime
+  type      ArticleType[]
+  /// Полиморфные блоки (TEXT | CODE | IMAGE) с разным набором полей.
+  /// Хранятся как JSON: нормализовать мешает в том числе то, что id блоков
+  /// не уникальны глобально (136 уникальных на 137 блоков).
+  blocks    Json
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  comments   Comment[]
+  ratings    Rating[]
+  viewEvents ArticleView[]
+
+  @@index([createdAt])
+  @@index([views])
+  @@index([title])
+  @@map("articles")
+}
+
+/// Журнал просмотров — отдельно от Article.views (счётчика). Views — то, что
+/// сериализуется в ответ и что видит пользователь; эта таблица нужна только
+/// для "статьи дня" по окну в 7 дней (см. HighlightsService): без истории
+/// нельзя было бы отличить просмотр вчера от просмотра год назад, оставался
+/// бы только пожизненный счётчик, который не меняется практически никогда.
+model ArticleView {
+  id       String   @id @default(cuid())
+  viewedAt DateTime @default(now())
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  /// Гость тоже засчитывается — id пользователя есть, только если он вошёл.
+  userId String?
+
+  @@index([articleId, viewedAt])
+  @@index([viewedAt])
+  @@map("article_views")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  /// Нужен для устойчивого порядка: раньше findMany шёл вовсе без orderBy,
+  /// и в ветке ответов это было особенно заметно. Наружу не отдаётся —
+  /// контракт ответа не меняется, только порядок элементов в массиве.
+  createdAt DateTime @default(now())
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation("CommentAuthor", fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Самоссылка "схлопнутого" (Reddit-style) дерева: у ответа всегда указывает
+  /// на КОРНЕВОЙ комментарий, даже когда отвечают на ответ — схлопывание
+  /// делает CommentsService.create. onDelete: Cascade — удаление корня
+  /// забирает с собой все ответы на него.
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+
+  /// Кому адресован ответ — источник подписи "@username" в схлопнутой ветке
+  /// (parentId сам по себе указывает на корень, а не на непосредственного
+  /// адресата). SetNull, а не Cascade: удаление адресата не должно стирать
+  /// сам комментарий, только терять подпись под кем он был.
+  replyToUserId String?
+  replyToUser   User?   @relation("CommentReplyTo", fields: [replyToUserId], references: [id], onDelete: SetNull)
+
+  @@index([articleId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+model Notification {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  href        String?
+  isViewed    Boolean @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+model Rating {
+  id       String  @id @default(cuid())
+  rate     Int
+  feedback String?
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Одна оценка на пару пользователь+статья.
+  @@unique([userId, articleId])
+  @@map("ratings")
+}

@@ -30,4 +30,14 @@ export { ArticleTypeTabs } from './ui/ArticleTypeTabs/ArticleTypeTabs';
 
 export type { ArticleDetailsSchema } from './model/types/articleDetailsSchema';
 
+export type {
+    Highlights,
+    ArticleTeaser,
+    SnippetTeaser,
+} from './model/types/highlights';
+
+export { useHighlights } from './api/highlightsApi';
+
+export { useGetArticlesByAuthorQuery } from './api/authorArticlesApi';
+
 export { getArticleDetailsData } from './model/selectors/articleDetails';

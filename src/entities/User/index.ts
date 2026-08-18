@@ -14,8 +14,16 @@ export { getUserAuthData } from './model/selectors/getUserAuthData';
 
 export { getUserInited } from './model/selectors/getUserInited';
 
+export { getIsLoginModalOpen } from './model/selectors/getIsLoginModalOpen';
+
 export { getUserRoles } from './model/selectors/getUserRoles';
 
 export { isUserAdmin } from './model/selectors/isUserAdmin';
 
 export { isUserManager } from './model/selectors/isUserManager';
+
+export type { Author } from './model/types/author';
+
+export { useGetAuthorQuery } from './api/authorApi';
+
+export { AuthorCard } from './ui/AuthorCard/AuthorCard';

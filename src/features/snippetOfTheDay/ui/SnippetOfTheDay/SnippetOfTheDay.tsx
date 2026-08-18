@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { classNames } from '@/shared/lib/classNames/classNames';
 import { Text } from '@/shared/ui/Text/Text';
@@ -7,16 +7,15 @@ import { Avatar } from '@/shared/ui/Avatar/Avatar';
 import { AppLink } from '@/shared/ui/AppLink/AppLink';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { HStack } from '@/shared/ui/Stack';
-import { getRouteArticleDetails } from '@/shared/const/router';
-import { useSnippetCandidates } from '../../api/snippetOfTheDayApi';
-import { pickSnippetOfTheDay } from '../../model/lib/pickSnippetOfTheDay';
+import { getRouteArticleDetails, getRouteAuthor } from '@/shared/const/router';
+import { useHighlights } from '@/entities/Article';
 import cls from './SnippetOfTheDay.module.scss';
 
 interface SnippetOfTheDayProps {
     className?: string;
 }
 
-const SNIPPET_PATH = '~/it-news/snippet.js';
+const SNIPPET_PATH = '~/techwire/snippet.js';
 
 const TitleBar = () => (
     <div className={cls.titleBar}>
@@ -44,11 +43,12 @@ const SnippetOfTheDaySkeleton = () => (
 export const SnippetOfTheDay = memo((props: SnippetOfTheDayProps) => {
     const { className = '' } = props;
     const { t } = useTranslation();
-    const { data: articles, isLoading, error } = useSnippetCandidates();
-
-    // Picked client-side (not in transformResponse) so the day-based rotation
-    // stays live instead of freezing inside the RTK Query cache.
-    const snippet = useMemo(() => pickSnippetOfTheDay(articles), [articles]);
+    const { data, isLoading, error } = useHighlights();
+    // Выбор сниппета делает сервер. Раньше клиент забирал два десятка статей
+    // целиком и выбирал сам, но после закрытия каталога такой запрос
+    // незалогиненному недоступен — и отдавать статьи ради одного блока кода
+    // всё равно было расточительно.
+    const snippet = data?.snippetOfTheDay;
 
     if (isLoading) {
         return (
@@ -83,10 +83,15 @@ export const SnippetOfTheDay = memo((props: SnippetOfTheDayProps) => {
                     >
                         {snippet.article.title}
                     </AppLink>
-                    <HStack gap='8' className={cls.author}>
-                        <Avatar size={24} src={snippet.article.user.avatar} />
-                        <Text text={snippet.article.user.username} />
-                    </HStack>
+                    <AppLink
+                        to={getRouteAuthor(snippet.article.user.id)}
+                        className={cls.authorLink}
+                    >
+                        <HStack gap='8' className={cls.author}>
+                            <Avatar size={24} src={snippet.article.user.avatar} />
+                            <Text text={snippet.article.user.username} />
+                        </HStack>
+                    </AppLink>
                 </div>
             </div>
         </div>

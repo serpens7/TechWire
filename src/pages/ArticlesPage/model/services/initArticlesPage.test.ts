@@ -2,7 +2,12 @@ import { TestAsyncThunk } from '@/shared/lib/tests/TestAsyncThunk';
 import { fetchArticlesList } from './fetchArticlesList';
 import { initArticlesPage } from './initArticlesPage';
 
-jest.mock('./fetchArticlesList');
+// Фабрика, а не автомок: автомок сначала загружает настоящий модуль, чтобы
+// снять с него форму, и тянет за собой всю цепочку до axios — включая
+// shared/api/api.ts, который на импорте вешает перехватчики.
+jest.mock('./fetchArticlesList', () => ({
+    fetchArticlesList: jest.fn(),
+}));
 
 describe('initArticlesPage.test', () => {
     test('success', async () => {

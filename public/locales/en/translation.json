@@ -1,6 +1,6 @@
 {
     "about": {
-        "title": "IT-news — articles on development, economics and science",
+        "title": "TechWire — articles on development, economics and science",
         "eyebrow": "About the project",
         "lead": "A publication for people who write code and want to understand what is going on around it: technology deep dives, plain explanations, and material that is still useful a week later.",
         "topicsTitle": "What we write about",
@@ -71,7 +71,9 @@
         "switcher": "Русский"
     },
     "notFound": {
-        "title": "Page not found"
+        "title": "Page not found",
+        "description": "The address may contain a typo, or the page no longer exists.",
+        "goHome": "Go to home"
     },
     "forbidden": {
         "title": "Access denied"
@@ -95,18 +97,44 @@
         "noData": "Invalid data",
         "incorrectUserData": "First and last name are required",
         "articleNotFound": "Article not found",
-        "articleError": "An error occurred when uploading the article"
+        "articleError": "An error occurred when uploading the article",
+        "reloadHint": "Try reloading the page — that usually helps."
     },
     "login": {
         "error": "Invalid username or password",
         "authorization": "Authorization form",
         "username": "Enter your login",
         "password": "Enter your password",
-        "submit": "Login"
+        "submit": "Login",
+        "goToRegister": "No account? Register",
+        "goToLogin": "Already have an account? Login",
+        "tooManyAttempts": "Too many login attempts, try again later"
+    },
+    "register": {
+        "title": "Registration",
+        "username": "Choose a login",
+        "password": "Choose a password",
+        "passwordRepeat": "Repeat password",
+        "submit": "Register",
+        "error": "Failed to register",
+        "usernameTaken": "This login is already taken",
+        "errors": {
+            "usernameLength": "Login must be between 3 and 32 characters",
+            "usernameChars": "Login can only contain latin letters, digits, _ and -",
+            "passwordLength": "Password must be at least 6 characters",
+            "passwordsMismatch": "Passwords do not match"
+        }
     },
     "navbar": {
         "exit": "Exit",
         "login": "Enter"
+    },
+    "author": {
+        "articlesCount_one": "{{count}} article",
+        "articlesCount_other": "{{count}} articles",
+        "age_one": "{{count}} year old",
+        "age_other": "{{count}} years old",
+        "showMore": "Show more"
     },
     "profile": {
         "page": "Profile",
@@ -121,6 +149,7 @@
         "lastname": "Your lastname",
         "age": "Your age",
         "city": "Your city",
+        "status": "Status",
         "username": "Your login",
         "avatar": "Your avatar",
         "button": {
@@ -172,7 +201,11 @@
     "comments": {
         "notFound": "No comments",
         "send": "Send",
-        "enterText": "Enter comment text"
+        "enterText": "Enter comment text",
+        "reply": "Reply",
+        "replyPlaceholder": "Reply to @{{username}}",
+        "cancelReply": "Cancel",
+        "delete": "Delete"
     },
     "articles": {
         "allArticles": "All",
@@ -188,8 +221,9 @@
     },
     "search": "Search",
     "edit": "Edit",
-    "IT-NEWS": "IT-news",
-    "increment": "Increment",
-    "decrement": "Decrement",
-    "add5": "Add 5"
+    "auth": {
+        "toComment": "Sign in to leave a comment",
+        "toRate": "Sign in to rate this article"
+    },
+    "appName": "TechWire"
 }

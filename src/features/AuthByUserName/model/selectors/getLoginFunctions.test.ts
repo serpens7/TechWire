@@ -1,5 +1,6 @@
 import { StateSchema } from '@/app/providers/StoreProvider';
 import { getLoginError, getLoginIsLoading, getLoginPassword, getLoginUsername } from './getLoginFunctions';
+import { AuthErrorCode } from '../types/authError';
 
 describe('login selectors', () => {
     const state: DeepPartial<StateSchema> = {
@@ -7,7 +8,7 @@ describe('login selectors', () => {
             username: 'admin',
             password: '123123',
             isLoading: true,
-            error: 'error',
+            error: AuthErrorCode.INVALID_CREDENTIALS,
         },
     };
 
@@ -32,7 +33,7 @@ describe('login selectors', () => {
     test('getLoginError', () => {
         expect(
             getLoginError(state as StateSchema)
-        ).toEqual('error');
+        ).toEqual(AuthErrorCode.INVALID_CREDENTIALS);
     });
 
     test('should work with empty state', () => {

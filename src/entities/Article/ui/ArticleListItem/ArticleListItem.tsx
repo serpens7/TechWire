@@ -6,7 +6,7 @@ import { Icon } from '@/shared/ui/Icon/Icon';
 import EyeIcon from '@/shared/assets/icons/eye-20-20.svg';
 import { Avatar } from '@/shared/ui/Avatar/Avatar';
 import { Button, ButtonTheme } from '@/shared/ui/Button/Button';
-import { getRouteArticleDetails } from '@/shared/const/router';
+import { getRouteArticleDetails, getRouteAuthor } from '@/shared/const/router';
 import cls from './ArticleListItem.module.scss';
 import {
     Article,
@@ -53,11 +53,16 @@ export const ArticleListItem = memo((props: ArticleListItemProps) => {
             >
                 <Card className={cls.card}>
                     <div className={cls.header}>
-                        <Avatar size={30} src={article.user.avatar} />
-                        <Text
-                            text={article.user.username}
-                            className={cls.username}
-                        />
+                        <AppLink
+                            to={getRouteAuthor(article.user.id)}
+                            className={cls.authorLink}
+                        >
+                            <Avatar size={30} src={article.user.avatar} />
+                            <Text
+                                text={article.user.username}
+                                className={cls.username}
+                            />
+                        </AppLink>
                         <Text text={article.createdAt} className={cls.date} />
                     </div>
                     <AppLink

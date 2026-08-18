@@ -45,4 +45,43 @@ test.describe('articles pagination', () => {
         const response = await request.response();
         expect(response?.ok()).toBeTruthy();
     });
+
+    test('прокрутка не откатывается назад во время догрузки', async ({ page }) => {
+        // Регрессионная защита. Подвал списка рисовал целую страницу заглушек
+        // (12 карточек в сетке), а карточки не имели фиксированной высоты —
+        // из-за этого высота списка скакала в обе стороны, и вид дёргало.
+        // Замеры до правки: 3619 → 5037 → 4689 px.
+        await page.goto('/');
+        await login(page, ADMIN);
+        await page.goto('/articles');
+
+        await expect(page.locator('a[href*="/articles/"]').first()).toBeVisible();
+
+        const scrollTop = () =>
+            page.evaluate(() => {
+                const scroller = [...document.querySelectorAll('div')].find(
+                    (d) => d.scrollHeight > d.clientHeight + 50 && d.clientHeight > 300,
+                );
+                return scroller ? Math.round(scroller.scrollTop) : 0;
+            });
+
+        await page.mouse.move(640, 400);
+
+        let previous = await scrollTop();
+
+        /* eslint-disable no-await-in-loop */
+        for (let i = 0; i < 20; i += 1) {
+            await page.mouse.wheel(0, 350);
+            await page.waitForTimeout(300);
+
+            const current = await scrollTop();
+
+            // Небольшой допуск: браузер может подправить позицию на пиксель-другой.
+            expect(current, `шаг ${i}: позиция уехала назад`).toBeGreaterThanOrEqual(
+                previous - 10,
+            );
+            previous = current;
+        }
+        /* eslint-enable no-await-in-loop */
+    });
 });

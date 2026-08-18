@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  // Сборка — только приложение. prisma/seed.ts и prisma.config.ts входят в
+  // include основного tsconfig (их проверяет type:check), но компилировать их
+  // в dist не нужно: иначе rootDir поднимается до корня и main.js уезжает
+  // в dist/src/main.js, ломая start:prod.
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "test", "dist", "generated", "prisma", "**/*spec.ts"]
+}

@@ -74,6 +74,13 @@
 }
 
 .meta {
+    .authorLink {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
     .username {
         p {
             font-weight: 700;

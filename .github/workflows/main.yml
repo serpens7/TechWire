@@ -7,7 +7,10 @@ on:
         branches: [main]
 
 jobs:
-    pipeline:
+    # Фронтенд и бэкенд проверяются отдельными job'ами намеренно: по красному
+    # крестику сразу видно, где сломалось, и они идут параллельно.
+    frontend:
+        name: frontend
         runs-on: ubuntu-latest
 
         strategy:
@@ -40,9 +43,95 @@ jobs:
             - name: Unit tests
               run: npm run unit
               if: always()
+            # Типы фронта генерируются из server/openapi.json. Если файл
+            # обновили, а типы — нет, расхождение всплывёт здесь, а не в
+            # рантайме. Сверка типов со схемой живёт в
+            # src/app/types/apiConformance.ts и проверяется type:check.
+            - name: API types are in sync
+              run: |
+                  npm run api:types
+                  git diff --exit-code src/shared/api/generated/schema.ts
+              if: always()
             - name: Build production
               run: npm run build:prod
               if: always()
             - name: Build Storybook
               run: npm run build-storybook
+              if: always()
+
+    backend:
+        name: backend
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [24.x]
+
+        # Настоящий PostgreSQL: тесты бэкенда ходят в базу, а не в моки.
+        # Версия совпадает с локальной, чтобы поведение не расходилось.
+        services:
+            postgres:
+                image: postgres:17
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: techwire
+                ports:
+                    - 5432:5432
+                # Без health-check шаги стартуют раньше, чем Postgres примет
+                # подключения, и миграция падает на ровном месте.
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        env:
+            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/techwire?schema=public
+            JWT_SECRET: ci-secret-not-used-anywhere-else
+            JWT_EXPIRES_IN: 7d
+            # Искусственная задержка нужна только фронту в разработке.
+            RESPONSE_DELAY_MS: 0
+
+        defaults:
+            run:
+                working-directory: server
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Generate Prisma client
+              run: npm run prisma:generate
+
+            - name: Apply migrations
+              run: npx prisma migrate deploy
+
+            - name: Type checking
+              run: npm run type:check
+              if: always()
+            - name: Lint
+              run: npm run lint:check
+              if: always()
+            - name: Build
+              run: npm run build
+              if: always()
+            # openapi.json коммитится и служит источником типов для фронта.
+            # Шаг ловит ситуацию «поменяли контракт, забыли пересобрать схему».
+            - name: OpenAPI schema is in sync
+              run: |
+                  npm run openapi
+                  git diff --exit-code openapi.json
+              if: always()
+            # Сид гоняется внутри test:e2e (--fresh), поэтому отдельным шагом
+            # не выносится: тесты сами приводят базу к нужному состоянию.
+            - name: API tests
+              run: npm run test:e2e
               if: always()

@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { Text, TextAlign, TextSize } from '@/shared/ui/Text/Text';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { Avatar } from '@/shared/ui/Avatar/Avatar';
+import { AppLink } from '@/shared/ui/AppLink/AppLink';
+import { getRouteAuthor } from '@/shared/const/router';
 import EyeIcon from '@/shared/assets/icons/eye-20-20.svg';
 import CalendarIcon from '@/shared/assets/icons/calendar-20-20.svg';
 import { Icon } from '@/shared/ui/Icon/Icon';
@@ -120,6 +122,17 @@ export const ArticleDetails = (props: ArticleDetailsProps) => {
                         text={article?.subtitle}
                         size={TextSize.L}
                     />
+                    {article?.user && (
+                        <AppLink
+                            to={getRouteAuthor(article.user.id)}
+                            className={cls.authorLink}
+                        >
+                            <HStack gap='8' className={cls.articleInfo}>
+                                <Avatar size={24} src={article.user.avatar} />
+                                <Text text={article.user.username} />
+                            </HStack>
+                        </AppLink>
+                    )}
                     <HStack gap='8' className={cls.articleInfo}>
                         <Icon className={cls.icon} Svg={EyeIcon} />
                         <Text text={String(article?.views)} />
